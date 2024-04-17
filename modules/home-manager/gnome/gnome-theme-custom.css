@@ -1,0 +1,17 @@
+/* gnome-theme-custom.css */
+
+/* Target the top panel */
+#panel {
+    /* Add space at the top and both sides */
+    padding: 10px 20px;  /* Adjust padding as needed for spacing */
+    /* Make the panel background transparent */
+    background-color: transparent; 
+    color: #FFFFFF; /* Ensure text color is visible, adjust as needed */
+}
+
+/* Target the system tray (or similar) to keep it visible */
+#panel .system-tray, 
+#panel .app-menu {
+    background-color: rgba(50, 50, 50, 0.8); /* Slightly transparent dark background */
+}
+
