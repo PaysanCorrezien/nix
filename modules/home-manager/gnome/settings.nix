@@ -29,6 +29,7 @@
       move-to-workspace-10 = [ "<Alt><Shift>0" ];
       close = [ "<Alt><Shift>q" ];
     };
+    # FIXME: automove dont work troubleshoot
     "org/gnome/shell/extensions/auto-move-windows" = {
       application-list = [
         "firefox.desktop:5"
@@ -41,15 +42,20 @@
         "org.gnome.Calendar.desktop:9"
       ];
     };
+  "org/gnome/desktop/input-sources" = {
+  xkb-options = [ "caps:escape" ];
+};
+    #FIXME
       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings" = {
     custom0 = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/";
   };
-  #FIXME: should work but doesnt
-  "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-    binding = "['<Alt>Return']";
-    command = "['wezterm.desktop']";
-    name = "['Launch WezTerm']";
-  };
+"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+  binding = [ "<Alt>Return" ];
+  command = [ "wezterm" ];
+  name = [ "Launch WezTerm" ];
+};
+#TODO: HOME AND END SOMEHOW ?
+
   };
 }
 

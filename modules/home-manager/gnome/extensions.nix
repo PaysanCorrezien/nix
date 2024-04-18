@@ -82,35 +82,41 @@ in
       ];
     };
     "org/gnome/desktop/interface" = {
-  gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark";
+  gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
   # icon-theme = "Catppuccin-Papirus-Dark";  # Confirm this is the correct installed name
   cursor-theme = "Catppuccin-Macchiato-Mauve-Cursors";  # Adjust to the exact name
 };
 
+# gnome general theme via user-theme extensions
+"org/gnome/shell/extensions/user-theme" = {
+  name = "Catppuccin-Macchiato-Compact-Pink-Dark";
+};
 
-   # "org/gnome/desktop/wm/preferences" = {
-   #   workspace-names = [ "Main" ];
-   # };
+  "org/gnome/desktop/wm/preferences" = {
+      num-workspaces = 10;  # Adjusted to set the number of workspaces
+    };
+
     "org/gnome/desktop/background" = {
       # picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
       # picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-d.png";
-      picture-uri = "file:///etc/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-      picture-uri-dark = "file:///etc/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+      #FIXME: make use of relative path here
+      picture-uri = "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+      picture-uri-dark = "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
       picture-options = "zoom" ;              # Set wallpaper display option
     };
     # TODO: GDM theming https://github.com/catppuccin/gtk/issues/21
     # dont seems to work right now need to find what is missing
     "org/gnome/desktop/screensaver" = {
-      # picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-d.png";
-      # primary-color = "#3465a4";
-      # secondary-color = "#000000";
- picture-uri = "file:///etc/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-      primary-color = "#000000";              # Default primary color for screensaver
-      secondary-color = "#3465a4";            # Default secondary color for screensaver
+ picture-uri = "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+      primary-color = "#b7bdf8"; #catppuccin machia lavender             # Default primary color for screensaver
+      secondary-color = "#f0c6c6"; # catpuccin machia  flamingo          # Default secondary color for screensaver
     };
-
-
-
+    # extension search-light
+# /org/gnome/shell/extensions/search-light/entry-font-size   /org/gnome/shell/extensions/search-light/scale-width
+# /org/gnome/shell/extensions/search-light/scale-height      /org/gnome/shell/extensions/search-light/shortcut-search
+    "org/gnome/shell/extensions/search-light" = {
+      shortcut-search = "['<Alt>d']";  # Ensure correct syntax for the keyboard shortcut
   };
+};
 }
 		

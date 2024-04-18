@@ -8,6 +8,7 @@
      ./terminals/zsh.nix
      ./gnome/extensions.nix
      ./gnome/settings.nix
+   # need system wide     ./gnome/gdm.nix
      # ./gnome/keybinds.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should

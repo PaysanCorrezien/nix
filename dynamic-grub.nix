@@ -10,6 +10,7 @@
   boot.loader.grub.splashMode            = "stretch";
 
   boot.loader.grub.devices               = [ "nodev" ];
+  boot.loader.grub.configurationLimit = 50;
   boot.loader.grub.extraEntries = ''
     menuentry "Reboot" {
       reboot
