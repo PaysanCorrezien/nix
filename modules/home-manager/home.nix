@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config,lib, pkgs, ... }:
 
 {
   imports =
@@ -6,8 +6,10 @@
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
      ./terminals/zsh.nix
+     ./terminals/fonts.nix
      ./gnome/extensions.nix
      ./gnome/settings.nix
+     ./programs/nvim.nix
    # need system wide     ./gnome/gdm.nix
      # ./gnome/keybinds.nix
     ];
@@ -77,9 +79,11 @@
   #  /etc/profiles/per-user/dylan/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-     EDITOR = "nvim";
+    EDITOR = "nvim";
+    # LD_LIBRARY_PATH = lib.concatStringsSep ":" ([
+    #   "${pkgs.sqlite}/lib"
+    # ] ++ lib.optional (config.home.sessionVariables ? LD_LIBRARY_PATH) config.home.sessionVariables.LD_LIBRARY_PATH);
   };
-
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }

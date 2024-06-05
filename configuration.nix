@@ -53,7 +53,21 @@
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.enable = false;
+
+    # Enable LightDM
+  services.xserver.displayManager.lightdm = {
+    enable = true;
+        background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";  # Set the background image
+    greeters = {
+      #gtk = {
+        # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";  # This should be a valid GTK theme name
+    #    iconTheme = "Papirus";  # Set the icon theme, if "Papirus" is installed
+     #   fontName = "Noto Sans 10";  # Set the font and size for the greeter
+     # };
+    };
+  };
+
   services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
@@ -129,6 +143,13 @@
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   # tigervnc  
   neovim
+  sqlite
+  
+  nil #LSP for nix
+  # dev 
+  nodejs_21
+  nodePackages.npm
+
   wget
   #x11 temp
   xorg.xinit
@@ -137,7 +158,10 @@
   wezterm
   git
 starship
-fzf zoxide bat ripgrep neofetch zsh fd shell_gpt gum zsh
+fzf zoxide bat ripgrep neofetch zsh fd shell_gpt gum 
+zsh-fzf-tab
+zsh-forgit
+
 obsidian
 discord
 # WORK
@@ -147,6 +171,8 @@ powershell
 vial qmk qmk_hid keymapviz
 # DEV
 helix
+tailscale
+
 #TODO : replace this with  real setup
 rustup
 rustc
@@ -167,7 +193,11 @@ github-copilot-cli
 keepassxc
 #TODO: forticlient vpn
 python3
+pyenv
 nextcloud-client
+
+lsd
+ollama
 
   ];
 

@@ -49,6 +49,8 @@ in
    # catppuccin-papirus-folders
   ];
 
+    # Additionally, ensure that the theme is recognized as the dark variant globally
+
   # Configure GNOME Shell, GNOME Extensions and set the Cursor and Icons using GSettings
   dconf.settings = {
     "org/gnome/shell" = {
@@ -85,7 +87,8 @@ in
   gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
   # icon-theme = "Catppuccin-Papirus-Dark";  # Confirm this is the correct installed name
   cursor-theme = "Catppuccin-Macchiato-Mauve-Cursors";  # Adjust to the exact name
-};
+#    color-scheme = "prefer-dark";  # This is important to force dark mode in apps supporting it
+  };
 
 # gnome general theme via user-theme extensions
 "org/gnome/shell/extensions/user-theme" = {
@@ -115,7 +118,8 @@ in
 # /org/gnome/shell/extensions/search-light/entry-font-size   /org/gnome/shell/extensions/search-light/scale-width
 # /org/gnome/shell/extensions/search-light/scale-height      /org/gnome/shell/extensions/search-light/shortcut-search
     "org/gnome/shell/extensions/search-light" = {
-      shortcut-search = "['<Alt>d']";  # Ensure correct syntax for the keyboard shortcut
+      # shortcut-search = "['<Alt>d']";  # Ensure correct syntax for the keyboard shortcut
+       shortcut-search = ["<Alt>d"] ;
   };
 };
 }
