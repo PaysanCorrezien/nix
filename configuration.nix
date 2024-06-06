@@ -144,7 +144,6 @@
   # tigervnc  
   neovim
   sqlite
-  
   nil #LSP for nix
   # dev 
   nodejs_21
