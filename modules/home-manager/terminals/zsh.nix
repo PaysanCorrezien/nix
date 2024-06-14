@@ -61,6 +61,7 @@ in
         cat = "bat";
         update = "sudo nixos-rebuild switch";
         sw = "sudo nixos-rebuild switch --flake ~/.config/nix#default --impure --show-trace -v";
+        switchkb = "switch-keyboard-layout";
       };
     };
   };

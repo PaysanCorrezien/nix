@@ -18,77 +18,12 @@
   # boot.loader.grub.useOSProber = true;
  # boot.loader.grub.efiSupport = true;
 
-
-
-
-  networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "Europe/Paris";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "fr_FR.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = false;
-
-    # Enable LightDM
-  services.xserver.displayManager.lightdm = {
-    enable = true;
-        background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";  # Set the background image
-    greeters = {
-      #gtk = {
-        # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";  # This should be a valid GTK theme name
-    #    iconTheme = "Papirus";  # Set the icon theme, if "Papirus" is installed
-     #   fontName = "Noto Sans 10";  # Set the font and size for the greeter
-     # };
-    };
-  };
-
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "fr";
-    xkb.variant = "";
-  };
-
-  # Configure console keymap
-  console.keyMap = "fr";
-  
-# NOTE: for keyboard computer
-  # Configure keymap in X11
-#   services.xserver = {
- #   xkb.layout = "us";
- #    xkb.variant = "altgr-intl";
- #    xkb.options = "nodeadkeys";
-  
- # };
-
-  # Configure console keymap
 #  console.keyMap = "us-acentos";
 
   # Enable CUPS to print documents.
@@ -133,9 +68,6 @@
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -209,6 +141,7 @@ ollama
      enableSSHSupport = true;
    };
   # List services that you want to enable:
+  #NOTE: TODOIST 
   nixpkgs.config.permittedInsecurePackages = [
                 "electron-25.9.0"
               ];
@@ -223,21 +156,7 @@ services.xrdp.defaultWindowManager = "startplasma-x11";
 environment.etc = {
   "xrdp/sesman.ini".source = "${config.services.xrdp.confDir}/sesman.ini";
 };
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   #home manager enable
   home-manager = {
