@@ -3,7 +3,8 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware-configuration.nixos
+    ./modules/keyboard/keyboard.nix
   ];
 
   networking.networkmanager.enable = true;
@@ -24,18 +25,6 @@
     LC_TIME = "fr_FR.UTF-8";
   };
 
- # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "fr,us";
-    xkb.variant = ",altgr-intl";
-#     xkb.options = "grp:alt_shift_toggle"; # Use Alt+Shift to switch between layouts
-  };
-
-  # Configure console keymap
-  console.keyMap = "fr";
-
-  services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -51,8 +40,6 @@
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      firefox
-      thunderbird
       # Other user packages
     ];
   };

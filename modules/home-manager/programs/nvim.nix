@@ -7,6 +7,18 @@
 #       "${pkgs.sqlite}/lib"
 #     ] ++ lib.optional (config.home.sessionVariables ? LD_LIBRARY_PATH) config.home.sessionVariables.LD_LIBRARY_PATH);
 #   };
+#
+  environment.systemPackages = with pkgs; [
+  neovim
+  nil # nixos lsp 
+   
+  xclip # NOTE: mandatory ?
+  sqlite
+  nodejs_21 #TODO: check how to auto up to date 
+  nodePackages.npm
+nodenv
+jdk21
+  ];
   programs.neovim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [

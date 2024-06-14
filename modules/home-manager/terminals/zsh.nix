@@ -49,6 +49,16 @@ in
     description = "The type of environment, defaults to 'HOME'. Can be overridden.";
   };
 
+    # Install keyboard-related packages
+  environment.systemPackages = with pkgs; [
+zsh
+zsh-fzf-tab
+zsh-forgit
+  ];
+}
+
+
+
   config = {
     programs.zsh = {
       enable = true;
@@ -64,6 +74,7 @@ in
         switchkb = "switch-keyboard-layout";
       };
     };
-  };
+    };
 }
+
 

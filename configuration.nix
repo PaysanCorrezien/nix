@@ -54,82 +54,28 @@
     isNormalUser = true;
     description = "dylan";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      firefox
-      thunderbird
-
-    ];
+#    packages = with pkgs; [
+#    ];
   };
-
-  # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "dylan";
-
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  # tigervnc  
-  neovim
-  sqlite
-  
-  nil #LSP for nix
-  # dev 
-  nodejs_21
-  nodePackages.npm
-
-  wget
   #x11 temp
   xorg.xinit
-  xclip
 ##
-  wezterm
-  git
-starship
-fzf zoxide bat ripgrep neofetch zsh fd shell_gpt gum 
-zsh-fzf-tab
-zsh-forgit
-
-obsidian
-discord
-# WORK
-remmina wireshark teamviewer 
-powershell
-# KEYBOARD 
-vial qmk qmk_hid keymapviz
-# DEV
-helix
 tailscale
-
-#TODO : replace this with  real setup
-rustup
-rustc
-cargo
 #
-todoist-electron
-rofi
-nodenv
-jdk21
-ffmpeg
-btop
 docker
 pandoc
-yazi
-tokei
-gh
-github-copilot-cli
-keepassxc
 #TODO: forticlient vpn
 python3
 pyenv
 nextcloud-client
 
 lsd
-ollama
+
+# ollama #TODO : setup ollama /machine (light model on laptop : whisper / phi / translation)
 
   ];
 
@@ -140,23 +86,10 @@ ollama
      enable = true;
      enableSSHSupport = true;
    };
-  # List services that you want to enable:
-  #NOTE: TODOIST 
-  nixpkgs.config.permittedInsecurePackages = [
-                "electron-25.9.0"
-              ];
 
+# TODO: SSH.nix with hardened setup no passwd / 
   # Enable the OpenSSH daemon.
    services.openssh.enable = true;
-# Enable rdp for test purpose for now
-services.xrdp.enable = true;
-services.xrdp.openFirewall = true;
-services.xrdp.defaultWindowManager = "startplasma-x11";
-# https://github.com/NixOS/nixpkgs/issues/250533
-environment.etc = {
-  "xrdp/sesman.ini".source = "${config.services.xrdp.confDir}/sesman.ini";
-};
-
 
   #home manager enable
   home-manager = {

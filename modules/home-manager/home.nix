@@ -4,11 +4,11 @@
   imports =
     [ # Include the results of the hardware scan.
     ../chezmoi/chezmoi.nix
-     ./browser/firefox.nix
      ./terminals/zsh.nix
      ./terminals/fonts.nix
-     ./gnome/extensions.nix
-     ./gnome/settings.nix
+     #./browser/firefox.nix
+     #./gnome/extensions.nix
+     #./gnome/settings.nix
      ./programs/nvim.nix
    # need system wide     ./gnome/gdm.nix
      # ./gnome/keybinds.nix
