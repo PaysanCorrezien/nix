@@ -1,5 +1,5 @@
- { pkgs, inputs, ... }:
-#TODO: enable extemsions without prompt.
+{ pkgs, inputs, ... }:
+#TODO: enable extensions without prompt.
 #TODO: skip first login message useless
 #TODO : theming
 #TODO : GPT as installed webapp 
@@ -46,6 +46,47 @@ let
       Homepage = {
         URL = "about:profiles | about:config | about:policies | about:debugging#/runtime/this-firefox";
       };
+      ExtensionSettings = {
+        "*".installation_mode = "allowed"; # Allow all addons except the ones explicitly blocked
+        
+        # uBlock Origin:
+        "uBlock0@raymondhill.net" = {
+          installation_mode = "force_installed";
+        };
+        # SponsorBlock:
+        "{sponsorblock@ajay.app}" = {
+          installation_mode = "force_installed";
+        };
+        # Dark Reader:
+        "addon@darkreader.org" = {
+          installation_mode = "force_installed";
+        };
+        # Tridactyl:
+        "tridactyl.vim@cmcaine.co.uk" = {
+          installation_mode = "force_installed";
+        };
+        # YouTube Shorts Block:
+        "{youtube-shorts-block@youtube-shorts-block.com}" = {
+          installation_mode = "force_installed";
+        };
+        # Firefox Color:
+        "{firefox-color@mozilla.com}" = {
+          installation_mode = "force_installed";
+        };
+        # KeePassXC Browser:
+        "keepassxc-browser@keepassxc.org" = {
+          installation_mode = "force_installed";
+        };
+        # GNOME Shell Integration:
+        "chrome-gnome-shell@gnome.org" = {
+          installation_mode = "force_installed";
+        };
+        # firefox-ctrlnumber:
+        "{abigailbuccaneer-firefox-ctrlnumber}" = {
+          install_url = "https://github.com/AbigailBuccaneer/firefox-ctrlnumber/releases/download/v1.0/firefox-ctrlnumber.xpi";
+          installation_mode = "force_installed";
+        };
+      };
     };
   });
 in
@@ -63,11 +104,8 @@ in
         tridactyl
         youtube-shorts-block
         firefox-color
-	keepassxc-browser
-	gnome-shell-integration
-	# https://github.com/AbigailBuccaneer/firefox-ctrlnumber missing from list of package
-	#TODO: add this to firefox nix
-
+        keepassxc-browser
+        gnome-shell-integration
       ];
       settings = {
         "dom.security.https_only_mode" = true;
@@ -79,7 +117,7 @@ in
         "startup.homepage_welcome_url.additional" = "";
         "browser.startup.page" = 0;
       };
-      # for trydactyl this need to be set by default
+      # for tridactyl this need to be set by default
       # :set newtab about:blank
       userChrome = ''
         /* some css */
