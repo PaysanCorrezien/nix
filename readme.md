@@ -27,7 +27,11 @@ nix-shell -p git --run "git clone https://github.com/PaysanCorrezien/nix /mnt/et
 ## Bypass gnome idle timer
 
 ```bash
-gsettings set org.gnome.desktop.session idle-delay 43200
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'nothing'
+gsettings set org.gnome.settings-daemon.plugins.power power-off-inactive-ac-type 'nothing'
+gsettings set org.gnome.settings-daemon.plugins.power power-off-inactive-battery-type 'nothing'
+gsettings set org.gnome.desktop.session idle-delay 0
 ```
 
 Once done
