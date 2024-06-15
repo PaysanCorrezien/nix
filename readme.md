@@ -35,3 +35,16 @@ Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$dest\nixos-wsl.tar
 wsl --import NixOS $dest "$dest\nixos-wsl.tar.gz" --version 2;
 wsl -d NixOS
 ```
+
+### WSL2 setup
+
+```powershell
+sudo nix-channel --update # update nix channels , mandatory from doc
+nix-shell -p git --run "mkdir -p /home/dylan/.config/nix && git clone -b wsl https://github.com/PaysanCorrezien/nix /home/dylan/.config/nix && nixos-install --flake /home/dylan/.config/nix#wsl && reboot"
+```
+
+## Automating setup
+
+```bash
+curl -L https://raw.githubusercontent.com/PaysanCorrezien/nix/main/setup-disk.sh | sh
+```
