@@ -26,8 +26,25 @@ BUG: dont work for now
 
 ## WSL setup
 
+### command to setup system
 ```bash
 nix-shell -p git --run "mkdir -p /home/dylan/.config/nix && git clone -b wsl https://github.com/PaysanCorrezien/nix /home/dylan/.config/nix && nixos-install --flake /home/dylan/.config/nix#wsl && reboot"
 
 
+=======
+
+## Install Nixos on Windows
+
+_WSL need to be installed already_
+
+```powershell
+$dest="$env:USERPROFILE\NixOS";
+if (!(Test-Path $dest)) {
+    New-Item -ItemType Directory -Path $dest
+};
+$latestRelease = Invoke-RestMethod -Uri https://api.github.com/repos/nix-community/NixOS-WSL/releases/latest;
+$asset = $latestRelease.assets | Where-Object { $_.name -eq 'nixos-wsl.tar.gz' };
+Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$dest\nixos-wsl.tar.gz";
+wsl --import NixOS $dest "$dest\nixos-wsl.tar.gz" --version 2;
+wsl -d NixOS
 ```
