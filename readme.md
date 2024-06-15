@@ -18,6 +18,16 @@ sudo nixos-rebuild switch --flake ~/.config/nix#default --impure --show-trace -v
 
 TODO : test the automatic setup:
 
+sudo :
 ```
 nix-shell -p git --run "git clone https://github.com/PaysanCorrezien/nix /mnt/etc/nixos && mkdir -p /mnt/home/dylan/.config/nix && cp -r /mnt/etc/nixos/flake.nix /mnt/home/dylan/.config/nix/flake.nix && nixos-install --flake /mnt/home/dylan/.config/nix#default && reboot"
+```
+BUG: dont work for now
+
+## WSL setup
+
+```bash
+nix-shell -p git --run "mkdir -p /home/dylan/.config/nix && git clone -b wsl https://github.com/PaysanCorrezien/nix /home/dylan/.config/nix && nixos-install --flake /home/dylan/.config/nix#wsl && reboot"
+
+
 ```
