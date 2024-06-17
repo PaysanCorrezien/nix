@@ -4,7 +4,7 @@
 {
   networking.hostName = "lenovo";
   
-  boot.loader.grub.device = "/dev/sda"; # Adjust as needed
+  # boot.loader.grub.device = "/dev/sda"; # Adjust as needed
 
   # Host-specific configurations
   services.xserver.displayManager.lightdm.background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
@@ -20,13 +20,13 @@
   services.xserver.displayManager.lightdm = {
     enable = true;
         background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";  # Set the background image
-    greeters = {
+    # greeters = {
       #gtk = {
         # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";  # This should be a valid GTK theme name
     #    iconTheme = "Papirus";  # Set the icon theme, if "Papirus" is installed
      #   fontName = "Noto Sans 10";  # Set the font and size for the greeter
      # };
-    };
+    # };
   };
 
   services.xserver.desktopManager.gnome.enable = true;
