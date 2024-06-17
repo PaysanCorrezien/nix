@@ -7,7 +7,7 @@
   # boot.loader.grub.device = "/dev/sda"; # Adjust as needed
 
   # Host-specific configurations
-  services.xserver.displayManager.lightdm.background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+  # services.xserver.displayManager.lightdm.background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
   services.xserver.desktopManager.gnome.enable = true;
 
   # Other host-specific settings
@@ -17,9 +17,9 @@
   services.xserver.displayManager.gdm.enable = false;
 
     # Enable LightDM
-  services.xserver.displayManager.lightdm = {
-    enable = true;
-        background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";  # Set the background image
+  # services.xserver.displayManager.lightdm = {
+  #   enable = true;
+        # background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";  # Set the background image
     # greeters = {
       #gtk = {
         # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";  # This should be a valid GTK theme name
@@ -28,8 +28,5 @@
      # };
     # };
   };
-
-  services.xserver.desktopManager.gnome.enable = true;
-
 }
 
