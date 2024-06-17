@@ -27,6 +27,6 @@
      #   fontName = "Noto Sans 10";  # Set the font and size for the greeter
      # };
     # };
-  };
+  # };
 }
 

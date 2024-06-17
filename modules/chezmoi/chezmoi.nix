@@ -1,22 +1,40 @@
+{ config, pkgs, ... }:
 
-{ pkgs, config, lib, ... }: let
-  homeDir = config.home.homeDirectory;
-in {
-  home.packages = with pkgs; [
+#TODO: make a template variable that get applied
+#make the repo vabriable global
+let
+  chezmoiSetupScript = pkgs.writeShellScriptBin "chezmoi-setup" ''
+    #!/bin/bash
+
+    # URL to your chezmoi dotfiles repository
+    REPO_URL="https://github.com/PaysanCorrezien/dotfiles"
+
+    # Check if chezmoi is already set up
+    if [ -d "$HOME/.config/chezmoi" ]; then
+      echo "chezmoi is already set up. Applying changes..."
+      chezmoi update
+    else
+      echo "chezmoi is not set up. Initializing from $REPO_URL..."
+      chezmoi init --apply $REPO_URL
+    fi
+  '';
+in
+{
+  environment.systemPackages = with pkgs; [
     chezmoi
+    chezmoiSetupScript
   ];
 
-  # home.activation.chezmoi = lib.hm.dag.entryAfter ["writeBoundary"] ''
-  #   # Optional: Add colored echo messages to indicate the activation of chezmoi
-  #   # echo -e "\033[0;34mActivating chezmoi\033[0m"
-  #   # echo -e "\033[0;34m==================\033[0m"
-  #   ${pkgs.chezmoi}/bin/chezmoi apply --verbose
-  #   # echo -e "\033[0;34m==================\033[0m"
-  # '';
+  systemd.services.chezmoi-setup = {
+    description = "Chezmoi Setup Service";
+    wantedBy = [ "default.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      ExecStart = "${chezmoiSetupScript}/bin/chezmoi-setup";
+      Type = "oneshot";
+    };
+  };
+
+  systemd.services.chezmoi-setup.path = [ pkgs.chezmoi ];
 }
 
-# TODO: install from github on first init my dotfiles
-# or sync otherwise with github
-# chezmoi apply or update then on each rebuild
-# handle error 
-# if first init; initialize chezmoi templ w placeholder

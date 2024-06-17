@@ -37,6 +37,7 @@
           modules = [
             ./hosts/lenovo.nix
             ./modules/common.nix
+            ./dynamic-grub.nix
             inputs.home-manager.nixosModules.home-manager
             {
               home-manager.users.dylan = import ./modules/home-manager/home.nix;
@@ -50,6 +51,7 @@
           modules = [
             ./hosts/WSL.nix
             ./modules/common.nix
+            ./dynamic-grub.nix
             inputs.home-manager.nixosModules.home-manager
             {
               home-manager.users.dylan = import ./modules/home-manager/home.nix;
