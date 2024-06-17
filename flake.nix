@@ -16,8 +16,11 @@
       url = "github:numtide/flake-utils";
     };
     # TODO: add yazi flake 
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
+# TODO : move computer conf on /machine/ subfolder
+# TEST: serv conf
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     let
       system = "x86_64-linux";
@@ -61,6 +64,14 @@
         # Other global packages
       ];
     };
+    # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
+    #   specialArgs = { inherit inputs; };
+    #   modules = [
+    #     ./homeserver.nix
+    #     ./dynamic-grub.nix  # Include the dynamic GRUB module
+    #     inputs.home-manager.nixosModules.home-manager
+    #   ];
+    # };
   };
 }
 
