@@ -30,17 +30,18 @@
 
       switchKeyboardLangScript = import ./scripts/switch-keyboard-layout.nix { inherit pkgs; };
     in {
-      nixosConfigurations = {
+        nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs pkgs; };
           modules = [
             ./hosts/lenovo.nix
             ./modules/common.nix
-            ./dynamic-grub.nix
+	    ./dynamic-grub.nix
+	    ./configuration.nix
             inputs.home-manager.nixosModules.home-manager
             {
-              home-manager.users.dylan = import ./modules/home-manager/home.nix;
+              home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
             }
           ];
         };

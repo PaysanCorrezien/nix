@@ -60,6 +60,9 @@
 
     ];
   };
+  #cant be in HM fix this
+  users.users.dylan.shell = pkgs.zsh;
+  programs.zsh.enable = true;
 
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
@@ -119,6 +122,8 @@ docker
 pandoc
 yazi
 tokei
+
+libnotify
 gh
 github-copilot-cli
 keepassxc
