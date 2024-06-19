@@ -107,11 +107,6 @@ vial qmk qmk_hid keymapviz
 helix
 tailscale
 
-#TODO : replace this with  real setup
-#rustup
-#rustc
-# cargo
-#
 todoist-electron
 rofi
 nodenv
@@ -123,7 +118,6 @@ pandoc
 yazi
 tokei
 
-libnotify
 gh
 github-copilot-cli
 keepassxc
@@ -132,13 +126,28 @@ python3
 pyenv
 nextcloud-client
 
+zig 
+# libgcc
 lsd
+libnotify
+ripgrep-all
+
+nil
+nixpkgs-fmt
+nixpkgs-lint
+gitui
+stylua
+unzip
+gcc
+
 ollama
+
 
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
+  
    programs.mtr.enable = true;
    programs.gnupg.agent = {
      enable = true;

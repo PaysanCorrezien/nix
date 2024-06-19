@@ -15,6 +15,10 @@
 # TODO: move to gnome.nix
    # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = false;
+  
+    environment.systemPackages = with pkgs; [
+  acpi # battery util
+  ];
 
     # Enable LightDM
   # services.xserver.displayManager.lightdm = {

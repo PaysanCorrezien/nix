@@ -53,3 +53,7 @@ Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$dest\nixos-wsl.tar
 wsl --import NixOS $dest "$dest\nixos-wsl.tar.gz" --version 2;
 wsl -d NixOS
 ```
+
+## Usefull ressources
+
+[home manager option](https://nix-community.github.io/home-manager/options.xhtml)
