@@ -1,6 +1,15 @@
-{ pkgs, lib, ... }:
+{ pkgs,config, lib, ... }:
+let
+  nvim-spell-fr-utf8-dictionary = builtins.fetchurl {
+    url = "https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl";
+    sha256 = "abfb9702b98d887c175ace58f1ab39733dc08d03b674d914f56344ef86e63b61";
+  };
 
-{
+  nvim-spell-fr-utf8-suggestions = builtins.fetchurl {
+    url = "https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.sug";
+    sha256 = "0294bc32b42c90bbb286a89e23ca3773b7ef50eff1ab523b1513d6a25c6b3f58";
+  };
+in {
 # home.sessionVariables = {
 #     EDITOR = "nvim";
 #     LD_LIBRARY_PATH = lib.concatStringsSep ":" ([
@@ -22,6 +31,10 @@
     url = "https://github.com/PaysanCorrezien/nvim-treesitter-powershell";
     # rev = "master";  # You can specify a specific commit hash here if necessary
   };
+  # Ensure the French spell files are downloaded
+  home.file."${config.home.homeDirectory}/.config/nvim/spell/fr.utf-8.spl".source = nvim-spell-fr-utf8-dictionary;
+  home.file."${config.home.homeDirectory}/.config/nvim/spell/fr.utf-8.sug".source = nvim-spell-fr-utf8-suggestions;
+
 }
 
 

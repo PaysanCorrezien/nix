@@ -108,9 +108,9 @@ helix
 tailscale
 
 #TODO : replace this with  real setup
-rustup
-rustc
-cargo
+#rustup
+#rustc
+# cargo
 #
 todoist-electron
 rofi

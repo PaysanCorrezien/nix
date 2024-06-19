@@ -7,6 +7,7 @@
      ./browser/firefox.nix
      ./terminals/zsh.nix
      ./terminals/fonts.nix
+     ./terminals/rust.nix
      ./gnome/extensions.nix
      ./gnome/settings.nix
      ./programs/nvim.nix
