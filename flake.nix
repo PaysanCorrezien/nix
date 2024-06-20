@@ -28,7 +28,6 @@
         config.allowUnfree = true;
       };
 
-      switchKeyboardLangScript = import ./scripts/switch-keyboard-layout.nix { inherit pkgs; };
     in {
         nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
@@ -55,15 +54,11 @@
             ./dynamic-grub.nix
             inputs.home-manager.nixosModules.home-manager
             {
-              home-manager.users.dylan = import ./modules/home-manager/home.nix;
+             home-manager.users.dylan = import ./modules/home-manager/home.nix;
             }
           ];
         };
       };
-       environment.systemPackages = [
-        switchKeyboardLangScript
-        # Other global packages
-      ];
     };
     # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
     #   specialArgs = { inherit inputs; };

@@ -54,19 +54,14 @@
     isNormalUser = true;
     description = "dylan";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      firefox
-      thunderbird
-
-    ];
   };
   #cant be in HM fix this
   users.users.dylan.shell = pkgs.zsh;
   programs.zsh.enable = true;
 
   # # Enable automatic login for the user.
-  # services.displayManager.autoLogin.enable = true;
-  # services.displayManager.autoLogin.user = "dylan";
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "dylan";
   services.xserver.enable = true ;
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.displayManager.lightdm = {
@@ -111,8 +106,6 @@ discord
 # WORK
 remmina wireshark teamviewer 
 powershell
-# KEYBOARD 
-vial qmk qmk_hid keymapviz
 # DEV
 helix
 tailscale
@@ -153,7 +146,7 @@ gcc
 ollama
 
 # gnome.adwaita-icon-theme
-xorg.xcursorthemes
+# xorg.xcursorthemes
 
   ];
 

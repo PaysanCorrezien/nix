@@ -4,6 +4,7 @@
 {
   imports = [
   /etc/nixos/hardware-configuration.nix
+  ./keyboard.nix
   ];
 
   networking.networkmanager.enable = true;

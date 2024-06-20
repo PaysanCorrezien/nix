@@ -2,7 +2,6 @@
 { pkgs }:
 
 pkgs.writeScriptBin "switch-keyboard-layout" ''
-  #!/bin/bash
   current_layout=$(setxkbmap -query | grep layout | awk '{print $2}')
 
   if [ "$current_layout" = "fr" ]; then
