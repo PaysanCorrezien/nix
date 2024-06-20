@@ -26,6 +26,7 @@ let
     };
     "SSHAgent" = {
       "EnableSSHAgent" = "true";                        # Enable SSH agent integration
+      "UseOpenSSH"="true";
     };
     "Browser" = {
       "EnableBrowserIntegration" = "true";              # Enable browser integration

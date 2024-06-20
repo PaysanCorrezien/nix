@@ -8,16 +8,18 @@
 
   # Host-specific configurations
   # services.xserver.displayManager.lightdm.background = "/home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-  services.xserver.desktopManager.gnome.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.displayManager.lightdm.enable = true;
+
 
   # Other host-specific settings
 
 # TODO: move to gnome.nix
    # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = false;
   
-    environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
   acpi # battery util
+  gnome.adwaita-icon-theme
   ];
 
     # Enable LightDM

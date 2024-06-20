@@ -64,9 +64,19 @@
   users.users.dylan.shell = pkgs.zsh;
   programs.zsh.enable = true;
 
-  # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "dylan";
+  # # Enable automatic login for the user.
+  # services.displayManager.autoLogin.enable = true;
+  # services.displayManager.autoLogin.user = "dylan";
+  services.xserver.enable = true ;
+  services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.displayManager.lightdm = {
+    enable = true;
+    };
+  # Set X cursor theme globally or it break because of cursor mqybe related to : https://github.com/NixOS/nixpkgs/issues/140505
+  # services.xserver.desktopManager.gnome.extraGSettingsOverrides = ''
+  #   [org.gnome.desktop.interface]
+  #   cursor-theme='Adwaita'
+  # '';
 
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
@@ -81,7 +91,7 @@
   sqlite
   nil #LSP for nix
   # dev 
-  nodejs_21
+  # nodejs_21
   nodePackages.npm
 
   wget
@@ -92,7 +102,7 @@
   wezterm
   git
 starship
-fzf zoxide bat ripgrep neofetch zsh fd shell_gpt gum 
+fzf zoxide bat ripgrep neofetch zsh fd shell-gpt gum 
 zsh-fzf-tab
 zsh-forgit
 
@@ -142,6 +152,8 @@ gcc
 
 ollama
 
+# gnome.adwaita-icon-theme
+xorg.xcursorthemes
 
   ];
 

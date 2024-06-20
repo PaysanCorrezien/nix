@@ -40,7 +40,6 @@ in
     gnomeExtensions.blur-my-shell
     gnome.gnome-tweaks
     gnome.gucharmap
- #   catppuccin-cursors
     catppuccin-cursors.macchiatoPink
     catppuccin-cursors.macchiatoLavender
     catppuccin-cursors.macchiatoMauve
@@ -86,7 +85,7 @@ in
     "org/gnome/desktop/interface" = {
   gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
   # icon-theme = "Catppuccin-Papirus-Dark";  # Confirm this is the correct installed name
-  cursor-theme = "Catppuccin-Macchiato-Mauve-Cursors";  # Adjust to the exact name
+  # cursor-theme = "Catppuccin-Macchiato-Mauve-Cursors";  # Adjust to the exact name
 #    color-scheme = "prefer-dark";  # This is important to force dark mode in apps supporting it
   };
 

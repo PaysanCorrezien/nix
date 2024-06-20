@@ -11,6 +11,7 @@
      ./gnome/extensions.nix
      ./gnome/settings.nix
      ./programs/nvim.nix
+     # ./programs/nextloud-cli.nix
    # need system wide     ./gnome/gdm.nix
      # ./gnome/keybinds.nix
     ];

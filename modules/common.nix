@@ -32,10 +32,8 @@
   };
 
   # Configure console keymap
+  #TODO: console alt depending on keyboard udev rules ?
   console.keyMap = "fr";
-
-  services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -50,11 +48,9 @@
   users.users.dylan = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      firefox
-      thunderbird
-      # Other user packages
-    ];
+    # packages = with pkgs; [
+    #   # Other user packages
+    # ];
   };
 
 

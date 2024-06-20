@@ -16,7 +16,11 @@ nix-store -q --tree $(which fzf)
 sudo nixos-rebuild switch --flake ~/.config/nix#default --impure --show-trace -v
 ```
 
-TODO : test the automatic setup:
+Update
+
+```
+nix flake update
+```
 
 FIXME: dont work like this i need to boot post install to have this work so the cp part is useless
 
