@@ -26,6 +26,24 @@
       };
       secrets."nextcloudKey" = {};
   };
+
+      systemd.services.sometestservice = {
+    script = ''
+      mkdir -p /home/dylan/sometestservice
+      echo "
+      Hey bro! I'm a service, and imma send this secure password:
+      $(cat ${config.sops.secrets."nextcloudUrl".path})
+      located in:
+      ${config.sops.secrets."nextcloudUrl".path}
+      to database and hack the mainframe
+      " > /home/dylan/sometestservice/testfile
+    '';
+    serviceConfig = {
+      User = "dylan";
+      WorkingDirectory = "/home/dylan/";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
 }
 
 
