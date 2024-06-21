@@ -1,17 +1,27 @@
-{inputs, config, pkgs, ... }:
+{inputs, config, pkgs,sops-nix, ... }:
 
 # TODO: sops url + name 
 # prompt for creds on install or launch the CLI
 # force sync with cmd or 
 # dont use readfile and make it work more directly
+ # Import the sops module to ensure it can be used here
 
+# Import the sops module to ensure it can be used here
 let
-  nextcloudUrl = builtins.readFile "${config.sops.secrets.nextcloudUrl.path}";
-  nextcloudUser = builtins.readFile "${config.sops.secrets.nextcloudUser.path}";
+  # sopsModule = inputs.sops-nix.homeManagerModules.sops;
+  # nextcloudUrl = builtins.readFile "${config.sops.secrets.nextcloudUrl.path}";
+  # nextcloudUser = builtins.readFile "${config.sops.secrets.nextcloudUser.path}";
+# NOTE: workarounb becase home manager dont seems to be able to read config.sops.secrets.nextcloudUrl if defined by global module ?
+    nextcloudUrl = builtins.readFile "/run/secrets/nextcloudUrl";
+  nextcloudUser = builtins.readFile "/run/secrets/nextcloudUser";
 in {
+  # Import the sops module to ensure it can be used here
+  # imports = [ sopsModule ];
+
   home.packages = with pkgs; [
     nextcloud-client
   ];
+
 
   home.file.".config/Nextcloud/nextcloud.cfg".text = ''
   [General]
@@ -66,4 +76,3 @@ in {
 
   # systemd.user.startServices = true;
 }
-

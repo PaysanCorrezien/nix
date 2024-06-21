@@ -6,7 +6,7 @@
     # inputs.sops-nix.homeManagerModules.sops
     # ../sops.nix
 
-      # ./programs/nextloud-cli.nix
+      ./programs/nextloud-cli.nix
      # ./gnome/keybinds.nix
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
