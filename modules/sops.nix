@@ -1,16 +1,17 @@
 { inputs, config, pkgs, ... }:
 
 {
-  # environment.systemPackages = with pkgs; [
-  #   sops
-  #   age
-  # ];
-  home.packages = with pkgs; [
-  sops
-  age 
+  environment.systemPackages = with pkgs; [
+    sops
+    age
   ];
+  # home.packages = with pkgs; [
+  # sops
+  # age 
+  # ];
     imports = [
-    inputs.sops-nix.homeManagerModules.sops
+    # inputs.sops-nix.homeManagerModules.sops
+    inputs.sops-nix.nixosModules.sops
   ];
 
   sops = {
@@ -18,10 +19,10 @@
     defaultSopsFormat = "yaml";
     age.keyFile = "/home/dylan/.config/sops/age/keys.txt";
     secrets."nextcloudUrl"  = { 
-      # owner = "dylan" ;
+      owner = "dylan" ;
       };
     secrets."nextcloudUser"  = { 
-      # owner = "dylan" ;
+      owner = "dylan" ;
       };
       secrets."nextcloudKey" = {};
   };

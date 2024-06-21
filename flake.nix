@@ -40,7 +40,7 @@
             ./modules/common.nix
 	          ./dynamic-grub.nix
 	          ./configuration.nix
-            # ./modules/sops.nix
+            ./modules/sops.nix
             # ./testcreds.nix
             # ./modules/home-manager/programs/nextloud-cli.nix
             {

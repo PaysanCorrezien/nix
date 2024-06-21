@@ -4,9 +4,9 @@
   imports =
     [ # Configuration via home.nix
     # inputs.sops-nix.homeManagerModules.sops
-    ../sops.nix
+    # ../sops.nix
 
-      ./programs/nextloud-cli.nix
+      # ./programs/nextloud-cli.nix
      # ./gnome/keybinds.nix
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
