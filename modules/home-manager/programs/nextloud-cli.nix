@@ -1,15 +1,16 @@
-{ pkgs, ... }:
+{inputs, config, pkgs, ... }:
 
 # TODO: sops url + name 
 # prompt for creds on install or launch the CLI
 # force sync with cmd or 
+# dont use readfile and make it work more directly
+
 let
-  nextcloudKey = builtins.getEnv "nextcloud_key";
-  nextcloudUrl = builtins.getEnv "nextcloud_url";
-  nextcloudUser = builtins.getEnv "nextcloud_user";
+  nextcloudUrl = builtins.readFile "${config.sops.secrets.nextcloudUrl.path}";
+  nextcloudUser = builtins.readFile "${config.sops.secrets.nextcloudUser.path}";
 in {
-  home.packages = [
-    pkgs.nextcloud-client
+  home.packages = with pkgs; [
+    nextcloud-client
   ];
 
   home.file.".config/Nextcloud/nextcloud.cfg".text = ''

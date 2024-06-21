@@ -2,7 +2,12 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ # Configuration via home.nix
+    # inputs.sops-nix.homeManagerModules.sops
+    ../sops.nix
+
+      ./programs/nextloud-cli.nix
+     # ./gnome/keybinds.nix
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
      ./terminals/zsh.nix
@@ -11,9 +16,7 @@
      ./gnome/extensions.nix
      ./gnome/settings.nix
      ./programs/nvim.nix
-     # ./programs/nextloud-cli.nix
    # need system wide     ./gnome/gdm.nix
-     # ./gnome/keybinds.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.

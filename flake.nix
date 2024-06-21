@@ -20,7 +20,7 @@
 
 # TODO : move computer conf on /machine/ subfolder
 # TEST: serv conf
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager,sops-nix, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -32,13 +32,17 @@
         nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = { inherit inputs pkgs; };
+          specialArgs = { inherit inputs pkgs ; };
           modules = [
+            # inputs.sops-nix.nixosModules.sops
+            # inputs.home-manager.nixosModules.home-manager
             ./hosts/lenovo.nix
             ./modules/common.nix
-	    ./dynamic-grub.nix
-	    ./configuration.nix
-            inputs.home-manager.nixosModules.home-manager
+	          ./dynamic-grub.nix
+	          ./configuration.nix
+            # ./modules/sops.nix
+            # ./testcreds.nix
+            # ./modules/home-manager/programs/nextloud-cli.nix
             {
               home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
             }
