@@ -1,4 +1,4 @@
-{inputs, config, pkgs,sops-nix, ... }:
+{inputs,lib, config, pkgs,sops-nix, ... }:
 
 # TODO: sops url + name 
 # prompt for creds on install or launch the CLI
@@ -8,47 +8,57 @@
 
 # Import the sops module to ensure it can be used here
 let
-  # sopsModule = inputs.sops-nix.homeManagerModules.sops;
-  # nextcloudUrl = builtins.readFile "${config.sops.secrets.nextcloudUrl.path}";
-  # nextcloudUser = builtins.readFile "${config.sops.secrets.nextcloudUser.path}";
-# NOTE: workarounb becase home manager dont seems to be able to read config.sops.secrets.nextcloudUrl if defined by global module ?
-    nextcloudUrl = builtins.readFile "/run/secrets/nextcloudUrl";
+  # NOTE: workaround because Home Manager doesn't seem to be able to read config.sops.secrets.nextcloudUrl if defined by global module?
+  nextcloudUrl = builtins.readFile "/run/secrets/nextcloudUrl";
   nextcloudUser = builtins.readFile "/run/secrets/nextcloudUser";
-in {
-  # Import the sops module to ensure it can be used here
-  # imports = [ sopsModule ];
+  passwordLocalPath = "${config.home.homeDirectory}/Documents/Password";
+  passwordRemotePath = "/Password";
+  musicLocalPath = "${config.home.homeDirectory}/Documents/Music";
+  musicRemotePath = "/Musique";
+  nextcloudConfig = ''
+    [General]
+    startInBackground=true
+    showInExplorerNavigationPane=true
 
+    [Accounts]
+    version=2
+    0\\version=1
+    0\\url=${nextcloudUrl}
+    0\\dav_user=${nextcloudUser}
+    0\\webflow_user=${nextcloudUser}
+    0\\authType=webflow
+    0\\user=@Invalid()
+    0\\Folders\\1\\localPath=${passwordLocalPath}/
+    0\\Folders\\1\\targetPath=${passwordRemotePath}
+    0\\Folders\\1\\paused=false
+    0\\Folders\\1\\ignoreHiddenFiles=false
+    0\\Folders\\1\\virtualFilesMode=off
+    0\\Folders\\1\\version=2
+    0\\Folders\\2\\localPath=${musicLocalPath}/
+    0\\Folders\\2\\targetPath=${musicRemotePath}
+    0\\Folders\\2\\paused=false
+    0\\Folders\\2\\ignoreHiddenFiles=false
+    0\\Folders\\2\\virtualFilesMode=off
+    0\\Folders\\2\\version=2
+  '';
+in {
   home.packages = with pkgs; [
     nextcloud-client
   ];
 
+  home.activation.copyNextcloudConfig = lib.mkAfter ''
+    mkdir -p /home/dylan/.config/Nextcloud
+    echo "${nextcloudConfig}" > /home/dylan/.config/Nextcloud/nextcloud.cfg
+    chown dylan:users /home/dylan/.config/Nextcloud/nextcloud.cfg
+    chmod 644 /home/dylan/.config/Nextcloud/nextcloud.cfg
 
-  home.file.".config/Nextcloud/nextcloud.cfg".text = ''
-  [General]
-  startInBackground=true
-  showInExplorerNavigationPane=true
-
-  [Accounts]
-  version=2
-  0\\version=1
-  0\\url=${nextcloudUrl}
-  0\\dav_user=${nextcloudUser}
-  0\\webflow_user=${nextcloudUser}
-  0\\authType=webflow
-  0\\user=@Invalid()
-  0\\Folders\\1\\localPath=$HOME/Documents/Password/
-  0\\Folders\\1\\targetPath=/Password
-  0\\Folders\\1\\paused=false
-  0\\Folders\\1\\ignoreHiddenFiles=false
-  0\\Folders\\1\\virtualFilesMode=off
-  0\\Folders\\1\\version=2
-  0\\Folders\\2\\localPath=$HOME/Documents/Music/
-  0\\Folders\\2\\targetPath=/Musique
-  0\\Folders\\2\\paused=false
-  0\\Folders\\2\\ignoreHiddenFiles=false
-  0\\Folders\\2\\virtualFilesMode=off
-  0\\Folders\\2\\version=2
+    # Create local sync folders if they don't exist
+    mkdir -p ${passwordLocalPath}
+    mkdir -p ${musicLocalPath}
   '';
+}
+
+
 
   # The systemd service and timer definitions can be uncommented and adjusted as needed
   # systemd.user.services.nextcloud-autosync = {
@@ -75,4 +85,3 @@ in {
   # };
 
   # systemd.user.startServices = true;
-}
