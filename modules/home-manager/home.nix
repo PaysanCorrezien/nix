@@ -7,6 +7,7 @@
     # ../sops.nix
 
       ./programs/nextloud-cli.nix
+      ./mime-type.nix
      # ./gnome/keybinds.nix
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
@@ -16,6 +17,7 @@
      ./gnome/extensions.nix
      ./gnome/settings.nix
      ./programs/nvim.nix
+     ./programs/keepassxc.nix
    # need system wide     ./gnome/gdm.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should

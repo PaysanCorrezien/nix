@@ -144,6 +144,8 @@ unzip
 gcc
 
 ollama
+zip
+espanso
 
 # gnome.adwaita-icon-theme
 # xorg.xcursorthemes

@@ -38,6 +38,8 @@ in
     gnomeExtensions.appindicator
     gnomeExtensions.forge
     gnomeExtensions.blur-my-shell
+    gnomeExtensions.clipqr
+    gnomeExtensions.color-picker
     gnome.gnome-tweaks
     gnome.gucharmap
     catppuccin-cursors.macchiatoPink
@@ -52,7 +54,15 @@ in
 
   # Configure GNOME Shell, GNOME Extensions and set the Cursor and Icons using GSettings
   dconf.settings = {
+
+    # Setting world clocks
+
+
     "org/gnome/shell" = {
+      
+      #FIXME: 
+      # "world-clocks/locations" = ''[('San Francisco', 'KOAK', true, [(0.65832848982162007, -2.133408063190589)], [(0.659296885757089, -2.1366218601153339)]), ('Tokyo', 'RJTI', true, [(0.62191898430954862, 2.4408429589140699)], [(0.62282074357417661, 2.4391218722853854)])]''; 
+      # "weather/locations" = ''[('Limoges', 'LFBL', false, [(0.80052435606583006, 0.02065305699750206)], @a(dd) [])]'';
       disable-user-extensions = false;
       favorite-apps = [
         "firefox.desktop"
@@ -62,6 +72,7 @@ in
       #  # NOTE: this "virt-manager.desktop"
         "org.gnome.Nautilus.desktop"
       ];
+      # dconf read /org/gnome/shell/enabled-extensions
       enabled-extensions = [
         "appindicatorsupport@rgcjonas.gmail.com"
         "blur-my-shell@aunetx"
@@ -80,6 +91,8 @@ in
         "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com"
         "user-theme@gnome-shell-extensions.gcampax.github.com"
         "launch-new-instance@gnome-shell-extensions.gcampax.github.com"
+        "color-picker@tuberry" 
+        "clipqr@drien.com"
       ];
     };
     "org/gnome/desktop/interface" = {

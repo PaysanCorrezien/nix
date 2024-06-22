@@ -1,5 +1,3 @@
-# keepassxc.nix
-
 { config, pkgs, lib, ... }:
 
 let
@@ -14,8 +12,7 @@ let
       "AutoSaveAfterEveryChange" = "true";              # Auto save database after every change
     };
     "GUI" = {
-      "ColorScheme" = "dark";                           # Use dark color scheme
-      "UnlockDatabase" = "true";                        # Unlock database on startup
+      "ApplicationTheme" = "dark";                      # Use dark color scheme
     };
     "Security" = {
       "UseBrowserIntegration" = "true";                 # Enable browser integration
@@ -25,38 +22,48 @@ let
       "ClearClipboardAfterSeconds" = "30";              # Clear clipboard after 30 seconds
     };
     "SSHAgent" = {
+      "Enabled" = "true";
       "EnableSSHAgent" = "true";                        # Enable SSH agent integration
-      "UseOpenSSH"="true";
+      "UseOpenSSH" = "true";
     };
     "Browser" = {
       "EnableBrowserIntegration" = "true";              # Enable browser integration
     };
     "Database" = {
-## FIXME: adjust this
-      "DefaultDatabasePath" = "${pkgs.lib.getHomeDir}/Documents/Password/password.kdbx";  # Set default database path
+      "DefaultDatabasePath" = "/home/user/Documents/Password/password.kdbx";  # Set default database path
       "AutoOpenDatabases" = "true";                     # Automatically open last used databases
     };
   };
+
+  customToINI = lib.generators.toINI {
+    mkKeyValue = lib.generators.mkKeyValueDefault {
+      mkValueString = v:
+        if lib.isBool v then (if v then "true" else "false")
+        else if lib.isString v then v
+        else lib.generators.mkValueStringDefault {} v;
+    } "=";
+  };
+ 
+
 in
 {
   # Enable KeePassXC
-  environment.systemPackages = with pkgs; [
+  home.packages = with pkgs; [
     keepassxc
   ];
 
   # Set up KeePassXC configuration
-  environment.etc."xdg/keepassxc/keepassxc.ini".text = pkgs.lib.generators.toINI keepassxcConfig;
+  home.file.".config/keepassxc/keepassxc.ini".text = customToINI keepassxcConfig;
 
-# NOTE: check if realy needed or window manager handle this
-  # Start KeePassXC on boot
-  systemd.user.services.keepassxc = {
-    description = "KeePassXC Password Manager";
-    serviceConfig = {
-      ExecStart = "${pkgs.keepassxc}/bin/keepassxc";
-      Restart = "always";
-      RestartSec = 5;
-    };
-    wantedBy = [ "default.target" ];
-  };
+  # # Start KeePassXC on boot
+  # systemd.user.services.keepassxc = {
+  #   description = "KeePassXC Password Manager";
+  #   serviceConfig = {
+  #     ExecStart = "${pkgs.keepassxc}/bin/keepassxc";
+  #     Restart = "always";
+  #     RestartSec = 5;
+  #   };
+  #   wantedBy = [ "default.target" ];
+  # };
 }
 
