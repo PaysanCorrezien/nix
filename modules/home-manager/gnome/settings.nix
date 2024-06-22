@@ -45,16 +45,6 @@
   "org/gnome/desktop/input-sources" = {
   xkb-options = [ "caps:escape" ];
 };
-    #FIXME
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings" = {
-    custom0 = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/";
-  };
-##FIXME: dont work
-"org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-  binding = [ "<Alt>Return" ];
-  command = [ "wezterm" ];
-  name = [ "Launch WezTerm" ];
-};
 #TODO: HOME AND END SOMEHOW ?
 
   };

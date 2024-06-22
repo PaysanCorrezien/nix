@@ -1,7 +1,11 @@
 # hosts/lenovo.nix
-{ config, pkgs, ... }:
+{ config, pkgs,lib, ... }:
 
 {
+  imports = [
+  ../modules/gui/gui.nix
+  ];
+  
   networking.hostName = "lenovo";
   
   # boot.loader.grub.device = "/dev/sda"; # Adjust as needed

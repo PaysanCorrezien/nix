@@ -8,7 +8,7 @@
 
       ./programs/nextloud-cli.nix
       ./mime-type.nix
-     # ./gnome/keybinds.nix
+     ./gnome/keybinds.nix
     ../chezmoi/chezmoi.nix
      ./browser/firefox.nix
      ./terminals/zsh.nix

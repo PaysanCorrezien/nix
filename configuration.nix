@@ -53,7 +53,8 @@
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
+# libvirtd et kvm oour virtualisation.nix ( a deplacer)
   };
   #cant be in HM fix this
   users.users.dylan.shell = pkgs.zsh;
@@ -146,6 +147,9 @@ gcc
 ollama
 zip
 espanso
+
+todoist
+planify
 
 # gnome.adwaita-icon-theme
 # xorg.xcursorthemes
