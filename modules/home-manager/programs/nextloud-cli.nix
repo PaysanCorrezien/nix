@@ -13,11 +13,19 @@ let
   nextcloudUser = builtins.readFile "/run/secrets/nextcloudUser";
   passwordLocalPath = "${config.home.homeDirectory}/Documents/Password";
   passwordRemotePath = "/Password";
+  wallpaperLocalPath = "${config.home.homeDirectory}/Images/Wallpaper";
+  wallpaperRemotePath= "/Configuration/wallpaper";
   musicLocalPath = "${config.home.homeDirectory}/Documents/Music";
   musicRemotePath = "/Musique";
+  projetLocalPath = "${config.home.homeDirectory}/Documents/Projets";
+  projetRemotePath = "/Work/Projet"; # Fixed spelling from 'projetRemotPath'
+  nextcloudExclude = builtins.readFile ./nextcloud_exclude.txt ; #gitignore for nextcloud
+  excludeFile = "${config.home.homeDirectory}/.config/Nextcloud/sync-exclude.lst";
+  stateFile = "${config.home.homeDirectory}/.config/Nextcloud/.nextcloud_cfg_written";
+  nextcloudLocal = "${config.home.homeDirectory}/.config/Nextcloud/nextcloud.cfg";
+
   nextcloudConfig = ''
     [General]
-    startInBackground=true
     showInExplorerNavigationPane=true
 
     [Accounts]
@@ -40,26 +48,50 @@ let
     0\\Folders\\2\\ignoreHiddenFiles=false
     0\\Folders\\2\\virtualFilesMode=off
     0\\Folders\\2\\version=2
+    0\\Folders\\3\\localPath=${wallpaperLocalPath}/
+    0\\Folders\\3\\targetPath=${wallpaperRemotePath}
+    0\\Folders\\3\\paused=false
+    0\\Folders\\3\\ignoreHiddenFiles=false
+    0\\Folders\\3\\virtualFilesMode=off
+    0\\Folders\\3\\version=2
+    0\\Folders\\4\\localPath=${projetLocalPath}/
+    0\\Folders\\4\\targetPath=${projetRemotePath}
+    0\\Folders\\4\\paused=false
+    0\\Folders\\4\\ignoreHiddenFiles=false
+    0\\Folders\\4\\virtualFilesMode=off
+    0\\Folders\\4\\version=2
   '';
 in {
   home.packages = with pkgs; [
     nextcloud-client
   ];
+  home.file."${excludeFile}".text = nextcloudExclude; # gitignore file write
 
   home.activation.copyNextcloudConfig = lib.mkAfter ''
-    mkdir -p /home/dylan/.config/Nextcloud
-    echo "${nextcloudConfig}" > /home/dylan/.config/Nextcloud/nextcloud.cfg
-    chown dylan:users /home/dylan/.config/Nextcloud/nextcloud.cfg
-    chmod 644 /home/dylan/.config/Nextcloud/nextcloud.cfg
+    if [ ! -f ${stateFile} ]; then
+      echo "Creating Nextcloud config directory"
+      mkdir -p "${config.home.homeDirectory}"/.config/Nextcloud
+      echo "Writing config to ${nextcloudLocal}"
+     echo "${nextcloudConfig}" > ${nextcloudLocal}
 
-    # Create local sync folders if they don't exist
-    mkdir -p ${passwordLocalPath}
-    mkdir -p ${musicLocalPath}
+      chown dylan:users ${nextcloudLocal}
+      chmod 644 ${nextcloudLocal}
+
+      # Create local sync folders if they don't exist
+      echo "Creating local sync folders"
+      mkdir -p ${passwordLocalPath}
+      mkdir -p ${musicLocalPath}
+      mkdir -p ${wallpaperLocalPath}
+      mkdir -p ${projetLocalPath}
+
+      # Create state file to indicate that the configuration has been written
+      echo "Creating state file"
+      touch ${stateFile}
+    else
+      echo "State file exists, skipping configuration"
+    fi
   '';
 }
-
-
-
   # The systemd service and timer definitions can be uncommented and adjusted as needed
   # systemd.user.services.nextcloud-autosync = {
   #   Unit = {
