@@ -20,6 +20,8 @@ let
       "QuickUnlock" = "true";                           # Enable quick unlock feature
       "QuickUnlockTimeout" = "0";                       # No timeout for quick unlock
       "ClearClipboardAfterSeconds" = "30";              # Clear clipboard after 30 seconds
+      "ClearClipboardTimeout"="30";
+
     };
     "SSHAgent" = {
       "Enabled" = "true";
@@ -30,7 +32,7 @@ let
       "EnableBrowserIntegration" = "true";              # Enable browser integration
     };
     "Database" = {
-      "DefaultDatabasePath" = "/home/user/Documents/Password/password.kdbx";  # Set default database path
+      "DefaultDatabasePath" = "/home/dylan/Documents/Password/password.kdbx";  # Set default database path
       "AutoOpenDatabases" = "true";                     # Automatically open last used databases
     };
   };
@@ -43,7 +45,6 @@ let
         else lib.generators.mkValueStringDefault {} v;
     } "=";
   };
- 
 
 in
 {
@@ -52,18 +53,15 @@ in
     keepassxc
   ];
 
-  # Set up KeePassXC configuration
-  home.file.".config/keepassxc/keepassxc.ini".text = customToINI keepassxcConfig;
-
-  # # Start KeePassXC on boot
-  # systemd.user.services.keepassxc = {
-  #   description = "KeePassXC Password Manager";
-  #   serviceConfig = {
-  #     ExecStart = "${pkgs.keepassxc}/bin/keepassxc";
-  #     Restart = "always";
-  #     RestartSec = 5;
-  #   };
-  #   wantedBy = [ "default.target" ];
-  # };
+  # Create a regular file if it doesn't already exist
+  home.activation.copyKeepassxcConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ ! -f ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini ]; then
+      mkdir -p ${config.home.homeDirectory}/.config/keepassxc
+      cat << EOF > ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
+${customToINI keepassxcConfig}
+EOF
+      chmod 600 ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
+    fi
+  '';
 }
 
