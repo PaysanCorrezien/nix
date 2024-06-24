@@ -45,6 +45,9 @@
   "org/gnome/desktop/input-sources" = {
   xkb-options = [ "caps:escape" ];
 };
+"org/gnome/desktop/applications/browser" = {
+    exec = "firefox";
+  };
 #TODO: HOME AND END SOMEHOW ?
 
   };
