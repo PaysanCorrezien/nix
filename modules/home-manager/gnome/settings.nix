@@ -31,6 +31,8 @@
     };
     # FIXME: automove dont work troubleshoot
     "org/gnome/shell/extensions/auto-move-windows" = {
+      #NOTE: finding .desktop on nixos !
+      # ❯ find /run/current-system/sw/share/applications ~/.nix-profile/share/applications ~/.local/share/applications -name "*.desktop" | grep discord
       application-list = [
         "firefox.desktop:5"
         "org.gnome.Geary.desktop:9"
@@ -40,6 +42,8 @@
         "remmina.desktop:2"
         "org.gnome.Nautilus.desktop:4"
         "org.gnome.Calendar.desktop:9"
+        "discord.desktop:6"
+        "org.remmina.Remmina.desktop:2"
       ];
     };
   "org/gnome/desktop/input-sources" = {
@@ -52,4 +56,6 @@
 
   };
 }
+# find settings
+# gsettings list-recursively | grep media-keys
 

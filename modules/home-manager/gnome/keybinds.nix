@@ -17,10 +17,36 @@
   dconf.settings = {
     "org/gnome/settings-daemon/plugins/media-keys" = {
       custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/"
       ];
+    };
+#FIXME : not working
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5" = {
+      name = "OCR";
+      command = "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/ai-ocr.py'";
+      binding = "<Super>o";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" = {
+      name = "Grammar correct current clipboard";
+      command = "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/correct.py'";
+      binding = "<Super>g";
+    };
+
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+      name = "Todoist ";
+      command = "todoist-electron";
+      binding = "<Alt><Shift>t";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+      name = "Flameshot GUI";
+      command = "flameshot gui";
+      binding = "<Alt>c";
     };
 
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
@@ -31,7 +57,7 @@
 
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       binding = "<Alt>Return";
-      command = "wezterm";
+      command = "/run/current-system/sw/bin/wezterm";
       name = "Launch WezTerm";
     };
 
@@ -42,8 +68,8 @@
       con-split-horizontal = ["<Alt>z"];
       con-split-layout-toggle = ["<Alt>g"];
       con-split-vertical = ["<Alt>v"];
-      con-stacked-layout-toggle = ["<Shift><Alt>s"];
-      con-tabbed-layout-toggle = ["<Shift><Alt>t"];
+      # con-stacked-layout-toggle = ["<Shift><Alt>s"];
+      # con-tabbed-layout-toggle = ["<Shift><Alt>t"];
       con-tabbed-showtab-decoration-toggle = ["<Control><Alt>y"];
       # focus-border-toggle = ["<Alt>x"]; always on is better
       prefs-tiling-toggle = ["<Alt>w"];
@@ -75,8 +101,8 @@
       window-swap-left = ["<Control><Alt>h"];
       window-swap-right = ["<Control><Alt>l"];
       window-swap-up = ["<Control><Alt>k"];
-      window-toggle-always-float = ["<Shift><Alt>c"];
-      window-toggle-float = ["<Alt>c"];
+      # window-toggle-always-float = ["<Shift><Alt>c"];
+      # window-toggle-float = ["<Alt>c"];
       workspace-active-tile-toggle = ["<Shift><Alt>w"];
     };
   };

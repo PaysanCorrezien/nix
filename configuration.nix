@@ -25,6 +25,8 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
 #  console.keyMap = "us-acentos";
+#  stylix.enable = true;
+#  stylix.image = ./modules/home-manager/gnome/backgrounds/wallpaper_leaves.png;
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -126,7 +128,6 @@ gh
 github-copilot-cli
 keepassxc
 #TODO: forticlient vpn
-python3
 pyenv
 nextcloud-client
 
@@ -149,7 +150,7 @@ zip
 espanso
 
 todoist
-planify
+flameshot
 
 # gnome.adwaita-icon-theme
 # xorg.xcursorthemes
@@ -158,6 +159,7 @@ planify
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
+  services.espanso.enable = true;
   
    programs.mtr.enable = true;
    programs.gnupg.agent = {
@@ -186,6 +188,7 @@ environment.etc = {
   home-manager = {
   # also pass inputs to home-manager modules
   extraSpecialArgs = {inherit inputs;};
+  backupFileExtension = ".ExtensionsBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
   users = {
     "dylan" = import ./modules/home-manager/home.nix;
   };

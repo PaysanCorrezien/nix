@@ -61,3 +61,5 @@ wsl -d NixOS
 ## Usefull ressources
 
 [home manager option](https://nix-community.github.io/home-manager/options.xhtml)
+[home manager programs](https://mynixos.com/home-manager/options/programs)
+

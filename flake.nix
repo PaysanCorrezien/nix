@@ -16,6 +16,7 @@
     };
     # TODO: add yazi flake 
     sops-nix.url = "github:Mic92/sops-nix";
+   # stylix.url = "github:danth/stylix";
   };
 
 # TODO : move computer conf on /machine/ subfolder

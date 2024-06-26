@@ -20,7 +20,7 @@ in
     };
   };
 
-  # Symlink the GTK config files declaratively
+  # # Symlink the GTK config files declaratively
   xdg.configFile."gtk-4.0/assets".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
   xdg.configFile."gtk-4.0/gtk.css".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
   xdg.configFile."gtk-4.0/gtk-dark.css".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
@@ -97,9 +97,6 @@ in
     };
     "org/gnome/desktop/interface" = {
   gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
-  # icon-theme = "Catppuccin-Papirus-Dark";  # Confirm this is the correct installed name
-  # cursor-theme = "Catppuccin-Macchiato-Mauve-Cursors";  # Adjust to the exact name
-#    color-scheme = "prefer-dark";  # This is important to force dark mode in apps supporting it
   };
 
 # gnome general theme via user-theme extensions
@@ -112,8 +109,6 @@ in
     };
 
     "org/gnome/desktop/background" = {
-      # picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-l.png";
-      # picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/vnc-d.png";
       #FIXME: make use of relative path here
       picture-uri = "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
       picture-uri-dark = "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
@@ -134,5 +129,5 @@ in
        shortcut-search = ["<Alt>d"] ;
   };
 };
-}
 		
+		}
