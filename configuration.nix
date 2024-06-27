@@ -91,6 +91,11 @@
   # dev 
   # nodejs_21
   nodePackages.npm
+  nodejs
+
+
+ pinentry-tty
+
 
   wget
   #x11 temp
@@ -107,7 +112,6 @@ zsh-forgit
 obsidian
 discord
 # WORK
-remmina wireshark teamviewer 
 powershell
 # DEV
 helix
@@ -154,6 +158,11 @@ flameshot
 
 # gnome.adwaita-icon-theme
 # xorg.xcursorthemes
+# WORK : 
+microsoft-edge
+linphone
+openfortivpn
+remmina wireshark teamviewer 
 
   ];
 

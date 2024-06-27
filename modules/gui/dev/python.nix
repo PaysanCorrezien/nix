@@ -7,6 +7,8 @@ let
     requests
     pkgs.python3Packages.pygobject3
     pkgs.python3Packages.pycairo
+    pkgs.python3Packages.pyyaml
+    
   ]);
 in
 {
