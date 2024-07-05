@@ -39,7 +39,7 @@ fi
     # Additional initialization commands
     eval "$(zoxide init zsh)"
     eval "$(starship init zsh)"
-    export GPG_TTY=$(tty)
+    # export GPG_TTY=$(tty)
   '';
 in
 {
@@ -60,7 +60,7 @@ in
         ll = "ls -l";
         cat = "bat";
         update = "sudo nixos-rebuild switch";
-        sw = "sudo nixos-rebuild switch --flake ~/.config/nix#default --impure --show-trace -v";
+        sw = "~/.config/nix/scripts/rebuild.sh";
         switchkb = "switch-keyboard-layout";
       };
     };
