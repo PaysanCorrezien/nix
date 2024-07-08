@@ -23,12 +23,13 @@
       "x-scheme-handler/about" = "firefox.desktop";
       "x-scheme-handler/unknown" = "firefox.desktop";
       "application/x-terminal-emulator" = "org.wezfurlong.wezterm.desktop";
+      "x-scheme-handler/terminal" = "org.wezfurlong.wezterm.desktop";
     };
   };
 
   # Set environment variables if needed
   home.sessionVariables = {
     XDG_DEFAULT_BROWSER = "firefox.desktop";
+    TERMINAL = "${pkgs.wezterm}/bin/wezterm";
   };
 }
-
