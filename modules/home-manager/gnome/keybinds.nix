@@ -103,6 +103,8 @@
       window-swap-up = ["<Control><Alt>k"];
       # window-toggle-always-float = ["<Shift><Alt>c"];
       # window-toggle-float = ["<Alt>c"];
+      window-toggle-always-float = [""];
+      window-toggle-float = [""];
       workspace-active-tile-toggle = ["<Shift><Alt>w"];
     };
   };
