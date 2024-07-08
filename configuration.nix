@@ -55,7 +55,7 @@
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" ];
+    extraGroups = [ "i2c" "networkmanager" "wheel" "libvirtd" "kvm" ];
 # libvirtd et kvm oour virtualisation.nix ( a deplacer)
   };
   #cant be in HM fix this
@@ -63,8 +63,8 @@
   programs.zsh.enable = true;
 
   # # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "dylan";
+  # services.displayManager.autoLogin.enable = true;
+  # services.displayManager.autoLogin.user = "dylan";
   services.xserver.enable = true ;
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.displayManager.lightdm = {
@@ -164,6 +164,10 @@ linphone
 openfortivpn
 remmina wireshark teamviewer 
 
+ddcutil #attempt to control momitor
+ddcui
+gnomeExtensions.brightness-control-using-ddcutil
+
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -197,10 +201,12 @@ environment.etc = {
   home-manager = {
   # also pass inputs to home-manager modules
   extraSpecialArgs = {inherit inputs;};
-  backupFileExtension = ".ExtensionsBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
+  backupFileExtension = "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
   users = {
     "dylan" = import ./modules/home-manager/home.nix;
-  };
+  }; 
+  # https://github.com/nix-community/home-manager/issues/1213
+  # TODO: test this
+  # xdg.configFile."mimeapps.list".force = true;
 };
-
 }
