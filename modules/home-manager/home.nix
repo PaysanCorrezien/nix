@@ -15,6 +15,7 @@
      ./gnome/settings.nix
      ./programs/nvim.nix
      ./programs/keepassxc.nix
+     ./programs/keybswitch.nix
    # need system wide     ./gnome/gdm.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
@@ -31,7 +32,6 @@
   # release notes.
   home.stateVersion = "23.11"; # Please read the comment before changing.
 
-  # home.backupFileExtension = "FileExtensionBAK";
 
   # The home.packages option allows you to install Nix packages into your
   # environment.

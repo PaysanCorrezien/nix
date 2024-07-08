@@ -1,9 +1,6 @@
 # keyboard.nix
 { config, pkgs, ... }:
 
-let
-  switchKeyboardLangScript = import ../scripts/switch-keyboard-layout.nix { inherit pkgs; };
-in
 {
   # Configure keymap in X11
   services.xserver = {
@@ -16,7 +13,6 @@ in
   console.keyMap = "fr";
 
   environment.systemPackages = with pkgs; [
-    switchKeyboardLangScript
 vial
 qmk 
 qmk_hid

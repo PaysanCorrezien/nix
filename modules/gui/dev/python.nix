@@ -8,6 +8,7 @@ let
     pkgs.python3Packages.pygobject3
     pkgs.python3Packages.pycairo
     pkgs.python3Packages.pyyaml
+    pkgs.python3Packages.pyudev
     
   ]);
 in
