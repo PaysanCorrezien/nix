@@ -44,6 +44,9 @@
         "org.gnome.Calendar.desktop:9"
         "discord.desktop:6"
         "org.remmina.Remmina.desktop:2"
+        "org.keepassxc.KeepassXC.desktop:7"
+        "obsidian.desktop:3"
+        "linphone.desktop:8"
       ];
     };
   "org/gnome/desktop/input-sources" = {
