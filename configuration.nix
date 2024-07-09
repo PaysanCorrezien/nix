@@ -62,6 +62,11 @@
   users.users.dylan.shell = pkgs.zsh;
   programs.zsh.enable = true;
 
+  services.udev.extraRules = ''
+     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+   '';
+  hardware.i2c.enable = true;
+  boot.kernelModules = [ "i2c-dev" ];
   # # Enable automatic login for the user.
   # services.displayManager.autoLogin.enable = true;
   # services.displayManager.autoLogin.user = "dylan";
@@ -167,6 +172,7 @@ remmina wireshark teamviewer
 ddcutil #attempt to control momitor
 ddcui
 gnomeExtensions.brightness-control-using-ddcutil
+gitleaks
 
   ];
 
