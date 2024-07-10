@@ -24,7 +24,8 @@ let
 else
   echo "The file secrets.zsh is missing. Please ensure it is created with necessary configurations."
 fi
-
+    # avoid duplicated entries in PATH
+    typeset -U PATH
 
     # History settings
     HISTFILE=~/.zsh_history
@@ -40,6 +41,31 @@ fi
     eval "$(zoxide init zsh)"
     eval "$(starship init zsh)"
     # export GPG_TTY=$(tty)
+
+    
+    # source : https://github.com/khaneliman/khanelinix/blob/main/modules/home/programs/terminal/shells/zsh/default.nix
+    # Prevent the command from being written to history before it's
+    # executed; save it to LASTHIST instead.  Write it to history
+    # in precmd.
+    #
+    # called before a history line is saved.  See zshmisc(1).
+    function zshaddhistory() {
+      # Remove line continuations since otherwise a "\" will eventually
+      # get written to history with no newline.
+      LASTHIST=''${1//\\$'\n'/}
+      # Return value 2: "... the history line will be saved on the internal
+      # history list, but not written to the history file".
+      return 2
+    }
+
+    # zsh hook called before the prompt is printed.  See zshmisc(1).
+    function precmd() {
+      # Write the last command if successful, using the history buffered by
+      # zshaddhistory().
+      if [[ $? == 0 && -n ''${LASTHIST//[[:space:]\n]/} && -n $HISTFILE ]] ; then
+        print -sr -- ''${=''${LASTHIST%%'\n'}}
+      fi
+    }
   '';
 in
 {

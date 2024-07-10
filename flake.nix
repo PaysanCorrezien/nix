@@ -23,48 +23,65 @@
 # TEST: serv conf
   outputs = { self, nixpkgs, home-manager,sops-nix, ... }@inputs:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
+      # Global settings and configurations
+      globalDefaults = {
+        username = nixpkgs.lib.mkDefault "dylan";
+        allowUnfree =nixpkgs.lib.mkDefault true;
+        system = nixpkgs.lib.mkDefault"x86_64-linux";
       };
 
     in {
-        nixosConfigurations = {
-        lenovo = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs pkgs ; };
-          modules = [
-            # inputs.sops-nix.nixosModules.sops
-            # inputs.home-manager.nixosModules.home-manager
-            ./hosts/lenovo.nix
-            ./modules/common.nix
-	          ./dynamic-grub.nix
-	          ./configuration.nix
-            ./modules/sops.nix
-            # ./testcreds.nix
-            # ./modules/home-manager/programs/nextloud-cli.nix
-            {
-              home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
-            }
-          ];
-        };
+      nixosConfigurations = {
+      lenovo = nixpkgs.lib.nixosSystem {
+        # work around to not have to define refactore all the code to change pkgs to nixpkgs bc lsp suck
+        specialArgs = { inherit inputs nixpkgs globalDefaults; };
+        modules = let
+          pkgs = import nixpkgs {
+            system = globalDefaults.system;
+            config.allowUnfree = true;
+          };
+        in [
+          ./hosts/lenovo.nix
+          ./modules/common.nix
+          ./dynamic-grub.nix
+          ./configuration.nix
+          ./modules/sops.nix
+          {
+            home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
+          }
+        ];
+      };
 
         WSL = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./hosts/WSL.nix
-            ./modules/common.nix
-            ./dynamic-grub.nix
-            inputs.home-manager.nixosModules.home-manager
-            {
-             home-manager.users.dylan = import ./modules/home-manager/home.nix;
-            }
-          ];
-        };
+        specialArgs = { inherit inputs nixpkgs globalDefaults; };
+        modules = let
+          pkgs = import nixpkgs {
+            system = globalDefaults.system;
+          };
+        in [
+          ./hosts/WSL.nix
+          ./modules/common.nix
+          ./dynamic-grub.nix
+          inputs.home-manager.nixosModules.home-manager
+          {
+            home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
+          }
+        ];
+      };
+
+# NOTE: placeholder for any no x86_64-linux based system 
+      raspberryPi = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs nixpkgs globalDefaults; };
+        modules = let
+          pkgs = import nixpkgs {
+            system = "aarch64-linux";
+          };
+        in [
+          # Add Raspberry Pi specific modules here if needed
+        ];
       };
     };
+
     # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
     #   specialArgs = { inherit inputs; };
     #   modules = [
@@ -73,6 +90,7 @@
     #     inputs.home-manager.nixosModules.home-manager
     #   ];
     # };
-}
 
+};
+}
 
