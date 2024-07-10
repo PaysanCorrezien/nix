@@ -33,7 +33,7 @@
     in {
       nixosConfigurations = {
       lenovo = nixpkgs.lib.nixosSystem {
-        # work around to not have to define refactore all the code to change pkgs to nixpkgs bc lsp suck
+        # work around to not have to define refactore all for now
         specialArgs = { inherit inputs nixpkgs globalDefaults; };
         modules = let
           pkgs = import nixpkgs {
@@ -42,16 +42,10 @@
           };
         in [
           ./hosts/lenovo.nix
-          ./modules/common.nix
-          ./dynamic-grub.nix
-          ./configuration.nix
-          ./modules/sops.nix
-          {
-            home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
-          }
         ];
       };
 
+# NOTE: placeholder work wsl need to be done quick
         WSL = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs nixpkgs globalDefaults; };
         modules = let
