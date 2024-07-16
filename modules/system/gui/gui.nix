@@ -30,6 +30,59 @@
   systemd.services."autovt@tty1".enable = false;
 
   services.espanso.enable = true;
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  # Enable CUPS to print documents.
+
+  # Enable sound with pipewire.
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
+ 
+  services.printing.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    # tigervnc  
+    #TODO: forticlient vpn
+    # DEV
+    helix
+    wezterm
+
+    todoist-electron
+    rofi
+    # libgcc
+    obsidian
+    discord
+    libnotify
+
+    # ollama
+    espanso
+
+    todoist
+    flameshot
+
+    # gnome.adwaita-icon-theme
+    # xorg.xcursorthemes
+    # WORK : 
+    microsoft-edge
+    linphone
+    openfortivpn
+    remmina
+    wireshark
+    teamviewer
+
+  ];
 
   # NOTE: TODOIST 
   nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];

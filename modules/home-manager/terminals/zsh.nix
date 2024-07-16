@@ -84,7 +84,7 @@ in
       initExtra = lib.readFile customZshInit;
       shellAliases = {
         ll = "ls -l";
-        cat = "bat";
+        # cat = "bat";
         update = "sudo nixos-rebuild switch";
         sw = "~/.config/nix/scripts/rebuild.sh";
         switchkb = "switch-keyboard-layout";

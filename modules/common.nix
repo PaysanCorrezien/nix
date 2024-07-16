@@ -4,6 +4,8 @@
 {
   imports = [ /etc/nixos/hardware-configuration.nix ./keyboard.nix ];
 
+  system.stateVersion = "24.05";
+
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Paris";
@@ -30,26 +32,7 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   services.openssh.enable = true;
-  services.printing.enable = true;
 
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-
-  # Enable CUPS to print documents.
-
-  # Enable sound with pipewire.
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
@@ -66,27 +49,13 @@
   hardware.i2c.enable = true;
   boot.kernelModules = [ "i2c-dev" ];
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
-
   #home manager enable
   home-manager = {
     # also pass inputs to home-manager modules
     extraSpecialArgs = { inherit inputs; };
     backupFileExtension =
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
-    users = { "dylan" = import ./modules/home-manager/home.nix; };
+    users = { "dylan" = import ../modules/home-manager/home.nix; };
     # https://github.com/nix-community/home-manager/issues/1213
     # TODO: test this
     # xdg.configFile."mimeapps.list".force = true;

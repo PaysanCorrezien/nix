@@ -21,59 +21,54 @@
 
 # TODO : move computer conf on /machine/ subfolder
 # TEST: serv conf
-  outputs = { self, nixpkgs, home-manager,sops-nix, ... }@inputs:
-    let
-      # Global settings and configurations
-      globalDefaults = {
-        username = nixpkgs.lib.mkDefault "dylan";
-        allowUnfree =nixpkgs.lib.mkDefault true;
-        system = nixpkgs.lib.mkDefault"x86_64-linux";
-      };
-
-    in {
-      nixosConfigurations = {
+outputs = { self, nixpkgs, home-manager, sops-nix, ... }@inputs:
+  let
+    # Global settings and configurations
+    # Create a default instance of globalDefaults
+  in {
+    nixosConfigurations = {
       lenovo = nixpkgs.lib.nixosSystem {
-        # work around to not have to define refactore all for now
-        specialArgs = { inherit inputs nixpkgs globalDefaults; };
+        specialArgs = { inherit inputs nixpkgs ; };
         modules = let
           pkgs = import nixpkgs {
-            system = globalDefaults.system;
+            system = "x86_64-linux";
             config.allowUnfree = true;
           };
         in [
+        ./global-default.nix
           ./hosts/lenovo.nix
         ];
       };
 
-# NOTE: placeholder work wsl need to be done quick
-        WSL = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs nixpkgs globalDefaults; };
-        modules = let
-          pkgs = import nixpkgs {
-            system = globalDefaults.system;
-          };
-        in [
-          ./hosts/WSL.nix
-          ./modules/common.nix
-          ./dynamic-grub.nix
-          inputs.home-manager.nixosModules.home-manager
-          {
-            home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
-          }
-        ];
-      };
-
-# NOTE: placeholder for any no x86_64-linux based system 
-      raspberryPi = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs nixpkgs globalDefaults; };
-        modules = let
-          pkgs = import nixpkgs {
-            system = "aarch64-linux";
-          };
-        in [
-          # Add Raspberry Pi specific modules here if needed
-        ];
-      };
+# # NOTE: placeholder work wsl need to be done quick
+#         WSL = nixpkgs.lib.nixosSystem {
+#         specialArgs = { inherit inputs nixpkgs globalDefaults; };
+#         modules = let
+#           pkgs = import nixpkgs {
+#             system = globalDefaults.system;
+#           };
+#         in [
+#           ./hosts/WSL.nix
+#           ./modules/common.nix
+#           ./dynamic-grub.nix
+#           inputs.home-manager.nixosModules.home-manager
+#           {
+#             home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
+#           }
+#         ];
+#       };
+#
+# # NOTE: placeholder for any no x86_64-linux based system 
+#       raspberryPi = nixpkgs.lib.nixosSystem {
+#         specialArgs = { inherit inputs nixpkgs globalDefaults; };
+#         modules = let
+#           pkgs = import nixpkgs {
+#             system = "aarch64-linux";
+#           };
+#         in [
+#           # Add Raspberry Pi specific modules here if needed
+#         ];
+#       };
     };
 
     # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
