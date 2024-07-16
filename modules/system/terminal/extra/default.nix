@@ -1,6 +1,9 @@
 { config, pkgs, lib, ... }:
 
-let cfg = config.settings.terminal.extras;
+let
+  cfg = config.settings.terminal.extras;
+  isServer =
+    config.settings.isServer; # assuming this is where your isServer boolean is set
 in {
   imports = [
     # ../home-manager/gnome/keybinds.nix
@@ -12,8 +15,11 @@ in {
       "Enable extra terminal configurations and packages, used for dev setup mostly";
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
+  config = {
+    settings.terminal.extras.enable =
+      !isServer; # Set to true if isServer is false
+
+    environment.systemPackages = lib.mkIf cfg.enable (with pkgs; [
       btop
       ddcutil # attempt to control monitor
       # ddcui
@@ -29,6 +35,7 @@ in {
       gitui
       stylua
       gcc
-    ];
+    ]);
   };
 }
+

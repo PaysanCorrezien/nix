@@ -1,24 +1,10 @@
-{
-  lib,
-  pkgs,
-  config,
-  ...
-}:
+{ lib, pkgs, config, ... }:
 
 let
-in
-{
+in {
 
-  home.packages = with pkgs; [
-    miller
-    ouch
-    xdragon
-    zoxide
-    ueberzugpp
-  ];
+  home.packages = with pkgs; [ miller ouch xdragon zoxide ueberzugpp ];
 
-  programs.yazi = {
-    enable = true;
-  };
+  programs.yazi = { enable = true; };
 }
 

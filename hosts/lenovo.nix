@@ -1,6 +1,7 @@
 # hosts/lenovo.nix
 { inputs, config, pkgs, lib, ... }: {
   settings.isServer = false;
+  settings.virtualisation.enable = true;
 
   imports = [
     ../modules/system/gui/gui.nix

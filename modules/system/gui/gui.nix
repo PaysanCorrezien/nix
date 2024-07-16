@@ -1,103 +1,83 @@
-{ config, pkgs, ... }:
-
-{
+{ lib, config, pkgs, ... }:
+let
+  username = "dylan";
+  isServer = config.settings.isServer;
+  defaultGuiEnable = !isServer; # Default to true if not a server
+in {
   imports = [
-    ./virtualisation.nix
+    ./extra/virtualisation.nix
     ./dev/python.nix
     ./programs/thunderbird.nix
     # ../home-manager/gnome/keybinds.nix
   ];
-  # # Enable automatic login for the user.
-  # services.displayManager.autoLogin.enable = true;
-  # services.displayManager.autoLogin.user = "dylan";
-  services.xserver.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.displayManager.lightdm = { enable = true; };
-  # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "fr,us";
-    xkb.variant = ",altgr-intl";
-    #     xkb.options = "grp:alt_shift_toggle"; # Use Alt+Shift to switch between layouts
+
+  options.settings.gui = {
+    enable = lib.mkEnableOption
+      "Enable the GUI interface and all the related settings";
   };
-  # Set X cursor theme globally or it break because of cursor mqybe related to : https://github.com/NixOS/nixpkgs/issues/140505
-  # services.xserver.desktopManager.gnome.extraGSettingsOverrides = ''
-  #   [org.gnome.desktop.interface]
-  #   cursor-theme='Adwaita'
-  # '';
 
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
+  config = lib.mkMerge [
+    { settings.gui.enable = lib.mkDefault defaultGuiEnable; }
+    (lib.mkIf config.settings.gui.enable {
+      # Enable automatic login for the user.
+      services.displayManager.autoLogin.enable = true;
+      services.displayManager.autoLogin.user = "dylan";
 
-  services.espanso.enable = true;
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
+      services.xserver.enable = true;
+      services.xserver.desktopManager.gnome.enable = true;
+      services.xserver.displayManager.lightdm.enable = true;
 
-  # Enable CUPS to print documents.
+      services.xserver = {
+        xkb.layout = "fr,us";
+        xkb.variant = ",altgr-intl";
+        # xkb.options = "grp:alt_shift_toggle"; # Use Alt+Shift to switch between layouts
+      };
 
-  # Enable sound with pipewire.
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+      # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+      systemd.services."getty@tty1".enable = false;
+      systemd.services."autovt@tty1".enable = false;
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
- 
-  services.printing.enable = true;
+      services.espanso.enable = true;
+      sound.enable = true;
+      hardware.pulseaudio.enable = false;
 
-  environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    # tigervnc  
-    #TODO: forticlient vpn
-    # DEV
-    helix
-    wezterm
+      # Enable sound with pipewire.
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        # If you want to use JACK applications, uncomment this
+        #jack.enable = true;
+      };
 
-    todoist-electron
-    rofi
-    # libgcc
-    obsidian
-    discord
-    libnotify
+      services.printing.enable = true;
 
-    # ollama
-    espanso
+      environment.systemPackages = with pkgs; [
+        helix
+        wezterm
+        todoist-electron
+        rofi
+        obsidian
+        discord
+        libnotify
+        espanso
+        todoist
+        flameshot
+        microsoft-edge
+        linphone
+        openfortivpn
+        remmina
+        wireshark
+        teamviewer
+      ];
 
-    todoist
-    flameshot
+      # NOTE: TODOIST 
+      nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
 
-    # gnome.adwaita-icon-theme
-    # xorg.xcursorthemes
-    # WORK : 
-    microsoft-edge
-    linphone
-    openfortivpn
-    remmina
-    wireshark
-    teamviewer
-
+      # Enable the OpenSSH daemon.
+      services.openssh.enable = true;
+    })
   ];
-
-  # NOTE: TODOIST 
-  nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
-
-  # Enable the OpenSSH daemon.
-  # TODO: configure it
-  services.openssh.enable = true;
-  # NOTE: used to rdp to the host, will be needed for wsl
-  # Enable rdp for test purpose for now
-  # services.xrdp.enable = true;
-  # services.xrdp.openFirewall = true;
-  # services.xrdp.defaultWindowManager = "startplasma-x11";
-  # https://github.com/NixOS/nixpkgs/issues/250533
-  # environment.etc = {
-  #   "xrdp/sesman.ini".source = "${config.services.xrdp.confDir}/sesman.ini";
-  # };
 }
 

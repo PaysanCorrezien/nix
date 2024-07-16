@@ -1,11 +1,12 @@
-{ config, pkgs, lib, ... }:
+{ settings, pkgs, lib, ... }:
 
-let cfg = config.settings.terminal.extras;
+# install only if the setings is set to true
+let cfg = settings.terminal.extras;
 in {
-  # config = lib.mkIf cfg.enable {
-  home.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
-    monaspace
-  ];
-  # };
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
+      monaspace
+    ];
+  };
 }
