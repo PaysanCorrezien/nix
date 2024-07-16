@@ -1,18 +1,17 @@
 # hosts/lenovo.nix
-{ inputs, config, pkgs, lib, ... }:
-
-{
-  # settings.isServer = true;
-  # config.settings.isServer = false;
+{ inputs, config, pkgs, lib, ... }: {
+  settings.isServer = false;
 
   imports = [
     ../modules/system/gui/gui.nix
     ../modules/system/terminal/terminal.nix
     ../modules/common.nix
     ../dynamic-grub.nix
-    inputs.home-manager.nixosModules.default
     ../modules/sops.nix
-    { home-manager.users.dylan.imports = [ ../modules/home-manager/home.nix ]; }
+    # {
+    #   home-manager.users.dylan = import ../modules/home-manager/home.nix;
+    # }
+    # { home-manager.extraSpecialArgs = { settings = config.settings; }; }
   ];
 
   networking.hostName = "lenovo";

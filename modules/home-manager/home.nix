@@ -1,7 +1,19 @@
 # home.nix
-{ lib, config, pkgs, inputs, ... }:
-
-{
+{ lib, config, pkgs, inputs, settings, ... }:
+let
+  isServer = settings.isServer;
+  # Function to write settings to $HOME/.settings.nix
+  # Serialize the settings to JSON
+  # NOTE: dump all settings to ~/.settings.nix.json to troubleshoot
+  serializedSettings = builtins.toJSON settings;
+  settingsFilePath = "${config.home.homeDirectory}/.settings.nix.json";
+  # Create a writable copy of the settings file
+  setPermissionsScript = ''
+    rm -f ${settingsFilePath}
+    cp ${settingsFilePath}.init ${settingsFilePath}
+    chmod u+w ${settingsFilePath}
+  '';
+in {
   imports = [ # Configuration via home.nix
     ./programs/nextloud-cli.nix
     ./mime-type.nix
@@ -24,6 +36,15 @@
   home.username = "dylan";
   home.homeDirectory = "/home/dylan";
 
+  # Write the settings to an initial file in the home directory
+  home.file.".settings.nix.json.init".text = serializedSettings;
+  home.activation.setSettingsPermissions =
+    lib.hm.dag.entryAfter [ "writeTextFile" ] ''
+      ${setPermissionsScript}
+    '';
+
+  home.sessionVariables = { IS_SERVER = toString isServer; };
+  programs.bottom.enable = settings.isServer;
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.

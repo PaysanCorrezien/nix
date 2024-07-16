@@ -9,13 +9,13 @@
     fzf
     zoxide
     fd
-    zsh-fzf-tab
+    # zsh-fzf-tab
     yazi
     lsd
     unzip
     zip
-    zsh-forgit
-    bat
+    # zsh-forgit
+    # bat
     ripgrep
     wget
     # TODO: work on taiscale autosetup for all device 

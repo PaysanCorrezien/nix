@@ -1,8 +1,14 @@
 # modules/common.nix
 { inputs, config, pkgs, ... }:
+#NOTE: home manager cant inherit config it fail with darwin error
+let settings = config.settings;
 
-{
-  imports = [ /etc/nixos/hardware-configuration.nix ./keyboard.nix ];
+in {
+  imports = [
+    inputs.home-manager.nixosModules.default
+    /etc/nixos/hardware-configuration.nix
+    ./keyboard.nix
+  ];
 
   system.stateVersion = "24.05";
 
@@ -52,7 +58,7 @@
   #home manager enable
   home-manager = {
     # also pass inputs to home-manager modules
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs settings; };
     backupFileExtension =
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };
