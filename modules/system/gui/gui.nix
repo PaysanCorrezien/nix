@@ -38,7 +38,7 @@ in {
       systemd.services."autovt@tty1".enable = false;
 
       services.espanso.enable = true;
-      sound.enable = true;
+      # sound.enable = true;
       hardware.pulseaudio.enable = false;
 
       # Enable sound with pipewire.
@@ -70,6 +70,7 @@ in {
         remmina
         wireshark
         teamviewer
+        termusic
       ];
 
       # NOTE: TODOIST 

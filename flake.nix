@@ -11,10 +11,18 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-utils = { url = "github:numtide/flake-utils"; };
-    # TODO: add yazi flake 
-    sops-nix.url = "github:Mic92/sops-nix";
-    # stylix.url = "github:danth/stylix";
+    # flake-utils = { url = "github:numtide/flake-utils"; };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # TODO:
+    # stylix = {
+    #   url = "github:danth/stylix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   # TODO : move computer conf on /machine/ subfolder

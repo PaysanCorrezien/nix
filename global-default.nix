@@ -2,10 +2,13 @@
 
 # TODO: find a way to removeall boileplate using nix magic
 # for now i fail it doesnt output good structure
+# add a option to configure window manager 
+# add a taiscale option to enable and auto configure it
+#
 let
   globalDefaults = {
     username = lib.mkDefault "dylan";
-    ip = lib.mkDefault "192.168.0.111";
+    ip = lib.mkDefault "192.168.0.111"; # NOTE: this is not currently used
     isServer = lib.mkDefault false;
     virtualisation.enable = lib.mkDefault false;
     environment = lib.mkDefault "home";

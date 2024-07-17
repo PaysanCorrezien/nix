@@ -40,10 +40,9 @@ in {
     docker-compose-language-service
     dockerfile-language-server-nodejs
     vscode-extensions.dbaeumer.vscode-eslint
-    gitui
     hadolint
     # vscode-extensions.ms-vscode.js-debug
-    nodePackages.vscode-json-languageserver-bin
+    vscode-langservers-extracted
     # json-lsp
     lua-language-server
     vscode-extensions.davidanson.vscode-markdownlint
