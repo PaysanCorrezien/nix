@@ -20,12 +20,56 @@ in {
     enable = true;
     plugins = with pkgs.vimPlugins; [
       nvim-treesitter
+
+      vim-markdown-toc
       nvim-lspconfig
       sqlite-lua
     ];
+
   };
-  # Enable KeePassXC
-  home.packages = with pkgs; [ nodejs nodenv jdk21 ];
+
+  #TODO: make this depend on variable to not install all on serv ? 
+  # maybe make minimal list for server and add all for desktop ?
+  # exemple : taplo yaml-language-server ect and bash-language-server are usefull for server
+  home.packages = with pkgs; [
+    bash-language-server
+    black
+    cmake-language-server
+    vscode-extensions.vadimcn.vscode-lldb
+    # pythonPackages.debugpy
+    docker-compose-language-service
+    dockerfile-language-server-nodejs
+    vscode-extensions.dbaeumer.vscode-eslint
+    gitui
+    hadolint
+    # vscode-extensions.ms-vscode.js-debug
+    nodePackages.vscode-json-languageserver-bin
+    # json-lsp
+    lua-language-server
+    vscode-extensions.davidanson.vscode-markdownlint
+    markdownlint-cli2
+    marksman
+    neocmakelsp
+    nil
+    nixpkgs-fmt
+    nodePackages.prettier
+    nodePackages.typescript-language-server
+    pyright
+    ruff-lsp
+    shellcheck
+    shfmt
+    sqlfluff
+    stylua
+    tailwindcss-language-server
+    taplo
+    # vtsls
+    yaml-language-server
+    ltex-ls
+    nodejs
+    nodenv
+    jdk21
+    poppler_utils # for neovim pdf preview
+  ];
   # Clone the repository using builtins.fetchGit and expose it in the user's home directory
   home.file."repo/nvim-treesitter-powershell".source = builtins.fetchGit {
     url = "https://github.com/PaysanCorrezien/nvim-treesitter-powershell";
