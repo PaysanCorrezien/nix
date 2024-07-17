@@ -31,7 +31,7 @@
 
   environment.systemPackages = with pkgs; [
     acpi # battery util
-    gnome.adwaita-icon-theme
+    adwaita-icon-theme
   ];
 
   # Enable LightDM
