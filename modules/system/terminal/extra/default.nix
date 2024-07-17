@@ -20,7 +20,6 @@ in {
       !isServer; # Set to true if isServer is false
 
     environment.systemPackages = lib.mkIf cfg.enable (with pkgs; [
-      btop
       ddcutil # attempt to control monitor
       # ddcui
       xorg.xinit
@@ -32,7 +31,6 @@ in {
       tokei
       gh
       ripgrep-all
-      gitui
       stylua
       gcc
     ]);
