@@ -1,10 +1,5 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
-# TODO: find a way to removeall boileplate using nix magic
-# for now i fail it doesnt output good structure
-# add a option to configure window manager 
-# add a taiscale option to enable and auto configure it
-#
 let
   globalDefaults = {
     username = lib.mkDefault "dylan";
@@ -12,7 +7,12 @@ let
     isServer = lib.mkDefault false;
     virtualisation.enable = lib.mkDefault false;
     environment = lib.mkDefault "home";
-    isExperimental = lib.mkDefault false;
+    isExperimental = lib.mkDefault false; # NOTE: this is not currently used
+    social.enable = lib.mkDefault true; # NOTE: install social apps like discord
+    work = lib.mkDefault true; # NOTE: install work apps
+    gaming = lib.mkDefault true;
+    tailscale.enable = lib.mkDefault false; # Enable Tailscale by default
+    windowManager = lib.mkDefault "gnome"; # Default window manager
   };
 in {
   options = {
@@ -47,6 +47,31 @@ in {
         default = globalDefaults.isExperimental;
         description = "Is this an experimental machine?";
       };
+      social.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.social.enable;
+        description = "Install social apps like Discord.";
+      };
+      work = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.work;
+        description = "Install work-related applications.";
+      };
+      gaming = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.gaming;
+        description = "Install gaming-related applications.";
+      };
+      tailscale.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.tailscale.enable;
+        description = "Enable Tailscale.";
+      };
+      windowManager = lib.mkOption {
+        type = lib.types.enum [ "gnome" "plasma" "xfce" ];
+        default = globalDefaults.windowManager;
+        description = "Choose window manager (gnome, plasma, xfce).";
+      };
     };
   };
 
@@ -57,5 +82,11 @@ in {
     virtualisation.enable = globalDefaults.virtualisation.enable;
     environment = globalDefaults.environment;
     isExperimental = globalDefaults.isExperimental;
+    social.enable = globalDefaults.social.enable;
+    work = globalDefaults.work;
+    gaming = globalDefaults.gaming;
+    tailscale.enable = globalDefaults.tailscale.enable;
+    windowManager = globalDefaults.windowManager;
   };
 }
+
