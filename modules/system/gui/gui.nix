@@ -5,9 +5,12 @@ let
   defaultGuiEnable = !isServer; # Default to true if not a server
 in {
   imports = [
-    ./extra/virtualisation.nix
     ./dev/python.nix
     ./programs/thunderbird.nix
+    ./extra/work.nix
+    ./extra/social.nix
+    ./extra/virtualisation.nix
+    ./extra/glance.nix
     # ../home-manager/gnome/keybinds.nix
   ];
 
@@ -34,8 +37,8 @@ in {
       };
 
       # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-      systemd.services."getty@tty1".enable = false;
-      systemd.services."autovt@tty1".enable = false;
+      # systemd.services."getty@tty1".enable = false;
+      # systemd.services."autovt@tty1".enable = false;
 
       services.espanso.enable = true;
       # sound.enable = true;
@@ -59,17 +62,10 @@ in {
         todoist-electron
         rofi
         obsidian
-        discord
         libnotify
         espanso
         todoist
         flameshot
-        microsoft-edge
-        linphone
-        openfortivpn
-        remmina
-        wireshark
-        teamviewer
         termusic
       ];
 
