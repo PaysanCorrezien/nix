@@ -11,10 +11,11 @@ let
   };
 in {
   # Setup the GTK theme
+
   gtk = {
     enable = true;
     theme = {
-      name = "Catppuccin-Macchiato-Compact-Pink-Dark";
+      name = "catppuccin-macchiato-pink-compact+rimless,black";
       package = myGtkTheme;
     };
   };
@@ -96,17 +97,26 @@ in {
         "clipqr@drien.com"
       ];
     };
+    # org.gnome.desktop.interface color-scheme 'prefer-dark'
     "org/gnome/desktop/interface" = {
-      gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
+      # gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
+      # gtk-color-scheme =
+      #   "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
+      # gtk-key-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
+      # cursor-theme = "macchiatoPink"; # old cursor theme
+      # color-scheme = "prefer-dark";
     };
 
     # gnome general theme via user-theme extensions
+    # # gnome general theme via user-theme extensions
+
     "org/gnome/shell/extensions/user-theme" = {
-      name = "Catppuccin-Macchiato-Compact-Pink-Dark";
+      name = "catppuccin-macchiato-pink-compact+rimless,black";
     };
 
     "org/gnome/desktop/wm/preferences" = {
       num-workspaces = 10; # Adjusted to set the number of workspaces
+      # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";
     };
 
     "org/gnome/desktop/background" = {
@@ -132,7 +142,7 @@ in {
     # /org/gnome/shell/extensions/search-light/scale-height      /org/gnome/shell/extensions/search-light/shortcut-search
     "org/gnome/shell/extensions/search-light" = {
       # shortcut-search = "['<Alt>d']";  # Ensure correct syntax for the keyboard shortcut
-      shortcut-search = [ "<Alt>d" ];
+      shortcut-search = [ "<Alt>f" ];
     };
   };
 
