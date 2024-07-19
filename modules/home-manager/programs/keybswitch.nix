@@ -16,31 +16,32 @@ let
 
     nativeBuildInputs = [
       pkgs.pkg-config
-      pkgs.systemd  # systemd provides libudev
+      pkgs.systemd # systemd provides libudev
       pkgs.openssl
       pkgs.libffi
     ];
 
     # Explicitly set PKG_CONFIG_PATH
-    PKG_CONFIG_PATH = "${pkgs.systemd.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.libffi.dev}/lib/pkgconfig";
+    PKG_CONFIG_PATH =
+      "${pkgs.systemd.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.libffi.dev}/lib/pkgconfig";
 
     meta = {
       description = "USB Keyboard Detection and Layout Switch";
       homepage = "https://github.com/PaysanCorrezien/keybswitch";
       license = lib.licenses.mit;
-      maintainers = with lib.maintainers; [ ];
+      # maintainers = with lib.maintainers; [ ];
     };
   };
-in
-{
+in {
   home.packages = [ keybswitch ];
 
-  home.file.".config/autostart/keybswitch.desktop".text = lib.mkIf pkgs.stdenv.isLinux ''
-    [Desktop Entry]
-    Type=Application
-    Exec=${keybswitch}/bin/keybswitch > /home/${config.home.username}/keybswitch.log 2>&1
-    X-GNOME-Autostart-enabled=true
-    Name=Keybswitch
-    Comment=USB Keyboard Detection and Layout Switch
-  '';
+  home.file.".config/autostart/keybswitch.desktop".text =
+    lib.mkIf pkgs.stdenv.isLinux ''
+      [Desktop Entry]
+      Type=Application
+      Exec=${keybswitch}/bin/keybswitch > /home/${config.home.username}/keybswitch.log 2>&1
+      X-GNOME-Autostart-enabled=true
+      Name=Keybswitch
+      Comment=USB Keyboard Detection and Layout Switch
+    '';
 }

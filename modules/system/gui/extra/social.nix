@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 
-let cfg = config.settings.social.enable;
+let cfg = config.settings.social;
 in {
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [ discord ];
