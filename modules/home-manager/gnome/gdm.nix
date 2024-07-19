@@ -4,14 +4,13 @@
   # Enable the GNOME Desktop Environment
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-
   # TEST: this 
   # services.xserver.displayManager.sddm = {
   #   enable = true;
-  #   wayland.enable = true;
-  #   theme = "catppuccino-mocha";
-  #   package = pkgs.kdePackages.sddm;
-  #   extraPackages = with pkgs; [ catppucin-sddm ];
+  #   # wayland.enable = true;
+  #   # theme = "catppuccino-mocha";
+  #   # package = pkgs.kdePackages.sddm;
+  #   # extraPackages = with pkgs; [ catppucin-sddm ];
   #   autoNumlock = true;
   # };
   # environment.systemPackages = [
