@@ -13,6 +13,7 @@ let
     gaming = lib.mkDefault true;
     tailscale.enable = lib.mkDefault false; # Enable Tailscale by default
     windowManager = lib.mkDefault "gnome"; # Default window manager
+    displayServer = lib.mkDefault "xorg"; # Default display server
   };
 in {
   options = {
@@ -68,9 +69,15 @@ in {
         description = "Enable Tailscale.";
       };
       windowManager = lib.mkOption {
-        type = lib.types.enum [ "gnome" "plasma" "xfce" ];
+        type = lib.types.nullOr
+          (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
         default = globalDefaults.windowManager;
         description = "Choose window manager (gnome, plasma, xfce).";
+      };
+      displayServer = lib.mkOption {
+        type = lib.types.nullOr (lib.types.enum [ "xorg" "wayland" ]);
+        default = globalDefaults.displayServer;
+        description = "Choose display server (wayland, xorg).";
       };
     };
   };
@@ -87,6 +94,7 @@ in {
     gaming = globalDefaults.gaming;
     tailscale.enable = globalDefaults.tailscale.enable;
     windowManager = globalDefaults.windowManager;
+    displayServer = globalDefaults.displayServer;
   };
 }
 

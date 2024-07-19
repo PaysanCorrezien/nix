@@ -6,6 +6,7 @@ let
 in {
   imports = [
     ./dev/python.nix
+    ./programs/espanso.nix
     ./programs/thunderbird.nix
     ./extra/work.nix
     ./extra/social.nix
@@ -28,7 +29,7 @@ in {
       services.xserver.desktopManager.gnome.enable = true;
       services.displayManager.sddm = {
         enable = true;
-        wayland.enable = true;
+        wayland.enable = false;
         theme = "catppuccin-mocha";
         package = pkgs.kdePackages.sddm;
         # extraPackages = with pkgs; [ catppucin-sddm ];
@@ -47,11 +48,10 @@ in {
       # systemd.services."getty@tty1".enable = false;
       # systemd.services."autovt@tty1".enable = false;
 
-      services.espanso.enable = true;
-      # sound.enable = true;
       hardware.pulseaudio.enable = false;
 
       # Enable sound with pipewire.
+      security.rtkit.enable = true;
       services.pipewire = {
         enable = true;
         alsa.enable = true;
@@ -60,7 +60,6 @@ in {
         # If you want to use JACK applications, uncomment this
         #jack.enable = true;
       };
-
       services.printing.enable = true;
 
       environment.systemPackages = with pkgs; [
@@ -70,7 +69,6 @@ in {
         rofi
         obsidian
         libnotify
-        espanso
         todoist
         flameshot
         #flameshot need FIXME: launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
