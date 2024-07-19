@@ -23,12 +23,19 @@ in {
     { settings.gui.enable = lib.mkDefault defaultGuiEnable; }
     (lib.mkIf config.settings.gui.enable {
       # Enable automatic login for the user.
-      services.displayManager.autoLogin.enable = true;
-      services.displayManager.autoLogin.user = "dylan";
 
       services.xserver.enable = true;
       services.xserver.desktopManager.gnome.enable = true;
-      services.xserver.displayManager.lightdm.enable = true;
+      services.displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+        theme = "catppuccin-mocha";
+        package = pkgs.kdePackages.sddm;
+        # extraPackages = with pkgs; [ catppucin-sddm ];
+        autoNumlock = true;
+      };
+      # environment.systemPackages = [
+      # ];
 
       services.xserver = {
         xkb.layout = "fr,us";
@@ -66,7 +73,21 @@ in {
         espanso
         todoist
         flameshot
+        #flameshot need FIXME: launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
         termusic
+        #FIXME : mouse support on sddm 
+        (pkgs.catppuccin-sddm.override {
+          flavor = "mocha";
+          font = "Noto Sans";
+          fontSize = "9";
+          background =
+            "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
+          loginBackground = true;
+          # ClockEnabled = true;
+        })
+        xdg-desktop-portal-gnome
+        xdg-desktop-portal
+
       ];
 
       # NOTE: TODOIST 
