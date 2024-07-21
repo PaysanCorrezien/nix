@@ -25,6 +25,7 @@ in {
       xorg.xinit
       shell-gpt
       gum
+      navi
       # WORK
       powershell
       pandoc

@@ -1,23 +1,22 @@
 # NOTE : starting point
 #TEST: need to be done
 
+# virt.nix
+
 { config, pkgs, lib, ... }:
-let
-  username = "dylan";
-  cfg = config.settings.virtualisation.enable;
+let cfg = config.settings;
 in {
-
   config = lib.mkMerge [
-    (lib.mkIf cfg {
+    (lib.mkIf cfg.virtualisation.enable {
       programs.virt-manager.enable = true;
-
       virtualisation.libvirtd.enable = true;
 
-      users.users.${username} = {
+      users.users.${cfg.username} = {
         isNormalUser = true;
         extraGroups = [ "libvirtd" "kvm" ];
       };
 
+      # Uncomment the following if you need these settings
       # programs.dconf = {
       #   enable = true;
       #   settings = {
