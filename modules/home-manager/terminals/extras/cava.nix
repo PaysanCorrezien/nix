@@ -1,8 +1,9 @@
 # cava.nix
 # source :https://github.com/khaneliman/khanelinix/blob/main/modules/home/programs/terminal/tools/cava/default.nix
-{ config, lib, pkgs, ... }:
+{ settings, pkgs, lib, ... }:
 
-let cfg = config.settings;
+# install only if the setings is set to true
+let cfg = settings.terminal.extras;
 
 in {
   config = lib.mkIf cfg.enable {
