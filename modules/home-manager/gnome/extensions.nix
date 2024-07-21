@@ -1,8 +1,11 @@
 { config, pkgs, lib, ... }:
 
-#TODO: Custom the bar via nixconfig ? 
 let
   # Customization of the GTK theme
+  # inherit (lib.gvariant) mkVariant mkTuple mkUint32 mkEmptyArray;
+  inherit (lib.gvariant)
+    mkVariant mkTuple mkUint32 mkEmptyArray mkBoolean mkString mkArray
+    mkDictionaryEntry;
   myGtkTheme = pkgs.catppuccin-gtk.override {
     accents = [ "pink" ];
     size = "compact";
@@ -11,7 +14,6 @@ let
   };
 in {
   # Setup the GTK theme
-
   gtk = {
     enable = true;
     theme = {
@@ -28,51 +30,97 @@ in {
   xdg.configFile."gtk-4.0/gtk-dark.css".source =
     "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
 
-  # Include GNOME Extensions, GNOME Tweaks, Cursors and Icons in Home Packages
-  home.packages = with pkgs; [
-    gnomeExtensions.auto-move-windows
-    gnomeExtensions.clipboard-indicator
-    gnomeExtensions.gsconnect
-    gnomeExtensions.search-light
-    gnomeExtensions.caffeine
-    gnomeExtensions.space-bar
-    gnomeExtensions.vitals
-    gnomeExtensions.workspace-switcher-manager
-    gnomeExtensions.appindicator
-    gnomeExtensions.forge
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.clipqr
-    gnomeExtensions.color-picker
-    gnome-tweaks
-    gucharmap
-    catppuccin-cursors.macchiatoPink
-    catppuccin-cursors.macchiatoLavender
-    catppuccin-cursors.macchiatoMauve
-    # papirus-icon-theme
-    # papirus-folders
-    # catppuccin-papirus-folders
-  ];
-
-  # Additionally, ensure that the theme is recognized as the dark variant globally
+  home.file = {
+    "test.txt".text = ''
+      [Settings]
+      gtk-application-prefer-dark-theme=1
+    '';
+  };
 
   # Configure GNOME Shell, GNOME Extensions and set the Cursor and Icons using GSettings
   dconf.settings = {
 
-    # Setting world clocks
+    "org/gnome/shell/weather" = {
+      locations = mkArray [
+        (mkVariant (mkTuple [
+          (mkUint32 2)
+          (mkVariant (mkTuple [
+            "Limoges"
+            "LFBL"
+            false
+            (mkArray [ (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ]) ])
+            (mkArray [
+              (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ])
+            ]) # cant use mkemptyarray here ???
+          ]))
+        ]))
+      ];
+    };
+    "org/gnome/shell/world-clocks" = {
+      locations = [
+        (mkVariant (mkTuple [
+          (mkUint32 2)
+          (mkVariant (mkTuple [
+            "Toronto"
+            "CYTZ"
+            true
+            [ (mkTuple [ (0.761545324469095) (-1.3857914260834978) ]) ]
+            [ (mkTuple [ (0.7621271125219548) (-1.3860823201099277) ]) ]
+          ]))
+        ]))
+        (mkVariant (mkTuple [
+          (mkUint32 2)
+          (mkVariant (mkTuple [
+            "London"
+            "EGWU"
+            true
+            [ (mkTuple [ (0.8997172294030767) (-7.272211034407213e-3) ]) ]
+            [ (mkTuple [ (0.8988445647770796) (-2.0362232784242244e-3) ]) ]
+          ]))
+        ]))
+        (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+          (lib.gvariant.mkUint32 2)
+          (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+            "San Francisco"
+            "KOAK"
+            true
+            [
+              (lib.gvariant.mkTuple [
+                (0.6583284898216201)
+                (-2.133408063190589)
+              ])
+            ]
+            [
+              (lib.gvariant.mkTuple [
+                (0.659296885757089)
+                (-2.136621860115334)
+              ])
+            ]
+          ]))
+        ]))
+        (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+          (lib.gvariant.mkUint32 2)
+          (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+            "Tokyo"
+            "RJTI"
+            true
+            [ (lib.gvariant.mkTuple [ 0.6219189843095486 2.44084295891407 ]) ]
+            [ (lib.gvariant.mkTuple [ 0.6228207435741766 2.4391218722853854 ]) ]
+          ]))
+        ]))
+      ];
+    };
 
     "org/gnome/shell" = {
 
-      #FIXME: 
-      # "world-clocks/locations" = ''[('San Francisco', 'KOAK', true, [(0.65832848982162007, -2.133408063190589)], [(0.659296885757089, -2.1366218601153339)]), ('Tokyo', 'RJTI', true, [(0.62191898430954862, 2.4408429589140699)], [(0.62282074357417661, 2.4391218722853854)])]''; 
-      # "weather/locations" = ''[('Limoges', 'LFBL', false, [(0.80052435606583006, 0.02065305699750206)], @a(dd) [])]'';
       disable-user-extensions = false;
       favorite-apps = [
-        "firefox.desktop"
-        # # "code.desktop"
-        "wezterm.desktop"
-        #  # "spotify.desktop"
-        #  # NOTE: this "virt-manager.desktop"
-        "org.gnome.Nautilus.desktop"
+        # "firefox.desktop"
+        # # # "code.desktop"
+        # "wezterm.desktop"
+        # #  # "spotify.desktop"
+        # #  # NOTE: this "virt-manager.desktop"
+        # "org.gnome.Nautilus.desktop"
       ];
       # dconf read /org/gnome/shell/enabled-extensions
       enabled-extensions = [
@@ -97,49 +145,11 @@ in {
         "clipqr@drien.com"
       ];
     };
-    # org.gnome.desktop.interface color-scheme 'prefer-dark'
-    "org/gnome/desktop/interface" = {
-      # gtk-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
-      # gtk-color-scheme =
-      #   "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
-      # gtk-key-theme = "Catppuccin-Macchiato-Compact-Pink-Dark"; # old app theme
-      # cursor-theme = "macchiatoPink"; # old cursor theme
-      # color-scheme = "prefer-dark";
-    };
-
-    # gnome general theme via user-theme extensions
-    # # gnome general theme via user-theme extensions
 
     "org/gnome/shell/extensions/user-theme" = {
       name = "catppuccin-macchiato-pink-compact+rimless,black";
     };
 
-    "org/gnome/desktop/wm/preferences" = {
-      num-workspaces = 10; # Adjusted to set the number of workspaces
-      # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";
-    };
-
-    "org/gnome/desktop/background" = {
-      #FIXME: make use of relative path here
-      picture-uri =
-        "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-      picture-uri-dark =
-        "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-      picture-options = "zoom"; # Set wallpaper display option
-    };
-    # TODO: GDM theming https://github.com/catppuccin/gtk/issues/21
-    # dont seems to work right now need to find what is missing
-    "org/gnome/desktop/screensaver" = {
-      picture-uri =
-        "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-      primary-color =
-        "#b7bdf8"; # catppuccin machia lavender             # Default primary color for screensaver
-      secondary-color =
-        "#f0c6c6"; # catpuccin machia  flamingo          # Default secondary color for screensaver
-    };
-    # extension search-light
-    # /org/gnome/shell/extensions/search-light/entry-font-size   /org/gnome/shell/extensions/search-light/scale-width
-    # /org/gnome/shell/extensions/search-light/scale-height      /org/gnome/shell/extensions/search-light/shortcut-search
     "org/gnome/shell/extensions/search-light" = {
       # shortcut-search = "['<Alt>d']";  # Ensure correct syntax for the keyboard shortcut
       shortcut-search = [ "<Alt>f" ];

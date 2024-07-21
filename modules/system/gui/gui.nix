@@ -9,9 +9,11 @@ in {
     ./programs/espanso.nix
     ./programs/thunderbird.nix
     ./extra/work.nix
+    ./extra/audio.nix
     ./extra/social.nix
     ./extra/virtualisation.nix
     ./extra/glance.nix
+    ./extra/gnome.nix
     # ../home-manager/gnome/keybinds.nix
   ];
 
@@ -38,16 +40,6 @@ in {
       # environment.systemPackages = [
       # ];
 
-      services.xserver = {
-        xkb.layout = "fr,us";
-        xkb.variant = ",altgr-intl";
-        # xkb.options = "grp:alt_shift_toggle"; # Use Alt+Shift to switch between layouts
-      };
-
-      # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-      # systemd.services."getty@tty1".enable = false;
-      # systemd.services."autovt@tty1".enable = false;
-
       hardware.pulseaudio.enable = false;
 
       # Enable sound with pipewire.
@@ -64,16 +56,14 @@ in {
 
       environment.systemPackages = with pkgs; [
         helix
-        wezterm
+        # wezterm
         todoist-electron
         rofi
         obsidian
         libnotify
         todoist
         flameshot
-        #flameshot need FIXME: launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
-        termusic
-        #FIXME : mouse support on sddm 
+        #flameshot need FIXME: for wayland launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
         (pkgs.catppuccin-sddm.override {
           flavor = "mocha";
           font = "Noto Sans";

@@ -28,24 +28,89 @@ in {
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9/"
       ];
     };
+    "org/gnome/desktop/wm/keybindings" = {
+      switch-to-workspace-1 = [ "<Alt>1" ];
+      switch-to-workspace-2 = [ "<Alt>2" ];
+      switch-to-workspace-3 = [ "<Alt>3" ];
+      switch-to-workspace-4 = [ "<Alt>4" ];
+      switch-to-workspace-5 = [ "<Alt>5" ];
+      switch-to-workspace-6 = [ "<Alt>6" ];
+      switch-to-workspace-7 = [ "<Alt>7" ];
+      switch-to-workspace-8 = [ "<Alt>8" ];
+      switch-to-workspace-9 = [ "<Alt>9" ];
+      switch-to-workspace-10 = [ "<Alt>0" ];
+      switch-to-workspace-11 = [ "<Alt>N" ]; # NOTE: for Notes
+      move-to-workspace-1 = [ "<Alt><Shift>1" ];
+      move-to-workspace-2 = [ "<Alt><Shift>2" ];
+      move-to-workspace-3 = [ "<Alt><Shift>3" ];
+      move-to-workspace-4 = [ "<Alt><Shift>4" ];
+      move-to-workspace-5 = [ "<Alt><Shift>5" ];
+      move-to-workspace-6 = [ "<Alt><Shift>6" ];
+      move-to-workspace-7 = [ "<Alt><Shift>7" ];
+      move-to-workspace-8 = [ "<Alt><Shift>8" ];
+      move-to-workspace-9 = [ "<Alt><Shift>9" ];
+      move-to-workspace-10 = [ "<Alt><Shift>0" ];
+      close = [ "<Alt><Shift>q" ];
+    };
     # Disables the default screenshot interface
-    "org/gnome/shell/keybindings" = { show-screenshot-ui = [ ]; };
-    #FIXME : not working
+    "org/gnome/shell/keybindings" = {
+      toggle-quick-settings = [ "<Alt>x" ];
+      toggle-message-tray = [ "<Alt>m" ];
+      toggle-application-view = [ "" ];
+      show-screenshot-ui = [ ];
+      open-new-window-application-1 = [ "" ];
+      open-new-window-application-2 = [ "" ];
+      open-new-window-application-3 = [ "" ];
+      open-new-window-application-4 = [ "" ];
+      open-new-window-application-5 = [ "" ];
+      open-new-window-application-6 = [ "" ];
+      open-new-window-application-7 = [ "" ];
+      open-new-window-application-8 = [ "" ];
+      open-new-window-application-9 = [ "" ];
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9" =
+      {
+        name = "Gnome audio control";
+        # FIXME: xdotool left left doesnt work chained here 
+        command = "gnome-control-center sound";
+        binding = "<Alt>a";
+      };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8" =
+      {
+        name = "Gnome printers";
+        command = "gnome-control-center printers";
+        binding = "<Alt>P";
+      };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7" =
+      {
+        name = "Gnome bluetooth";
+        command = "gnome-control-center bluetooth";
+        binding = "<Alt>b";
+      };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6" =
+      {
+        name = "Gnome Wifi ";
+        command = "gnome-control-center wifi ";
+        binding = "<Alt>w";
+      };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5" =
       {
         name = "OCR";
         command =
           "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/ai-ocr.py'";
-        binding = "<Super>o";
+        binding = "<Alt>o";
       };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" =
       {
         name = "Grammar correct current clipboard";
         command =
           "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/correct.py'";
-        binding = "<Super>g";
+        binding = "<Alt>g";
       };
 
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" =
@@ -68,6 +133,7 @@ in {
         binding = "<Alt>t";
       };
 
+    #FIXME: not working
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" =
       {
         binding = "<Alt>Return";
@@ -82,11 +148,11 @@ in {
       con-split-horizontal = [ "<Alt>z" ];
       con-split-layout-toggle = [ "<Alt>g" ];
       con-split-vertical = [ "<Alt>v" ];
-      # con-stacked-layout-toggle = ["<Shift><Alt>s"];
-      # con-tabbed-layout-toggle = ["<Shift><Alt>t"];
+      con-stacked-layout-toggle = [ "" ];
+      con-tabbed-layout-toggle = [ "" ];
       con-tabbed-showtab-decoration-toggle = [ "<Control><Alt>y" ];
-      # focus-border-toggle = ["<Alt>x"]; always on is better
-      prefs-tiling-toggle = [ "<Alt>w" ];
+      focus-border-toggle = [ "" ]; # always on is better
+      prefs-tiling-toggle = [ "" ];
       window-focus-down = [ "<Alt>j" ];
       window-focus-left = [ "<Alt>h" ];
       window-focus-right = [ "<Alt>l" ];
@@ -119,7 +185,7 @@ in {
       # window-toggle-float = ["<Alt>c"];
       window-toggle-always-float = [ "" ];
       window-toggle-float = [ "" ];
-      workspace-active-tile-toggle = [ "<Shift><Alt>w" ];
+      workspace-active-tile-toggle = [ "" ];
     };
   };
 }
