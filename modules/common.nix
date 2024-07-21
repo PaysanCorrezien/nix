@@ -6,6 +6,7 @@ let settings = config.settings;
 in {
   imports = [
     inputs.home-manager.nixosModules.default
+    # FIXME: this require to use --impure
     /etc/nixos/hardware-configuration.nix
     ./keyboard.nix
   ];
@@ -16,35 +17,32 @@ in {
 
   time.timeZone = "Europe/Paris";
 
-  i18n.defaultLocale = "fr_FR.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
+  i18n = {
+    defaultLocale = settings.locale;
+    extraLocaleSettings = {
+      LC_ADDRESS = settings.locale;
+      LC_IDENTIFICATION = settings.locale;
+      LC_MEASUREMENT = settings.locale;
+      LC_MONETARY = settings.locale;
+      LC_NAME = settings.locale;
+      LC_NUMERIC = settings.locale;
+      LC_PAPER = settings.locale;
+      LC_TELEPHONE = settings.locale;
+      LC_TIME = settings.locale;
+    };
   };
 
   # Configure console keymap
-  #TODO: console alt depending on keyboard udev rules ?
-  console.keyMap = "fr";
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  services.openssh.enable = true;
-
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
-    extraGroups = [ "i2c" "networkmanager" "wheel" "libvirtd" "kvm" ];
-    # libvirtd et kvm oour virtualisation.nix ( a deplacer)
+    extraGroups = [ "i2c" "networkmanager" "wheel" ];
   };
+
   #cant be in HM fix this
   users.users.dylan.shell = pkgs.zsh;
   programs.zsh.enable = true;
@@ -55,16 +53,11 @@ in {
   hardware.i2c.enable = true;
   boot.kernelModules = [ "i2c-dev" ];
 
-  #home manager enable
   home-manager = {
-    # also pass inputs to home-manager modules
     extraSpecialArgs = { inherit inputs settings; };
     backupFileExtension =
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };
-    # https://github.com/nix-community/home-manager/issues/1213
-    # TODO: test this
-    # xdg.configFile."mimeapps.list".force = true;
   };
 }
 

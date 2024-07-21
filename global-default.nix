@@ -5,6 +5,7 @@ let
     username = lib.mkDefault "dylan";
     ip = lib.mkDefault "192.168.0.111"; # NOTE: this is not currently used
     isServer = lib.mkDefault false;
+    locale = lib.mkDefault "fr_FR.UTF-8";
     virtualisation.enable = lib.mkDefault false;
     environment = lib.mkDefault "home";
     isExperimental = lib.mkDefault false; # NOTE: this is not currently used
@@ -32,6 +33,11 @@ in {
         type = lib.types.bool;
         default = globalDefaults.isServer;
         description = "Is it a server?";
+      };
+      locale = lib.mkOption {
+        type = lib.types.str;
+        default = globalDefaults.locale;
+        description = "Locale lang settings for the system.";
       };
       virtualisation.enable = lib.mkOption {
         type = lib.types.bool;
@@ -86,6 +92,7 @@ in {
     username = globalDefaults.username;
     ip = globalDefaults.ip;
     isServer = globalDefaults.isServer;
+    locale = globalDefaults.locale;
     virtualisation.enable = globalDefaults.virtualisation.enable;
     environment = globalDefaults.environment;
     isExperimental = globalDefaults.isExperimental;
