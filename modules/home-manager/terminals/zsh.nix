@@ -7,7 +7,6 @@ let
 
         # Source Zsh plugins
         source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
-        source ${pkgs.zsh-forgit}/share/zsh/zsh-forgit/forgit.plugin.zsh
 
         # Source fzf bindings from nix package
         source ${pkgs.fzf}/share/fzf/key-bindings.zsh
@@ -33,6 +32,10 @@ let
         HISTSIZE=100000
         SAVEHIST=20000
         setopt hist_expire_dups_first hist_ignore_dups hist_ignore_space hist_verify inc_append_history SHARE_HISTORY
+
+        # make case insentive completion + filename
+        zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]}'
+        setopt NO_CASE_GLOB
 
         # Load completion system
         autoload -Uz compinit
