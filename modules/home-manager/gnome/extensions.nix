@@ -30,86 +30,110 @@ in {
   xdg.configFile."gtk-4.0/gtk-dark.css".source =
     "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
 
-  home.file = {
-    "test.txt".text = ''
-      [Settings]
-      gtk-application-prefer-dark-theme=1
-    '';
-  };
+  # home.file = {
+  #   "test.txt".text = ''
+  #     [Settings]
+  #     gtk-application-prefer-dark-theme=1
+  #   '';
+  # };
 
+  # Include GNOME Extensions, GNOME Tweaks, Cursors and Icons in Home Packages
+  home.packages = with pkgs; [
+    gnomeExtensions.auto-move-windows
+    gnomeExtensions.clipboard-indicator
+    gnomeExtensions.gsconnect
+    gnomeExtensions.search-light
+    gnomeExtensions.caffeine
+    gnomeExtensions.space-bar
+    gnomeExtensions.vitals
+    gnomeExtensions.workspace-switcher-manager
+    gnomeExtensions.appindicator
+    gnomeExtensions.forge
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.clipqr
+    gnomeExtensions.color-picker
+    gnome-tweaks
+    gucharmap
+    catppuccin-cursors.macchiatoPink
+    catppuccin-cursors.macchiatoLavender
+    catppuccin-cursors.macchiatoMauve
+    # papirus-icon-theme
+    # papirus-folders
+    # catppuccin-papirus-folders
+  ];
   # Configure GNOME Shell, GNOME Extensions and set the Cursor and Icons using GSettings
   dconf.settings = {
 
-    "org/gnome/shell/weather" = {
-      locations = mkArray [
-        (mkVariant (mkTuple [
-          (mkUint32 2)
-          (mkVariant (mkTuple [
-            "Limoges"
-            "LFBL"
-            false
-            (mkArray [ (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ]) ])
-            (mkArray [
-              (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ])
-            ]) # cant use mkemptyarray here ???
-          ]))
-        ]))
-      ];
-    };
-    "org/gnome/shell/world-clocks" = {
-      locations = [
-        (mkVariant (mkTuple [
-          (mkUint32 2)
-          (mkVariant (mkTuple [
-            "Toronto"
-            "CYTZ"
-            true
-            [ (mkTuple [ (0.761545324469095) (-1.3857914260834978) ]) ]
-            [ (mkTuple [ (0.7621271125219548) (-1.3860823201099277) ]) ]
-          ]))
-        ]))
-        (mkVariant (mkTuple [
-          (mkUint32 2)
-          (mkVariant (mkTuple [
-            "London"
-            "EGWU"
-            true
-            [ (mkTuple [ (0.8997172294030767) (-7.272211034407213e-3) ]) ]
-            [ (mkTuple [ (0.8988445647770796) (-2.0362232784242244e-3) ]) ]
-          ]))
-        ]))
-        (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
-          (lib.gvariant.mkUint32 2)
-          (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
-            "San Francisco"
-            "KOAK"
-            true
-            [
-              (lib.gvariant.mkTuple [
-                (0.6583284898216201)
-                (-2.133408063190589)
-              ])
-            ]
-            [
-              (lib.gvariant.mkTuple [
-                (0.659296885757089)
-                (-2.136621860115334)
-              ])
-            ]
-          ]))
-        ]))
-        (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
-          (lib.gvariant.mkUint32 2)
-          (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
-            "Tokyo"
-            "RJTI"
-            true
-            [ (lib.gvariant.mkTuple [ 0.6219189843095486 2.44084295891407 ]) ]
-            [ (lib.gvariant.mkTuple [ 0.6228207435741766 2.4391218722853854 ]) ]
-          ]))
-        ]))
-      ];
-    };
+    # "org/gnome/shell/weather" = {
+    #   locations = mkArray [
+    #     (mkVariant (mkTuple [
+    #       (mkUint32 2)
+    #       (mkVariant (mkTuple [
+    #         "Limoges"
+    #         "LFBL"
+    #         false
+    #         (mkArray [ (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ]) ])
+    #         (mkArray [
+    #           (mkTuple [ 0.8005243560658301 2.065305699750206e-2 ])
+    #         ]) # cant use mkemptyarray here ???
+    #       ]))
+    #     ]))
+    #   ];
+    # };
+    # "org/gnome/shell/world-clocks" = {
+    #   locations = [
+    #     (mkVariant (mkTuple [
+    #       (mkUint32 2)
+    #       (mkVariant (mkTuple [
+    #         "Toronto"
+    #         "CYTZ"
+    #         true
+    #         [ (mkTuple [ (0.761545324469095) (-1.3857914260834978) ]) ]
+    #         [ (mkTuple [ (0.7621271125219548) (-1.3860823201099277) ]) ]
+    #       ]))
+    #     ]))
+    #     (mkVariant (mkTuple [
+    #       (mkUint32 2)
+    #       (mkVariant (mkTuple [
+    #         "London"
+    #         "EGWU"
+    #         true
+    #         [ (mkTuple [ (0.8997172294030767) (-7.272211034407213e-3) ]) ]
+    #         [ (mkTuple [ (0.8988445647770796) (-2.0362232784242244e-3) ]) ]
+    #       ]))
+    #     ]))
+    #     (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+    #       (lib.gvariant.mkUint32 2)
+    #       (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+    #         "San Francisco"
+    #         "KOAK"
+    #         true
+    #         [
+    #           (lib.gvariant.mkTuple [
+    #             (0.6583284898216201)
+    #             (-2.133408063190589)
+    #           ])
+    #         ]
+    #         [
+    #           (lib.gvariant.mkTuple [
+    #             (0.659296885757089)
+    #             (-2.136621860115334)
+    #           ])
+    #         ]
+    #       ]))
+    #     ]))
+    #     (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+    #       (lib.gvariant.mkUint32 2)
+    #       (lib.gvariant.mkVariant (lib.gvariant.mkTuple [
+    #         "Tokyo"
+    #         "RJTI"
+    #         true
+    #         [ (lib.gvariant.mkTuple [ 0.6219189843095486 2.44084295891407 ]) ]
+    #         [ (lib.gvariant.mkTuple [ 0.6228207435741766 2.4391218722853854 ]) ]
+    #       ]))
+    #     ]))
+    #   ];
+    # };
 
     "org/gnome/shell" = {
 
@@ -117,7 +141,7 @@ in {
       favorite-apps = [
         # "firefox.desktop"
         # # # "code.desktop"
-        # "wezterm.desktop"
+        # "wezterm.desktopvv
         # #  # "spotify.desktop"
         # #  # NOTE: this "virt-manager.desktop"
         # "org.gnome.Nautilus.desktop"
