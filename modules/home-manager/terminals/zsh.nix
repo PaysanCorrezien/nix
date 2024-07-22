@@ -88,6 +88,24 @@ in {
         update = "sudo nixos-rebuild switch";
         sw = "~/.config/nix/scripts/rebuild.sh";
         switchkb = "switch-keyboard-layout";
+        # NOTE: This alias is used to find the nix package of a binary, and open the path in the file manager
+        np = ''
+                   function _findpkg() { 
+            if [ -z "$1" ]; then 
+              echo "Usage: findnixpkg <binary_name>"
+              return 1
+            fi
+            
+            binary_path=$(which "$1")
+            if [ -z "$binary_path" ]; then 
+              echo "Binary $1 not found"
+              return 1
+            fi
+            
+            nix_store_path=$(readlink -f "$binary_path")
+            yazi $(dirname "$nix_store_path")
+          }; _findpkg'';
+
       };
     };
   };
