@@ -1,18 +1,25 @@
 { config, lib, pkgs, ... }:
-
 let
+  owner = "PaysanCorrezien";
+  repo = "keybswitch";
+
+  # Fetch the latest commit information
+  latestCommit = builtins.fetchTree {
+    type = "github";
+    inherit owner repo;
+    ref = "master";
+  };
+
   keybswitch = pkgs.rustPlatform.buildRustPackage rec {
     pname = "keybswitch";
-    version = "unstable-2024-07-08";
-
+    version = "unstable-${builtins.substring 0 8 latestCommit.rev}";
     src = pkgs.fetchFromGitHub {
-      owner = "PaysanCorrezien";
-      repo = pname;
-      rev = "c35b144b4f62f1ed8d161aa880c9d7bba58f7288";
-      sha256 = "bdAsASlqgwErbxaITOfscaPBQfyykWDqDe6rjr0rX58=";
+      inherit owner repo;
+      rev = latestCommit.rev;
+      hash = latestCommit.narHash;
     };
 
-    cargoSha256 = "jaTMT9GkWyPXFb2Seuk6bD1uPgW8jHeAgEnQUnM9/Mk=";
+    cargoLock = { lockFile = "${src}/Cargo.lock"; };
 
     nativeBuildInputs = [
       pkgs.pkg-config
@@ -27,14 +34,12 @@ let
 
     meta = {
       description = "USB Keyboard Detection and Layout Switch";
-      homepage = "https://github.com/PaysanCorrezien/keybswitch";
+      homepage = "https://github.com/${owner}/${repo}";
       license = lib.licenses.mit;
-      # maintainers = with lib.maintainers; [ ];
     };
   };
 in {
   home.packages = [ keybswitch ];
-
   home.file.".config/autostart/keybswitch.desktop".text =
     lib.mkIf pkgs.stdenv.isLinux ''
       [Desktop Entry]
