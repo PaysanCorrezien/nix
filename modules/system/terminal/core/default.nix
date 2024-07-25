@@ -13,6 +13,7 @@
     yazi
     lsd
     unzip
+    bc # for math calculations on shell
     zip
     # zsh-forgit
     # bat

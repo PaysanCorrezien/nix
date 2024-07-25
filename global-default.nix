@@ -9,12 +9,13 @@ let
     virtualisation.enable = lib.mkDefault false;
     environment = lib.mkDefault "home";
     isExperimental = lib.mkDefault false; # NOTE: this is not currently used
-    social.enable = lib.mkDefault true; # NOTE: install social apps like discord
     work = lib.mkDefault true; # NOTE: install work apps
     gaming = lib.mkDefault true;
     tailscale.enable = lib.mkDefault false; # Enable Tailscale by default
     windowManager = lib.mkDefault "gnome"; # Default window manager
     displayServer = lib.mkDefault "xorg"; # Default display server
+    ai.enable = lib.mkDefault false; # Enable AI tools
+    social.enable = lib.mkDefault true; # NOTE: install social apps like discord
   };
 in {
   options = {
@@ -85,6 +86,11 @@ in {
         default = globalDefaults.displayServer;
         description = "Choose display server (wayland, xorg).";
       };
+      ai.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.ai.enable;
+        description = "Enable AI tools.";
+      };
     };
   };
 
@@ -102,6 +108,7 @@ in {
     tailscale.enable = globalDefaults.tailscale.enable;
     windowManager = globalDefaults.windowManager;
     displayServer = globalDefaults.displayServer;
+    ai.enable = globalDefaults.ai.enable;
   };
 }
 
