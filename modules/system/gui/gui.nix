@@ -14,6 +14,8 @@ in {
     ./extra/virtualisation.nix
     ./extra/glance.nix
     ./extra/gnome.nix
+    ./extra/ollama.nix
+    ./extra/clovis.nix
     # ../home-manager/gnome/keybinds.nix
   ];
 

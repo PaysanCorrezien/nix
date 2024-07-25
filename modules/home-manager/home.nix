@@ -31,6 +31,7 @@ in {
     ./programs/keepassxc.nix
     ./programs/keybswitch.nix
     ./programs/wezterm.nix
+    ./programs/virtualisation.nix
 
   ];
   # Home Manager needs a bit of information about you and the paths it should
