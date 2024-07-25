@@ -53,6 +53,7 @@ let
         # in precmd.
         #
         # called before a history line is saved.  See zshmisc(1).
+        # NOTE: the command stay in local shell history for editing 
         function zshaddhistory() {
           # Remove line continuations since otherwise a "\" will eventually
           # get written to history with no newline.
@@ -85,6 +86,7 @@ in {
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
+      historySubstringSearch.enable = true;
       initExtra = lib.readFile customZshInit;
       shellAliases = {
         ll = "ls -l";
