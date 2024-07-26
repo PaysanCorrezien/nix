@@ -1,8 +1,11 @@
 # system-virtualization.nix
 { config, pkgs, lib, ... }:
+let
+  cfg = config.settings.virtualisation.enable;
 
-{
-  config = {
+  # TODO: make it so it genrates the config file for the VMs
+in {
+  config = lib.mkIf cfg {
     # Enable QEMU/KVM virtualization
     virtualisation.libvirtd = {
       enable = true;

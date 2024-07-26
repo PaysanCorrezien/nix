@@ -25,6 +25,7 @@
         "discord.desktop:6"
         "org.keepassxc.KeePassXC.desktop:7"
         "linphone.desktop:8"
+        "microsoft-edge.desktop:8"
         "org.gnome.Geary.desktop:9"
         "thunderbird.desktop:9"
         "org.gnome.Calendar.desktop:9"

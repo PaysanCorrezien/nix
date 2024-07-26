@@ -9,6 +9,7 @@ in {
       cmus
       mpv
       musikcube
+      ncmpcpp # TODO: enable server and add conf for keyma
     ];
   };
 }

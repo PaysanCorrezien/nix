@@ -1,13 +1,17 @@
 # home-virtualization.nix
-{ config, pkgs, lib, ... }:
+{ config, settings, pkgs, lib, ... }:
+let cfg = settings.virtualisation.enable;
 
-{
+in {
   # Enable virt-manager
-  dconf.settings = {
-    "org/virt-manager/virt-manager" = { system-tray = true; };
-    "org/virt-manager/virt-manager/connections" = {
-      autoconnect = [ "qemu:///system" ];
-      uris = [ "qemu:///system" ];
+
+  config = lib.mkIf cfg {
+    dconf.settings = {
+      "org/virt-manager/virt-manager" = { system-tray = true; };
+      "org/virt-manager/virt-manager/connections" = {
+        autoconnect = [ "qemu:///system" ];
+        uris = [ "qemu:///system" ];
+      };
     };
   };
 }
