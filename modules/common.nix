@@ -7,8 +7,11 @@ in {
   imports = [
     inputs.home-manager.nixosModules.default
     # FIXME: this require to use --impure
-    /etc/nixos/hardware-configuration.nix
+    # /etc/nixos/hardware-configuration.nix
     ./keyboard.nix
+    # Conditionally import hardware-configuration.nix if it exists
+    (lib.mkIf (builtins.pathExists /etc/nixos/hardware-configuration.nix)
+      /etc/nixos/hardware-configuration.nix)
   ];
 
   system.stateVersion = "24.05";
