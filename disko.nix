@@ -37,15 +37,14 @@ in {
               };
             };
             root = {
-              name = "root";
-              start = "512MiB";
+              start = "513MiB";
               end = "100%";
+              type = "8300";
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
-                # Remove the label setting or use a shorter label
-                extraArgs = [ "-L" "nixos" ]; # Shorter label
+                extraArgs = [ "-L" "nixos" ];
               };
             };
           };
