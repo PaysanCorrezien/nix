@@ -45,6 +45,11 @@
             ./disko.nix
             ./hosts/lenovo.nix
             disko.nixosModules.disko
+            ({ config, pkgs, lib, ... }: {
+              imports = lib.optional
+                (builtins.pathExists /etc/nixos/hardware-configuration.nix)
+                /etc/nixos/hardware-configuration.nix;
+            })
           ];
         };
 

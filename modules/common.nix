@@ -10,8 +10,6 @@ in {
     # /etc/nixos/hardware-configuration.nix
     ./keyboard.nix
     # Conditionally import hardware-configuration.nix if it exists
-    (lib.mkIf (builtins.pathExists /etc/nixos/hardware-configuration.nix)
-      /etc/nixos/hardware-configuration.nix)
   ];
 
   system.stateVersion = "24.05";
