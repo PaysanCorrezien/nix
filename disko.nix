@@ -8,12 +8,10 @@ let
       50
     else
       0;
-
   # Find all available drives
   availableDrives =
     builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0")
     (builtins.attrNames (builtins.readDir /dev));
-
   # Find the best drive
   bestDrive = "/dev/" + lib.head (lib.sort (a: b: scoreDrive a > scoreDrive b)
     (builtins.filter (d: lib.hasPrefix "nvme" d || lib.hasPrefix "sd" d)
@@ -46,6 +44,8 @@ in {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
+                # Remove the label setting or use a shorter label
+                extraArgs = [ "-L" "nixos" ]; # Shorter label
               };
             };
           };
