@@ -30,7 +30,8 @@
   # TODO : move computer conf on /machine/ subfolder
   # TEST: serv conf
   outputs = { disko, self, nixpkgs, home-manager, sops-nix, ... }@inputs:
-    let
+    # TODO: make this a varaible too
+    let system = "x86_64-linux";
     in {
       nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
@@ -46,6 +47,7 @@
             ./hosts/lenovo.nix
             disko.nixosModules.disko
             ({ config, pkgs, lib, ... }: {
+              nixpkgs.hostPlatform = system;
               imports = lib.optional
                 (builtins.pathExists /etc/nixos/hardware-configuration.nix)
                 /etc/nixos/hardware-configuration.nix;
