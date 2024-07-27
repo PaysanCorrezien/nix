@@ -15,7 +15,9 @@ in {
     ./extra/glance.nix
     ./extra/gnome.nix
     ./extra/ollama.nix
-    ./extra/clovis.nix
+    #FIXME: create separate flakes input, fetchtree breack reinstall
+    # ./extra/clovis.nix
+    #
     # ../home-manager/gnome/keybinds.nix
   ];
 

@@ -29,7 +29,7 @@ in {
     ./gnome/settings.nix
     ./programs/nvim.nix
     ./programs/keepassxc.nix
-    ./programs/keybswitch.nix
+    # ./programs/keybswitch.nix
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
 
