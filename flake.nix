@@ -43,20 +43,10 @@
               imports = lib.optional
                 (builtins.pathExists /etc/nixos/hardware-configuration.nix)
                 /etc/nixos/hardware-configuration.nix;
+              disko.devices = import ./disko.nix { inherit lib; };
             })
           ];
         };
-      };
-
-      diskoConfigurations.default = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          disko.nixosModules.disko
-          {
-            nixpkgs.hostPlatform = system;
-            disko.devices = import ./disko.nix { inherit (nixpkgs) lib; };
-          }
-        ];
       };
     };
 }
