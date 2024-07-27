@@ -1,5 +1,5 @@
 # modules/common.nix
-{ inputs, config, pkgs, ... }:
+{ inputs, config, pkgs, lib, ... }:
 #NOTE: home manager cant inherit config it fail with darwin error
 let settings = config.settings;
 
