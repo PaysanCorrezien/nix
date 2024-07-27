@@ -17,6 +17,38 @@ let
     (builtins.filter (d: lib.hasPrefix "nvme" d || lib.hasPrefix "sd" d)
       availableDrives));
 in {
+  # {
+  #   disko.devices = {
+  #     disk = {
+  #       my-disk = {
+  #         device = "/dev/sda";
+  #         type = "disk";
+  #         content = {
+  #           type = "gpt";
+  #           partitions = {
+  #             ESP = {
+  #               type = "EF00";
+  #               size = "500M";
+  #               content = {
+  #                 type = "filesystem";
+  #                 format = "vfat";
+  #                 mountpoint = "/boot";
+  #               };
+  #             };
+  #             root = {
+  #               size = "100%";
+  #               content = {
+  #                 type = "filesystem";
+  #                 format = "ext4";
+  #                 mountpoint = "/";
+  #               };
+  #             };
+  #           };
+  #         };
+  #       };
+  #     };
+  #   };
+  # }
   disko.devices = {
     disk = {
       main = {
@@ -27,8 +59,9 @@ in {
           partitions = {
             ESP = {
               name = "ESP";
-              start = "1MiB";
-              end = "512MiB";
+              sixe = "500M";
+              # start = "1MiB";
+              # end = "512MiB";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -37,14 +70,15 @@ in {
               };
             };
             root = {
-              start = "513MiB";
-              end = "100%";
-              type = "8300";
+              # start = "513MiB";
+              # end = "100%";
+              size = "100%";
+              # type = "8300";
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
-                extraArgs = [ "-L" "nixos" ];
+                # extraArgs = [ "-L" "nixos" ];
               };
             };
           };
