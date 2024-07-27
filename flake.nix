@@ -31,8 +31,6 @@
   # TEST: serv conf
   outputs = { disko, self, nixpkgs, home-manager, sops-nix, ... }@inputs:
     let
-      # Global settings and configurations
-      # Create a default instance of globalDefaults
     in {
       nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
@@ -46,7 +44,7 @@
             ./global-default.nix
             ./disko.nix
             ./hosts/lenovo.nix
-            disko.nixosConfigurations.disko
+            disko.nixosModules.disko
           ];
         };
 

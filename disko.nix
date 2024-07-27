@@ -1,19 +1,34 @@
-{ config, lib, ... }:
+{ lib, ... }:
 let
-  defaultDisk = lib.findFirst (disk: disk.type == "disk")
-    (throw "No disk type device found!")
-    (builtins.attrValues config.deviceTree.children);
+  # Function to score drives, preferring NVMe
+  scoreDrive = drive:
+    if lib.hasPrefix "nvme" drive then
+      100
+    else if lib.hasPrefix "sd" drive then
+      50
+    else
+      0;
+
+  # Find all available drives
+  availableDrives =
+    builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0")
+    (builtins.attrNames (builtins.readDir /dev));
+
+  # Find the best drive
+  bestDrive = "/dev/" + lib.head (lib.sort (a: b: scoreDrive a > scoreDrive b)
+    (builtins.filter (d: lib.hasPrefix "nvme" d || lib.hasPrefix "sd" d)
+      availableDrives));
 in {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = lib.mkDefault defaultDisk.path;
+        device = bestDrive;
         content = {
           type = "gpt";
           partitions = {
             ESP = {
-              name = "boot";
+              name = "ESP";
               start = "1MiB";
               end = "512MiB";
               type = "EF00";
