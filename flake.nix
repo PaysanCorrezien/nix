@@ -55,50 +55,59 @@
           ];
         };
         # Add this new output for disko
-        diskoConfigurations.default = {
-          disko.devices = import ./disko.nix { inherit (nixpkgs) lib; };
-        };
-
-        # # NOTE: placeholder work wsl need to be done quick
-        #         WSL = nixpkgs.lib.nixosSystem {
-        #         specialArgs = { inherit inputs nixpkgs globalDefaults; };
-        #         modules = let
-        #           pkgs = import nixpkgs {
-        #             system = globalDefaults.system;
-        #           };
-        #         in [
-        #           ./hosts/WSL.nix
-        #           ./modules/common.nix
-        #           ./dynamic-grub.nix
-        #           inputs.home-manager.nixosModules.home-manager
-        #           {
-        #             home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
-        #           }
-        #         ];
-        #       };
-        #
-        # # NOTE: placeholder for any no x86_64-linux based system 
-        #       raspberryPi = nixpkgs.lib.nixosSystem {
-        #         specialArgs = { inherit inputs nixpkgs globalDefaults; };
-        #         modules = let
-        #           pkgs = import nixpkgs {
-        #             system = "aarch64-linux";
-        #           };
-        #         in [
-        #           # Add Raspberry Pi specific modules here if needed
-        #         ];
-        #       };
+        diskoConfigurations.default = let
+          evalNixos = nixpkgs.lib.nixosSystem {
+            inherit system;
+            modules = [
+              disko.nixosModules.disko
+              {
+                nixpkgs.hostPlatform = system;
+                disko.devices = import ./disko.nix { inherit (nixpkgs) lib; };
+              }
+            ];
+          };
+        in evalNixos.config.system.build.diskoScript;
       };
 
-      # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
-      #   specialArgs = { inherit inputs; };
-      #   modules = [
-      #     ./homeserver.nix
-      #     ./dynamic-grub.nix  # Include the dynamic GRUB module
-      #     inputs.home-manager.nixosModules.home-manager
-      #   ];
-      # };
-
+      # # NOTE: placeholder work wsl need to be done quick
+      #         WSL = nixpkgs.lib.nixosSystem {
+      #         specialArgs = { inherit inputs nixpkgs globalDefaults; };
+      #         modules = let
+      #           pkgs = import nixpkgs {
+      #             system = globalDefaults.system;
+      #           };
+      #         in [
+      #           ./hosts/WSL.nix
+      #           ./modules/common.nix
+      #           ./dynamic-grub.nix
+      #           inputs.home-manager.nixosModules.home-manager
+      #           {
+      #             home-manager.users.dylan = import ./modules/home-manager/home.nix { inherit pkgs inputs; };
+      #           }
+      #         ];
+      #       };
+      #
+      # # NOTE: placeholder for any no x86_64-linux based system 
+      #       raspberryPi = nixpkgs.lib.nixosSystem {
+      #         specialArgs = { inherit inputs nixpkgs globalDefaults; };
+      #         modules = let
+      #           pkgs = import nixpkgs {
+      #             system = "aarch64-linux";
+      #           };
+      #         in [
+      #           # Add Raspberry Pi specific modules here if needed
+      #         ];
+      #       };
     };
+
+  # nixosConfigurations.homeserver = nixpkgs.lib.nixosSystem {
+  #   specialArgs = { inherit inputs; };
+  #   modules = [
+  #     ./homeserver.nix
+  #     ./dynamic-grub.nix  # Include the dynamic GRUB module
+  #     inputs.home-manager.nixosModules.home-manager
+  #   ];
+  # };
+
 }
 
