@@ -15,6 +15,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # TODO:
     # stylix = {
@@ -25,7 +29,7 @@
 
   # TODO : move computer conf on /machine/ subfolder
   # TEST: serv conf
-  outputs = { self, nixpkgs, home-manager, sops-nix, ... }@inputs:
+  outputs = { disko, self, nixpkgs, home-manager, sops-nix, ... }@inputs:
     let
       # Global settings and configurations
       # Create a default instance of globalDefaults
@@ -38,7 +42,12 @@
               system = "x86_64-linux";
               config.allowUnfree = true;
             };
-          in [ ./global-default.nix ./hosts/lenovo.nix ];
+          in [
+            ./global-default.nix
+            ./disko.nix
+            ./hosts/lenovo.nix
+            disko.nixosConfigurations.disko
+          ];
         };
 
         # # NOTE: placeholder work wsl need to be done quick
