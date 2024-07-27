@@ -30,14 +30,14 @@
   # TODO : move computer conf on /machine/ subfolder
   # TEST: serv conf
   outputs = { disko, self, nixpkgs, home-manager, sops-nix, ... }@inputs:
-    let system = "x86_64-linux";
+    let
     in {
       nixosConfigurations = {
         lenovo = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs nixpkgs; };
           modules = let
             pkgs = import nixpkgs {
-              inherit system;
+              system = "x86_64-linux";
               config.allowUnfree = true;
             };
           in [
@@ -52,15 +52,9 @@
             })
           ];
         };
-        nixosConfigurations.install = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            disko.nixosModules.disko
-            ./disko-config.nix
-            ({ modulesPath, ... }: {
-              imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-            })
-          ];
+        # Add this new output for disko
+        diskoConfigurations.default = {
+          disko.devices = import ./disko.nix { inherit (nixpkgs) lib; };
         };
 
         # # NOTE: placeholder work wsl need to be done quick
