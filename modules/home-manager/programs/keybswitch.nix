@@ -1,53 +1,97 @@
-{ config, lib, pkgs, ... }:
+{
+  description = "Keybswitch flake with auto-imported NixOS module";
 
-let
-  owner = "PaysanCorrezien";
-  repo = "keybswitch";
-
-  # Fetch the latest commit information
-  latestCommit = builtins.fetchTree {
-    type = "github";
-    inherit owner repo;
-    ref = "master";
-  };
-
-  keybswitch = pkgs.rustPlatform.buildRustPackage rec {
-    pname = "keybswitch";
-    version = "unstable-${builtins.substring 0 8 latestCommit.rev}";
-    src = pkgs.fetchFromGitHub {
-      inherit owner repo;
-      rev = latestCommit.rev;
-      hash = latestCommit.narHash;
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
-
-    cargoLock = { lockFile = "${src}/Cargo.lock"; };
-
-    nativeBuildInputs = [
-      pkgs.pkg-config
-      pkgs.systemd # systemd provides libudev
-      pkgs.openssl
-      pkgs.libffi
-    ];
-
-    # Explicitly set PKG_CONFIG_PATH
-    PKG_CONFIG_PATH =
-      "${pkgs.systemd.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:${pkgs.libffi.dev}/lib/pkgconfig";
-
-    meta = {
-      description = "USB Keyboard Detection and Layout Switch";
-      homepage = "https://github.com/${owner}/${repo}";
-      license = lib.licenses.mit;
+    keybswitch-src = {
+      url = "github:PaysanCorrezien/keybswitch";
+      flake = false;
     };
   };
-in {
-  home.packages = [ keybswitch ];
-  home.file.".config/autostart/keybswitch.desktop".text =
-    lib.mkIf pkgs.stdenv.isLinux ''
-      [Desktop Entry]
-      Type=Application
-      Exec=${keybswitch}/bin/keybswitch > /home/${config.home.username}/keybswitch.log 2>&1
-      X-GNOME-Autostart-enabled=true
-      Name=Keybswitch
-      Comment=USB Keyboard Detection and Layout Switch
-    '';
+
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, keybswitch-src, ... }:
+    let
+      overlays = [
+        rust-overlay.overlays.default
+        (final: prev: {
+          rustToolchain = final.rust-bin.stable.latest.default.override {
+            extensions = [ "rust-src" ];
+          };
+        })
+      ];
+    in flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system overlays; };
+
+        keybswitch = pkgs.rustPlatform.buildRustPackage {
+          pname = "keybswitch";
+          version = "unstable-${builtins.substring 0 8 keybswitch-src.rev}";
+          src = keybswitch-src;
+
+          cargoLock = {
+            lockFile = "${keybswitch-src}/Cargo.lock";
+            outputHashes = { };
+          };
+
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [ pkgs.systemd pkgs.openssl pkgs.libffi ];
+
+          meta = {
+            description = "USB Keyboard Detection and Layout Switch";
+            homepage = "https://github.com/PaysanCorrezien/keybswitch";
+            license = pkgs.lib.licenses.mit;
+          };
+        };
+
+      in {
+        packages.default = keybswitch;
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            rustToolchain
+            pkg-config
+            systemd
+            openssl
+            libffi
+          ];
+        };
+
+        formatter = pkgs.nixpkgs-fmt;
+      }) // {
+        overlays.default = final: prev: {
+          keybswitch = self.packages.${final.system}.default;
+        };
+
+        nixosModules.keybswitch = { config, lib, pkgs, ... }:
+          let cfg = config.services.keybswitch;
+          in {
+            options.services.keybswitch = {
+              enable = lib.mkEnableOption "Keybswitch service";
+            };
+
+            config = lib.mkIf cfg.enable {
+              environment.systemPackages =
+                [ self.packages.${pkgs.system}.default ];
+
+              systemd.user.services.keybswitch = {
+                description =
+                  "Keybswitch - USB Keyboard Detection and Layout Switch";
+                wantedBy = [ "default.target" ];
+                serviceConfig = {
+                  ExecStart =
+                    "${self.packages.${pkgs.system}.default}/bin/keybswitch";
+                  Restart = "always";
+                };
+              };
+            };
+          };
+      };
 }

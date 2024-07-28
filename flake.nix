@@ -14,10 +14,12 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    disko = {
-      url = "github:nix-community/disko";
+    disko = { url = "github:nix-community/disko"; };
+    keybswitch = {
+      keybswitch.url = "path:./modules/home-manager/programs/keybswitch.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
   };
 
   outputs = { self, nixpkgs, home-manager, sops-nix, disko, ... }@inputs:
