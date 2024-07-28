@@ -70,10 +70,11 @@ in {
     poppler_utils # for neovim pdf preview
   ];
   # Clone the repository using builtins.fetchGit and expose it in the user's home directory
-  home.file."repo/nvim-treesitter-powershell".source = builtins.fetchGit {
-    url = "https://github.com/PaysanCorrezien/nvim-treesitter-powershell";
-    # rev = "master";  # You can specify a specific commit hash here if necessary
-  };
+  # FIXME: put this in flake too so it doesnt block
+  # home.file."repo/nvim-treesitter-powershell".source = builtins.fetchGit {
+  #   url = "https://github.com/PaysanCorrezien/nvim-treesitter-powershell";
+  #   # rev = "master";  # You can specify a specific commit hash here if necessary
+  # };
   # Ensure the French spell files are downloaded
   home.file."${config.home.homeDirectory}/.config/nvim/spell/fr.utf-8.spl".source =
     nvim-spell-fr-utf8-dictionary;
