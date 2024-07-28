@@ -43,7 +43,7 @@
               imports = lib.optional
                 (builtins.pathExists /etc/nixos/hardware-configuration.nix)
                 /etc/nixos/hardware-configuration.nix;
-              disko.devices = import ./disko.nix { inherit lib; };
+              # disko.devices = import ./disko.nix { inherit lib; };
             })
           ];
         };
