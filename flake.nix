@@ -16,8 +16,8 @@
     };
     disko = { url = "github:nix-community/disko"; };
     keybswitch = {
-      keybswitch.url = "path:./modules/home-manager/programs/keybswitch.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "path:./modules/home-manager/programs/keybswitch.nix";
+      flake = false;
     };
 
   };
