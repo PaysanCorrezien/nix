@@ -34,6 +34,13 @@ in {
     ./programs/virtualisation.nix
 
   ];
+  home.programs.chezmoi = {
+    enable = true;
+    repoUrl =
+      "https://github.com/PaysanCorrezien/dotfiles"; # Replace with your actual repo URL
+    autoApply = true; # Set to false if you want to apply changes manually
+  };
+
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "dylan";
