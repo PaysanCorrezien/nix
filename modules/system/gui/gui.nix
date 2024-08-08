@@ -40,6 +40,7 @@ in {
         package = pkgs.kdePackages.sddm;
         # extraPackages = with pkgs; [ catppucin-sddm ];
         autoNumlock = true;
+        settings = { General = { displayManager = "x11"; }; };
       };
       # environment.systemPackages = [
       # ];
@@ -57,6 +58,7 @@ in {
         #jack.enable = true;
       };
       services.printing.enable = true;
+      services.usbmuxd.enable = true;
 
       environment.systemPackages = with pkgs; [
         helix
@@ -67,6 +69,8 @@ in {
         libnotify
         todoist
         flameshot
+        libimobiledevice
+        ifuse
         #flameshot need FIXME: for wayland launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
         (pkgs.catppuccin-sddm.override {
           flavor = "mocha";
@@ -85,6 +89,10 @@ in {
       # NOTE: TODOIST 
       nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
 
+      # wake from sleep ? for main computer 
+      services.udev.extraRules = ''
+        ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
+      '';
       # Enable the OpenSSH daemon.
       services.openssh.enable = true;
     })
