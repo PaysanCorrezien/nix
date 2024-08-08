@@ -38,6 +38,11 @@ in {
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # NOTE: attempt to make computer wifi card work 
+  # move this to specific host conf if work
+  hardware.enableAllFirmware = true;
+  hardware.firmware = [ pkgs.firmwareLinuxNonfree ];
+
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
