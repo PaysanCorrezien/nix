@@ -18,5 +18,9 @@ in {
   # Conditionally include packages based on the `isServer` variable
   environment.systemPackages = with pkgs;
     (if debugSettings.isServer then [ ] else [ vial qmk qmk_hid keymapviz ]);
-}
 
+  # Add udev rule for Vial device
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+  '';
+}
