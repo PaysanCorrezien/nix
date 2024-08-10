@@ -36,6 +36,9 @@
     "org/gnome/desktop/applications/browser" = { exec = "firefox"; };
     #TODO: HOME AND END SOMEHOW ?
 
+    # allow external monitor to not be monaged by gnome virtual desktop
+    "org.gnome.mutter" = { workspaces-only-on-primary = true; };
+
     "org/gnome/desktop/background" = {
       #FIXME: make use of relative path here
       picture-uri =
