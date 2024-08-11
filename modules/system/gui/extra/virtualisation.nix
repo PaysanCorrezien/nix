@@ -2,6 +2,24 @@
 { config, pkgs, lib, ... }:
 let
   cfg = config.settings.virtualisation.enable;
+  vmName = "windows-11";
+  vmPath = "/home/dylan/Documents/vm";
+
+  launchScript = pkgs.writeShellScriptBin "launch-windows-vm" ''
+    # Launch the VM
+    ${pkgs.quickemu}/bin/quickemu --vm ${vmPath}/${vmName}.conf --display spice &
+
+    # Wait for the Spicy window to appear
+    while ! window_id=$(${pkgs.wmctrl}/bin/wmctrl -l | grep -i "spicy" | awk '{print $1}'); do
+        sleep 1
+    done
+
+    # Move the window to workspace 12 (index 11 because wmctrl uses 0-based indexing)
+    ${pkgs.wmctrl}/bin/wmctrl -i -r $window_id -t 11
+
+    # Optionally, activate workspace 12
+    ${pkgs.wmctrl}/bin/wmctrl -s 11
+  '';
 
   # TODO: make it so it genrates the config file for the VMs
 in {
@@ -33,8 +51,25 @@ in {
       win-virtio
       pciutils
       looking-glass-client # For GPU passthrough
+      quickemu
+      quickgui
+      samba
+      wmctrl
+      launchScript
     ];
 
+    # Generate .desktop file for the VM
+    home-manager.users.dylan = { pkgs, ... }: {
+      home.packages = [ pkgs.qemu ];
+
+      xdg.desktopEntries.${vmName} = {
+        name = vmName;
+        exec = "${launchScript}/bin/launch-windows-vm";
+        icon = "qemu";
+        type = "Application";
+        terminal = false;
+      };
+    };
     # Enable CPU virtualization extensions (AMD-specific)
     boot.kernelModules = [ "kvm-amd" ];
     boot.extraModprobeConfig =
@@ -52,22 +87,22 @@ in {
     '';
 
     # Ensure libvirt storage pool is set up
-    systemd.services.libvirt-storage-setup = {
-      description = "LibVirt Storage Pool Setup";
-      after = [ "libvirtd.service" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-      script = ''
-        # Check if the pool already exists
-        if ! ${pkgs.libvirt}/bin/virsh pool-info default >/dev/null 2>&1; then
-          ${pkgs.libvirt}/bin/virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
-          ${pkgs.libvirt}/bin/virsh pool-autostart default
-          ${pkgs.libvirt}/bin/virsh pool-start default
-        fi
-      '';
-    };
+    # systemd.services.libvirt-storage-setup = {
+    #   description = "LibVirt Storage Pool Setup";
+    #   after = [ "libvirtd.service" ];
+    #   wantedBy = [ "multi-user.target" ];
+    #   serviceConfig = {
+    #     Type = "oneshot";
+    #     RemainAfterExit = true;
+    #   };
+    #   script = ''
+    #     # Check if the pool already exists
+    #     if ! ${pkgs.libvirt}/bin/virsh pool-info default >/dev/null 3>&1; then
+    #       ${pkgs.libvirt}/bin/virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
+    #       ${pkgs.libvirt}/bin/virsh pool-autostart default
+    #       ${pkgs.libvirt}/bin/virsh pool-start default
+    #     fi
+    #   '';
+    # };
   };
 }
