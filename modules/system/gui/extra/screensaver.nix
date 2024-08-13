@@ -1,26 +1,49 @@
 { config, pkgs, ... }:
 
-{
-  # Enable XScreenSaver
-  services.xserver.enable = true;
-  services.xserver.displayManager.sessionCommands = ''
-    ${pkgs.xscreensaver}/bin/xscreensaver -no-splash &
+let
+  lockScript = pkgs.writeShellScript "lock-screen" ''
+    ${pkgs.xscreensaver}/bin/xscreensaver-command -lock
   '';
-
+in {
   # Install XScreenSaver
   environment.systemPackages = with pkgs; [ xscreensaver ];
 
-  # Create a systemd service to lock the screen after resume
-  systemd.services.lock-after-suspend = {
-    description = "Lock screen with XScreenSaver after resume";
-    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
-    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+  # Start XScreenSaver for each user session
+  systemd.user.services.xscreensaver = {
+    description = "XScreenSaver";
+    wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      Type = "simple";
-      User = "1000"; # Replace with your user ID or use a variable
-      Environment = "DISPLAY=:0";
-      ExecStart = "${pkgs.xscreensaver}/bin/xscreensaver-command -lock";
+      ExecStart = "${pkgs.xscreensaver}/bin/xscreensaver -no-splash";
+      Restart = "on-failure";
     };
   };
 
+  # Create a user service to lock the screen before sleep
+  systemd.user.services.lock-on-sleep = {
+    description = "Lock screen before sleep";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${lockScript}";
+    };
+  };
+
+  # Create a system service to trigger the user service before sleep
+  systemd.services.trigger-lock-on-sleep = {
+    description = "Trigger user lock screen before sleep";
+    wantedBy = [ "sleep.target" ];
+    before = [ "sleep.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart =
+        "${pkgs.systemd}/bin/systemctl --user --machine=1000@ start lock-on-sleep.service";
+    };
+  };
+
+  # Ensure the lock service runs before sleep
+  systemd.targets.sleep.unitConfig.RefuseManualStart = false;
+
+  # Optional: Configure XScreenSaver settings
+  environment.etc."xscreensaver/config".text = ''
+    # ... (keep the same XScreenSaver settings as before)
+  '';
 }

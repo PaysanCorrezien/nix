@@ -60,7 +60,9 @@ in {
     # papirus-icon-theme
     # papirus-folders
     # catppuccin-papirus-folders
+    xscreensaver
   ];
+
   # Configure GNOME Shell, GNOME Extensions and set the Cursor and Icons using GSettings
   dconf.settings = {
 
