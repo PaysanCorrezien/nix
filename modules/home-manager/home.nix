@@ -28,6 +28,7 @@ in {
     ./gnome/extensions.nix
     ./gnome/settings.nix
     ./programs/nvim.nix
+    ./programs/remmina.nix
     ./programs/keepassxc.nix
     # ./programs/keybswitch.nix
     ./programs/wezterm.nix
