@@ -20,6 +20,9 @@ in {
   #NOTE: credit https://gitlab.com/engmark/root/-/merge_requests/446/diffs
   dconf.settings = {
     "org/gnome/settings-daemon/plugins/media-keys" = {
+      "screensaver" =
+        [ "" ]; # This effectively disables the default Super+L binding
+
       custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
@@ -31,6 +34,10 @@ in {
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom10/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom12/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom13/"
       ];
     };
     "org/gnome/desktop/wm/keybindings" = {
@@ -73,6 +80,30 @@ in {
       open-new-window-application-8 = [ "" ];
       open-new-window-application-9 = [ "" ];
     };
+    # "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11" =
+    #   {
+    #     name = "GNOME Display Settings";
+    #     command = "gnome-control-center display";
+    #     binding = "<Alt>s";
+    #   };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom12" =
+      {
+        name = "Windows11 VM";
+        command = "/home/dylan//.config/scripts/w11.sh";
+        binding = "<Alt>apostrophe";
+      };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11" =
+      {
+        name = "GNOME Display Settings";
+        command = "gnome-control-center display";
+        binding = "<Alt>s";
+      };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom10" =
+      {
+        name = "Suspend System";
+        command = "${pkgs.systemd}/bin/systemctl suspend";
+        binding = "<Super>l";
+      };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9" =
       {
         name = "Gnome audio control";
@@ -112,7 +143,6 @@ in {
           "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/correct.py'";
         binding = "<Alt>g";
       };
-
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" =
       {
         name = "Todoist ";

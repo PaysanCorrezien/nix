@@ -58,7 +58,7 @@
     };
 
     "org/gnome/desktop/wm/preferences" = {
-      num-workspaces = 11; # Adjusted to set the number of workspaces
+      num-workspaces = 12;
       workspace-names = [
         " "
         " "
@@ -71,6 +71,7 @@
         " "
         "󰖂 "
         "󱚄"
+        ""
       ]; # icon for each workpace from one to 11 in order
       # theme = "Catppuccin-Macchiato-Compact-Pink-Dark";
     };

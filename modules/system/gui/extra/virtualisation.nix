@@ -4,23 +4,100 @@ let
   cfg = config.settings.virtualisation.enable;
   vmName = "windows-11";
   vmPath = "/home/dylan/Documents/vm";
-
+  workspace = "12";
   launchScript = pkgs.writeShellScriptBin "launch-windows-vm" ''
+    # Function to get current workspace
+    get_current_workspace() {
+      ${pkgs.xdotool}/bin/xdotool get_desktop
+    }
+
+    # Function to switch to workspace
+    switch_to_workspace() {
+      ${pkgs.xdotool}/bin/xdotool set_desktop $1
+    }
+
+    # Function to save current workspace
+    save_current_workspace() {
+      get_current_workspace > "$PREV_WORKSPACE_FILE"
+    }
+
+    # Save current workspace before launching VM
+    save_current_workspace
+
     # Launch the VM
     ${pkgs.quickemu}/bin/quickemu --vm ${vmPath}/${vmName}.conf --display spice &
 
     # Wait for the Spicy window to appear
     while ! window_id=$(${pkgs.wmctrl}/bin/wmctrl -l | grep -i "spicy" | awk '{print $1}'); do
-        sleep 1
+      sleep 1
     done
 
-    # Move the window to workspace 12 (index 11 because wmctrl uses 0-based indexing)
-    ${pkgs.wmctrl}/bin/wmctrl -i -r $window_id -t 11
+    # Move the window to workspace ${workspace} (index $((${workspace} - 1)) because wmctrl uses 0-based indexing)
+    ${pkgs.wmctrl}/bin/wmctrl -i -r $window_id -t $((${workspace} - 1))
 
-    # Optionally, activate workspace 12
-    ${pkgs.wmctrl}/bin/wmctrl -s 11
+    # Switch to the VM's workspace
+    switch_to_workspace $((${workspace} - 1))
+
+    # Focus the VM window
+    ${pkgs.xdotool}/bin/xdotool search --name "spicy" windowactivate
   '';
 
+  toggleScript = pkgs.writeShellScriptBin "toggle-windows-vm" ''
+    WORKSPACE="${workspace}"
+    PREV_WORKSPACE_FILE="/tmp/prev_workspace"
+
+    # Function to check if VM is running
+    is_vm_running() {
+      ${pkgs.wmctrl}/bin/wmctrl -l | grep -q "spicy"
+    }
+
+    # Function to get current workspace
+    get_current_workspace() {
+      ${pkgs.xdotool}/bin/xdotool get_desktop
+    }
+
+    # Function to switch to workspace
+    switch_to_workspace() {
+      ${pkgs.xdotool}/bin/xdotool set_desktop $1
+    }
+
+    # Function to save current workspace
+    save_current_workspace() {
+      get_current_workspace > "$PREV_WORKSPACE_FILE"
+    }
+
+    # Function to restore previous workspace
+    restore_previous_workspace() {
+      if [[ -f "$PREV_WORKSPACE_FILE" ]]; then
+        switch_to_workspace $(cat "$PREV_WORKSPACE_FILE")
+        rm "$PREV_WORKSPACE_FILE"
+      fi
+    }
+
+    # Function to focus VM window
+    focus_vm() {
+      ${pkgs.wmctrl}/bin/wmctrl -a "spicy"
+    }
+
+    # Main logic
+    CURRENT_WORKSPACE=$(get_current_workspace)
+    if [[ $CURRENT_WORKSPACE -eq $((WORKSPACE - 1)) ]]; then
+      # We're on the VM workspace, go back to previous workspace
+      restore_previous_workspace
+    else
+      # We're not on the VM workspace
+      if is_vm_running; then
+        # VM is running, switch to its workspace
+        save_current_workspace
+        switch_to_workspace $((WORKSPACE - 1))
+        focus_vm
+      else
+        # VM is not running, just switch to its workspace
+        save_current_workspace
+        switch_to_workspace $((WORKSPACE - 1))
+      fi
+    fi
+  '';
   # TODO: make it so it genrates the config file for the VMs
 in {
   config = lib.mkIf cfg {
