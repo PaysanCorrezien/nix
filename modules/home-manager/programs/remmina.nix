@@ -8,7 +8,8 @@
   # dump from my current basic ocnfig. 
   # removed the secret parts 
   # i disable password storing
-  # only real change it the ctrl R home to toggle fullscreen on / off
+  # only real change it the alt home to toggle fullscreen on / off
+  # and key grab by alt + end
   home.file.".config/remmina/remmina.pref".text = ''
     [remmina_pref]
     datadir_path=/home/${config.home.username}/.local/share/remmina
