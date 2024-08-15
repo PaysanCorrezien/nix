@@ -12,17 +12,19 @@
     # FIXME: automove dont work troubleshoot
     "org/gnome/shell/extensions/auto-move-windows" = {
       #NOTE: finding .desktop on nixos !
-      # ❯ find /run/current-system/sw/share/applications ~/.nix-profile/share/applications ~/.local/share/applications -name "*.desktop" | grep discord
+      #  find /run/current-system/sw/share/applications ~/.nix-profile/share/applications ~/.local/share/applications -name "*.desktop" | grep discord
       application-list = [
         "org.gnome.Console.desktop:1"
         "wezterm.desktop:1"
         "remmina.desktop:2"
         "org.remmina.Remmina.desktop:2"
+        "todoist.desktop:3"
         "org.gnome.Nautilus.desktop:4"
         "mpv.desktop:4"
         "umpv.desktop:4"
         "firefox.desktop:5"
         "discord.desktop:6"
+        "element-desktop.desktop:6"
         "org.keepassxc.KeePassXC.desktop:7"
         "linphone.desktop:8"
         "microsoft-edge.desktop:8"
@@ -55,6 +57,11 @@
         "#b7bdf8"; # catppuccin machia lavender             # Default primary color for screensaver
       secondary-color =
         "#f0c6c6"; # catpuccin machia  flamingo          # Default secondary color for screensaver
+    };
+
+    "org/gnome/settings-daemon/plugins/power" = {
+      sleep-inactive-ac-type = "nothing";
+      sleep-inactive-ac-timeout = 0;
     };
 
     "org/gnome/desktop/wm/preferences" = {

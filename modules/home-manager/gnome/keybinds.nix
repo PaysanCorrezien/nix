@@ -90,7 +90,8 @@ in {
       {
         name = "Windows11 VM";
         command = "/home/dylan//.config/scripts/w11.sh";
-        binding = "<Alt>apostrophe";
+        # binding = "<Alt>apostrophe";
+        binding = "<Alt><Shift>w";
       };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11" =
       {
