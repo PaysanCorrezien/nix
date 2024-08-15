@@ -7,7 +7,7 @@ in {
   imports = [
     ./dev/python.nix
     ./programs/espanso.nix
-    ./programs/thunderbird.nix
+    # ./programs/thunderbird.nix
     ./extra/work.nix
     ./extra/audio.nix
     ./extra/social.nix
@@ -17,7 +17,8 @@ in {
     ./extra/ollama.nix
     ./extra/screensaver.nix
     #FIXME: create separate flakes input, fetchtree breack reinstall
-    # ./extra/clovis.nix
+    ./extra/clovis.nix
+    ./extra/keybswitch.nix
     #
     # ../home-manager/gnome/keybinds.nix
   ];
