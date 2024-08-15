@@ -49,6 +49,15 @@ in {
     extraGroups = [ "i2c" "networkmanager" "wheel" ];
   };
 
+  # make my user avoid password for sudo
+  security.sudo.extraRules = [{
+    users = [ "dylan" ];
+    commands = [{
+      command = "ALL";
+      options = [ "NOPASSWD" ];
+    }];
+  }];
+
   #cant be in HM fix this
   users.users.dylan.shell = pkgs.zsh;
   programs.zsh.enable = true;
