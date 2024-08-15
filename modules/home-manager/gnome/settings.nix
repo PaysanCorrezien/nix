@@ -38,6 +38,13 @@
     "org/gnome/desktop/applications/browser" = { exec = "firefox"; };
     #TODO: HOME AND END SOMEHOW ?
 
+    "org/gnome/desktop/default-applications/terminal" = { exec = "wezterm"; };
+
+    "org/gtk/settings/file-chooser" = {
+      show-hidden = true;
+      sort-directories-first = true;
+    };
+
     # allow external monitor to not be monaged by gnome virtual desktop
     "org.gnome.mutter" = { workspaces-only-on-primary = true; };
 
