@@ -80,6 +80,8 @@
         # "ui.key.accelKey" = 91; # Re-bind ctrl to super (would interfere with tridactyl otherwise)
         "reader.parse-on-load.force-enabled" =
           false; # Keep the reader button enabled at all times if set to true; tridactyl :reader allow doing it with a shortcut :)
+        "ui.key.menuAccessKeyFocuses" =
+          false; # Disable alt to focus the menu bar annoying with home row mods for keyboard
         "app.shield.optoutstudies.enabled" = false; # tridactyl want this
         "app.update.auto" = false;
         "browser.contentblocking.category" = "strict";
