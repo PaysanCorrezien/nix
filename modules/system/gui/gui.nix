@@ -15,6 +15,7 @@ in {
     ./extra/glance.nix
     ./extra/gnome.nix
     ./extra/ollama.nix
+    ./extra/screensaver.nix
     #FIXME: create separate flakes input, fetchtree breack reinstall
     # ./extra/clovis.nix
     #
@@ -90,9 +91,15 @@ in {
       nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
 
       # wake from sleep ? for main computer 
+      # FIXME: not enough to wake from suspend 
       services.udev.extraRules = ''
-        ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
+        ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="removable", ATTR{power/wakeup}="enabled"
+        ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="fixed", ATTR{power/wakeup}="enabled"
       '';
+      boot.kernelParams = [ "usbcore.autosuspend=-1" ];
+      powerManagement.enable = true;
+      powerManagement.powertop.enable = true;
+
       # Enable the OpenSSH daemon.
       services.openssh.enable = true;
     })

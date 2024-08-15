@@ -16,13 +16,16 @@
     };
     disko = { url = "github:nix-community/disko"; };
     keybswitch = {
-      url = "path:./modules/home-manager/programs/keybswitch.nix";
-      flake = false;
+      url = "git+file:///home/dylan/repo/keybswitch";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    clovis = {
+      url = "git+file:///home/dylan/repo/clovis";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-
-  outputs = { self, nixpkgs, home-manager, sops-nix, disko, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, sops-nix, disko, clovis, keybswitch
+    , ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -40,12 +43,15 @@
             ./hosts/lenovo.nix
             disko.nixosModules.disko
             home-manager.nixosModules.home-manager
+            # keybswitch.nixosModules.default
+            # clovis.nixosModules.default
             ({ config, pkgs, lib, ... }: {
               nixpkgs.hostPlatform = system;
               imports = lib.optional
                 (builtins.pathExists /etc/nixos/hardware-configuration.nix)
                 /etc/nixos/hardware-configuration.nix;
-              # disko.devices = import ./disko.nix { inherit lib; };
+              # services.keybswitch.enable = true;
+              # programs.clovis.enable = true;
             })
           ];
         };

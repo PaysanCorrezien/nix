@@ -1,6 +1,48 @@
 { config, pkgs, lib, ... }:
 
-let cfg = config.home.programs.chezmoi;
+let
+  cfg = config.home.programs.chezmoi;
+  chezmoiSetupScript = pkgs.writeShellScript "chezmoi-setup" ''
+    set -euo pipefail
+
+    notify() {
+      ${pkgs.libnotify}/bin/notify-send -u "$1" -t 5000 "Chezmoi Setup" "$2"
+    }
+
+    echo "Starting Chezmoi setup..."
+    HOME_DIR=$(eval echo ~$USER)
+    echo "Home directory: $HOME_DIR"
+    echo "Chezmoi repo URL: ${cfg.repoUrl}"
+    echo "Auto apply: ${toString cfg.autoApply}"
+
+    chezmoi_dir="$HOME_DIR/.local/share/chezmoi"
+    echo "Chezmoi directory: $chezmoi_dir"
+
+    if [ ! -d "$chezmoi_dir" ]; then
+      echo "Initializing chezmoi from ${cfg.repoUrl}"
+      if ${pkgs.chezmoi}/bin/chezmoi init "${cfg.repoUrl}"; then
+        notify "normal" "Chezmoi initialized successfully"
+      else
+        error_msg="Failed to initialize Chezmoi"
+        echo "$error_msg"
+        notify "critical" "$error_msg"
+        exit 1
+      fi
+    fi
+
+    echo "Updating chezmoi repository and applying changes..."
+    if ${pkgs.chezmoi}/bin/chezmoi update; then
+      echo "Successfully updated and applied chezmoi configuration"
+      notify "normal" "Chezmoi configuration updated and applied successfully"
+    else
+      error_msg="Errors occurred while updating or applying chezmoi configuration"
+      echo "WARNING: $error_msg"
+      echo "Please review the output above and resolve any conflicts manually"
+      notify "critical" "WARNING: $error_msg Manual review required."
+    fi
+
+    echo "Chezmoi setup complete"
+  '';
 in {
   options.home.programs.chezmoi = {
     enable = lib.mkEnableOption "Chezmoi dotfiles manager";
@@ -12,87 +54,23 @@ in {
     autoApply = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Automatically apply changes after updating";
+      description =
+        "Automatically apply changes after initializing or updating";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = [ pkgs.chezmoi ];
+    home.packages = [ pkgs.chezmoi pkgs.libnotify ];
 
     home.activation.chezmoiSetup =
       lib.hm.dag.entryAfter [ "installPackages" ] ''
-        export PATH="${
-          lib.makeBinPath (with pkgs; [ chezmoi git git-lfs ])
-        }:$PATH"
-
-        chezmoi_dir="$HOME/.local/share/chezmoi"
-
-        error() {
-          echo "ERROR: $1" >&2
-          exit 1
-        }
-
-        ${builtins.trace ''
-
-          Starting Chezmoi setup...'' ""}
-
-        if [ ! -d "$chezmoi_dir" ]; then
-          ${
-            builtins.trace "Initializing chezmoi from ${cfg.repoUrl}..." ''
-              $DRY_RUN_CMD chezmoi init "${cfg.repoUrl}" || error "Failed to initialize chezmoi"
-            ''
-          }
-        else
-          ${
-            builtins.trace
-            "Chezmoi directory exists. Checking for updates..." ''
-              cd "$chezmoi_dir" || error "Failed to change to chezmoi directory"
-              $DRY_RUN_CMD git fetch origin || error "Failed to fetch updates"
-              if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
-                ${
-                  builtins.trace "Updates found. Attempting to merge..." ''
-                    if ! $DRY_RUN_CMD git merge --ff-only origin/$(git rev-parse --abbrev-ref HEAD); then
-                      ${
-                        builtins.trace
-                        "Fast-forward merge failed. Stashing local changes and trying again..." ''
-                          $DRY_RUN_CMD git stash || error "Failed to stash local changes"
-                          $DRY_RUN_CMD git merge --ff-only origin/$(git rev-parse --abbrev-ref HEAD) || error "Failed to merge remote changes"
-                          $DRY_RUN_CMD git stash pop || ${
-                            builtins.trace
-                            "Warning: Failed to pop stash. You may need to manually resolve conflicts."
-                            ""
-                          }
-                        ''
-                      }
-                    fi
-                  ''
-                }
-              else
-                ${builtins.trace "Local repository is up-to-date." ""}
-              fi
-            ''
-          }
-        fi
-
-        if ${toString cfg.autoApply}; then
-          ${
-            builtins.trace "Applying chezmoi configuration..." ''
-              $DRY_RUN_CMD chezmoi apply || error "Failed to apply chezmoi configuration"
-            ''
-          }
-        else
-          ${
-            builtins.trace
-            "Skipping automatic apply. Run 'chezmoi apply' manually to apply changes."
-            ""
-          }
-        fi
-
-        ${builtins.trace ''
-
-          Chezmoi setup complete. Current status:'' ''
-            $DRY_RUN_CMD chezmoi git status
+        ${builtins.trace "Starting Chezmoi setup..." ''
+          ${builtins.trace "Chezmoi repo URL: ${cfg.repoUrl}" ''
+            ${builtins.trace "Auto apply: ${toString cfg.autoApply}" ''
+              $DRY_RUN_CMD ${chezmoiSetupScript}
+            ''}
           ''}
+        ''}
       '';
   };
 }
