@@ -23,7 +23,6 @@ in {
       ddcutil # attempt to control monitor
       # ddcui
       xorg.xinit
-      shell-gpt
       gum
       navi
       # WORK
