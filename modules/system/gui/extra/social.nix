@@ -3,7 +3,7 @@
 let cfg = config.settings.social;
 in {
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ discord ];
+    environment.systemPackages = with pkgs; [ element-desktop discord ];
   };
 }
 
