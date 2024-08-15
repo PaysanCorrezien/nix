@@ -18,7 +18,7 @@ let
     email = readSecretFile "thunderbird/account1/email";
     server = readSecretFile "thunderbird/account1/server";
     port = readSecretFileAsInt "thunderbird/account1/port";
-    username = readSecretFile "thunderbird/account1/username";
+    # username = readSecretFile "thunderbird/account1/username";
   };
 
   account2 = {
@@ -26,7 +26,7 @@ let
     email = readSecretFile "thunderbird/account2/email";
     server = readSecretFile "thunderbird/account2/server";
     port = readSecretFileAsInt "thunderbird/account2/port";
-    username = readSecretFile "thunderbird/account2/username";
+    # username = readSecretFile "thunderbird/account2/username";
   };
 
 in {
@@ -92,6 +92,13 @@ in {
           "toolkit.telemetry.enabled" = false;
           "toolkit.telemetry.unified" = false;
           "toolkit.telemetry.server" = "";
+
+          #FIXME: This setting is not working
+          # Disable the appeal/donation page
+          "app.update.url.manual" = "";
+          # Disable update notifications and checks
+          "app.update.enabled" = false;
+          "app.update.auto" = false;
         };
       };
     };
