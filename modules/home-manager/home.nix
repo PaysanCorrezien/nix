@@ -30,6 +30,7 @@ in {
     ./programs/nvim.nix
     ./programs/remmina.nix
     ./programs/keepassxc.nix
+    ./programs/thunderbird.nix
     # ./programs/keybswitch.nix
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
