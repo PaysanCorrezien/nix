@@ -64,6 +64,7 @@ in {
 
       environment.systemPackages = with pkgs; [
         helix
+        zed-editor
         # wezterm
         todoist-electron
         rofi

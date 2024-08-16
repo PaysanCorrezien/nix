@@ -3,6 +3,11 @@ let
   windowManager = config.settings.windowManager;
   cfg = config.settings;
 in {
+  # gsconnect need these
+  # networking.firewall.allowedTCPPorts = [ 1714 1764 ];
+  # networking.firewall.allowedUDPPorts = [ 1714 1764 ];
+  # environment.systemPackages = with pkgs; [ gnomeExtensions.gsconnect ];
+
   environment.gnome.excludePackages =
     if cfg.windowManager == "gnome" && cfg.isServer == false then
       (with pkgs; [

@@ -14,8 +14,6 @@ in {
 
   system.stateVersion = "24.05";
 
-  networking.networkmanager.enable = true;
-
   time.timeZone = "Europe/Paris";
 
   i18n = {
@@ -73,7 +71,7 @@ in {
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };
 
-    # Add these lines to enable user service management
+    #  enable user service management to swtich without passworc
     sharedModules = [{
       systemd.user.services.home-manager-dylan = {
         Unit = { Description = "Home Manager for user dylan"; };
