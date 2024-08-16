@@ -8,12 +8,12 @@ let
 in {
   # Configure keymap in X11
   services.xserver = {
-    xkb.layout = "fr,us";
-    xkb.variant = ",altgr-intl";
+    xkb.layout = "us,fr";
+    xkb.variant = "altgr-intl,";
   };
 
   # Configure console keymap
-  console.keyMap = "fr";
+  console.keyMap = "us";
 
   # Conditionally include packages based on the `isServer` variable
   environment.systemPackages = with pkgs;
