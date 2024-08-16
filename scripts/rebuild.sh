@@ -1,7 +1,9 @@
 # Configuration
 homeManagerBackupFileExtension="HomeManagerBAK"
 defaultFlakePath="/home/dylan/.config/nix"
-
+if [ "$PWD" != "$HOME/.config/nix" ]; then
+	cd "$HOME/.config/nix" || exit 1
+fi
 # Function to get the current repository path using Git
 get_current_repo_path() {
 	if command -v git &>/dev/null; then
@@ -39,3 +41,5 @@ fi
 
 echo "restarting home manager now"
 systemctl restart home-manager-dylan.service
+echo "Running Chezmoi update"
+$HOME/.local/bin/update-dotfiles "https://github.com/PaysanCorrezien/dotfiles"
