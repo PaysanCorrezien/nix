@@ -41,7 +41,7 @@ in {
   home.packages = with pkgs; [
     gnomeExtensions.auto-move-windows
     gnomeExtensions.clipboard-indicator
-    gnomeExtensions.gsconnect
+    # gnomeExtensions.gsconnect
     gnomeExtensions.search-light
     gnomeExtensions.caffeine
     gnomeExtensions.space-bar

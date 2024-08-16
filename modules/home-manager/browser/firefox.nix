@@ -135,7 +135,8 @@
         "datareporting.policy.dataSubmissionEnable" = false;
         "datareporting.policy.dataSubmissionPolicyAcceptedVersion" = 2;
 
-        "extensions.formautofill.creditCards.enabled" = false;
+        "extensions.formautofill.creditCards.enabled" =
+          false; # disable autofill for credit cards
 
         # printing https://github.com/gvolpe/nix-config/blob/6feb7e4f47e74a8e3befd2efb423d9232f522ccd/home/programs/browsers/firefox.nix
         "print.print_footerleft" = "";
