@@ -16,6 +16,8 @@ in {
       "nextcloudUrl" = { owner = "dylan"; };
       "nextcloudUser" = { owner = "dylan"; };
       "nextcloudKey" = { };
+      "wifi_homekey" = { owner = "dylan"; };
+      "tailscale_auth_key" = { owner = "dylan"; };
       # New Thunderbird secrets
       "thunderbird/account1/name" = { owner = "dylan"; };
       "thunderbird/account1/email" = { owner = "dylan"; };

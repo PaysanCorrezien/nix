@@ -1,6 +1,8 @@
 nextcloudKey: ENC[AES256_GCM,data:61bBx7K6axjL,iv:M9rH+02ifMLCrmmxx/sWl+lrDDPa3p6Q/Ea/DqdC620=,tag:lCOwG5+TB8muiJFv/Yj3VQ==,type:str]
 nextcloudUrl: ENC[AES256_GCM,data:Wc4uWaJtiN4zvm/YtiRnJf9KhHa9x8bY2vHqdek+Cx5PkR/a,iv:xSOF3O6VhWXA9DRdYpT4rd3o+BUdcHnWKRKUl1oTU4c=,tag:duB6mENE8BY6GVVLyjfwAw==,type:str]
 nextcloudUser: ENC[AES256_GCM,data:yIOZQn4bMQA=,iv:OW4hNb80DtFlomunIA5SoU6MZzot8jxc2ZvwtY+f/X4=,tag:pKiXXPTm+DOokmCvNCbo5A==,type:str]
+wifi_homekey: ENC[AES256_GCM,data:Iq0XqpGtAi+aT18h,iv:0qamHH7Yqc09wcEQe7au1TgOXatj9J4AyFwiVcUvy6I=,tag:uk82God4kI+2vft3V1qQcQ==,type:str]
+tailscale_auth_key: ENC[AES256_GCM,data:rBiZqbgDBcIb3YRrZvrOSXrH3IWnzclI2AZwzxy3VlLhZQzR/qfF9kfVkbnIZxb7GR2DclBWL/NyitcIRg==,iv:c/JM47KsvTYEWnMvK3yydhfO8vpRjuftY58pFE58714=,tag:In+fnlP99b3bF4eqVe41dw==,type:str]
 thunderbird:
     account1:
         name: ENC[AES256_GCM,data:+f8m+r8R5PB8AFq9,iv:M98c7cLap5xE21uQ11Dt5Gs48KcvEwHsGaw+keQcSxQ=,tag:lqzHdFn0X3Owvr7XwwNKUg==,type:str]
@@ -29,8 +31,8 @@ sops:
             U2pla3gwZk5icDQzaUNubERzOEVtQTQKWhFQptKdACRAY0BZ2QzbzucT/Z94B6sA
             NcW3fAHyd5e9Hem+NiIF2DROXLxqEBjFLSH4JVqVoU5d1EDb0NpVcg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-06-26T21:27:49Z"
-    mac: ENC[AES256_GCM,data:ViEB9UB6fPpzyPxEEbxu+6/0LRgIW+cii/0gYXCPKjbGvYfewP/soMezdW2HOITCdcpa736EB+ISGfZxczIrQEUJZIl2GEe7hJxa8WMRYMY6bSc0E837ZevudYnVrjqjQLTtSRXumuigTUHAxcnnN080wg52JJHRFf0M/Zdr158=,iv:MSl1r/Y72xch3mREuncXIf5wGb1znYz2OuORdxPR/QQ=,tag:ODUBX3pU5F68TP9tYCB9Vg==,type:str]
+    lastmodified: "2024-08-16T21:49:48Z"
+    mac: ENC[AES256_GCM,data:UEZgHbOcWmRVWxOuxNVD4rwRQxegO6EIJUuq6cNrNgDZ+Xp+J6M/lXnn5AF0mR1hUM9WM9V9+KM6LaUhkC9WloVq42OM7gQAfkeM1knVZW3BBLxyU1t84exxLJKvZ8YI1eYNIdSNdSJtXEF6qGIs/7brVI72Tt4uwmzSvy91VnM=,iv:r9zE0dZ+fXIo9pEntkVuPz4PUP3FBK3Pf2f2/NcA9JM=,tag:Vqgg2mLrh4LiSiW0xla6Ug==,type:str]
     pgp: []
     unencrypted_suffix: _unencrypted
-    version: 3.8.1
+    version: 3.9.0

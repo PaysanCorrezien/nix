@@ -3,7 +3,7 @@
 let
   globalDefaults = {
     username = lib.mkDefault "dylan";
-    ip = lib.mkDefault "192.168.0.111"; # NOTE: this is not currently used
+    hostname = lib.mkDefault "nixos"; # Default hostname
     isServer = lib.mkDefault false;
     locale = lib.mkDefault "fr_FR.UTF-8";
     virtualisation.enable = lib.mkDefault false;
@@ -16,6 +16,9 @@ let
     displayServer = lib.mkDefault "xorg"; # Default display server
     ai.enable = lib.mkDefault false; # Enable AI tools
     social.enable = lib.mkDefault true; # NOTE: install social apps like discord
+    architecture = lib.mkDefault "x86_64"; # Default architecture
+    tailscaleIP = lib.mkDefault "100.100.100.120"; # Default Tailscale IP
+    minimalNvim = lib.mkDefault false; # Default to full Neovim configuration
   };
 in {
   options = {
@@ -25,10 +28,10 @@ in {
         default = globalDefaults.username;
         description = "Username for the system.";
       };
-      ip = lib.mkOption {
+      hostname = lib.mkOption {
         type = lib.types.str;
-        default = globalDefaults.ip;
-        description = "IP address for the system.";
+        default = globalDefaults.hostname;
+        description = "Hostname for the system.";
       };
       isServer = lib.mkOption {
         type = lib.types.bool;
@@ -79,7 +82,7 @@ in {
         type = lib.types.nullOr
           (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
         default = globalDefaults.windowManager;
-        description = "Choose window manager (gnome, plasma, xfce).";
+        description = "Choose window manager (gnome, plasma, xfce, hyprland).";
       };
       displayServer = lib.mkOption {
         type = lib.types.nullOr (lib.types.enum [ "xorg" "wayland" ]);
@@ -91,24 +94,44 @@ in {
         default = globalDefaults.ai.enable;
         description = "Enable AI tools.";
       };
+      architecture = lib.mkOption {
+        type = lib.types.enum [ "x86_64" "aarch64" "riscv64" ];
+        default = globalDefaults.architecture;
+        description = "Choose system architecture (x86_64, aarch64, riscv64).";
+      };
+      tailscaleIP = lib.mkOption {
+        type = lib.types.str;
+        default = globalDefaults.tailscaleIP;
+        description = "Tailscale IP address for the system.";
+      };
+      minimalNvim = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.minimalNvim;
+        description = "Use minimal Neovim configuration.";
+      };
     };
   };
 
-  config.settings = {
-    username = globalDefaults.username;
-    ip = globalDefaults.ip;
-    isServer = globalDefaults.isServer;
-    locale = globalDefaults.locale;
-    virtualisation.enable = globalDefaults.virtualisation.enable;
-    environment = globalDefaults.environment;
-    isExperimental = globalDefaults.isExperimental;
-    social.enable = globalDefaults.social.enable;
-    work = globalDefaults.work;
-    gaming = globalDefaults.gaming;
-    tailscale.enable = globalDefaults.tailscale.enable;
-    windowManager = globalDefaults.windowManager;
-    displayServer = globalDefaults.displayServer;
-    ai.enable = globalDefaults.ai.enable;
+  config = {
+    settings = {
+      username = globalDefaults.username;
+      isServer = globalDefaults.isServer;
+      hostname = globalDefaults.hostname;
+      locale = globalDefaults.locale;
+      virtualisation.enable = globalDefaults.virtualisation.enable;
+      environment = globalDefaults.environment;
+      isExperimental = globalDefaults.isExperimental;
+      social.enable = globalDefaults.social.enable;
+      work = globalDefaults.work;
+      gaming = globalDefaults.gaming;
+      tailscale.enable = globalDefaults.tailscale.enable;
+      windowManager = globalDefaults.windowManager;
+      displayServer = globalDefaults.displayServer;
+      ai.enable = globalDefaults.ai.enable;
+      architecture = globalDefaults.architecture;
+      tailscaleIP = globalDefaults.tailscaleIP;
+      minimalNvim = globalDefaults.minimalNvim;
+    };
+
   };
 }
-
