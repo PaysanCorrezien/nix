@@ -37,23 +37,12 @@
         lenovo = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit inputs nixpkgs; };
-          modules = [
-            ./global-default.nix
-            ./disko.nix
-            ./hosts/lenovo.nix
-            disko.nixosModules.disko
-            home-manager.nixosModules.home-manager
-            # keybswitch.nixosModules.default
-            # clovis.nixosModules.default
-            ({ config, pkgs, lib, ... }: {
-              nixpkgs.hostPlatform = system;
-              imports = lib.optional
-                (builtins.pathExists /etc/nixos/hardware-configuration.nix)
-                /etc/nixos/hardware-configuration.nix;
-              # services.keybswitch.enable = true;
-              # programs.clovis.enable = true;
-            })
-          ];
+          modules = [ ./imports.nix ./hosts/lenovo.nix ];
+        };
+        workstation = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs nixpkgs; };
+          modules = [ ./imports.nix ./hosts/workstation.nix ];
         };
       };
     };
