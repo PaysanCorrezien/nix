@@ -17,7 +17,6 @@
     social.enable = false;
     architecture = "x86_64";
     tailscaleIP = "100.100.110.20";
-    minimalNvim = false;
     hostname = "homeserver";
     ai.server.enable = true;
   };
@@ -52,8 +51,7 @@
 
   hardware.opengl = {
     enable = true;
-    #    driSupport = true;
-    #    driSupport32Bit = true;
+    driSupport32Bit = true;
   };
 
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)

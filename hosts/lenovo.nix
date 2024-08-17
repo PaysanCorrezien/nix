@@ -38,7 +38,6 @@ in {
     social.enable = true;
     architecture = "x86_64";
     tailscaleIP = "100.100.100.110";
-    minimalNvim = false;
     hostname = "lenovo";
   };
 

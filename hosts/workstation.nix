@@ -39,7 +39,6 @@ in {
     architecture = "x86_64";
     autoSudo = true;
     tailscaleIP = "100.69.180.101";
-    minimalNvim = false;
     hostname = "workstation";
   };
 

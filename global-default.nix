@@ -21,7 +21,6 @@ let
     social.enable = lib.mkDefault true;
     architecture = lib.mkDefault "x86_64";
     tailscaleIP = lib.mkDefault "100.100.100.120";
-    minimalNvim = lib.mkDefault false;
     autoSudo = lib.mkDefault false;
   };
 in {
@@ -121,11 +120,6 @@ in {
         default = globalDefaults.tailscaleIP;
         description = "Tailscale IP address for the system.";
       };
-      minimalNvim = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.minimalNvim;
-        description = "Use minimal Neovim configuration.";
-      };
       autoSudo = lib.mkOption {
         type = lib.types.bool;
         default = globalDefaults.autoSudo;
@@ -156,7 +150,6 @@ in {
       };
       architecture = globalDefaults.architecture;
       tailscaleIP = globalDefaults.tailscaleIP;
-      minimalNvim = globalDefaults.minimalNvim;
       autoSudo = globalDefaults.autoSudo;
     };
   };

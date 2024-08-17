@@ -11,7 +11,7 @@ in {
       microsoft-edge
       linphone
       openfortivpn
-      remmina
+      # remmina
       wireshark
       teamviewer
       vscode-extensions.ms-vscode.powershell # lsp for neovim

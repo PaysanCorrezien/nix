@@ -1,3 +1,4 @@
+# TODO: a wrapper that fetch the secrets from keepass and export them as env vars ?
 # keepass-secrets-script = pkgs.writeScriptBin "generate-keepass-secrets" ''
 #   #!/usr/bin/env bash
 #   set -euo pipefail
@@ -39,6 +40,18 @@
 #     echo "Secrets file already exists. Skipping generation."
 #   fi
 # '';
+#   home.activation = {
+#   generateKeepassSecrets = lib.hm.dag.entryAfter ["writeBoundary"] ''
+#     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${post-activation-script}
+#   '';
+# };
+# api_keys = [
+#   "GH_TOKEN"
+#   "OPENAI_API_KEY"
+#   "TODOIST_API_TOKEN"
+#   "BROWSERLESS_API_KEY"
+#   # Add more API keys as needed
+# ];
 
 { config, pkgs, lib, ... }:
 
@@ -47,44 +60,39 @@ let
     "${config.home.homeDirectory}/Documents/Password/DylanMDP.kdbx";
   keepassxcConfig = {
     "General" = {
-      "StartMinimized" = "false"; # Do not start KeePassXC minimized
-      "MinimizeToTray" = "true"; # Minimize to system tray instead of closing
-      "ShowTrayIcon" = "true"; # Always show the tray icon
-      "MinimizeOnStartup" = "false"; # Do not minimize on startup
-      "SaveDatabase" = "true"; # Automatically save the database
-      "RememberLastDatabases" = "true"; # Remember the last opened databases
-      "AutoSaveAfterEveryChange" =
-        "true"; # Auto save database after every change
+      "StartMinimized" = "false";
+      "MinimizeToTray" = "true";
+      "ShowTrayIcon" = "true";
+      "MinimizeOnStartup" = "false";
+      "SaveDatabase" = "true";
+      "RememberLastDatabases" = "true";
+      "AutoSaveAfterEveryChange" = "true";
     };
-    "GUI" = {
-      "ApplicationTheme" = "dark"; # Use dark color scheme
-    };
+    "GUI" = { "ApplicationTheme" = "dark"; };
     "Security" = {
-      "UseBrowserIntegration" = "true"; # Enable browser integration
-      "UseKeyFile" = "false"; # Do not use a key file
-      "QuickUnlock" = "true"; # Enable quick unlock feature
-      "QuickUnlockTimeout" = "0"; # No timeout for quick unlock
-      "ClearClipboardAfterSeconds" = "30"; # Clear clipboard after 30 seconds
+      "UseBrowserIntegration" = "true";
+      "UseKeyFile" = "false";
+      "QuickUnlock" = "true";
+      "QuickUnlockTimeout" = "0";
+      "ClearClipboardAfterSeconds" = "30";
       "ClearClipboardTimeout" = "30";
       "LockDatabaseMinimize " = "false";
       "LockDatabaseScreenLock " = "false";
       "RelockAutoType " = "false";
-
     };
     "SSHAgent" = {
       "Enabled" = "true";
-      "EnableSSHAgent" = "true"; # Enable SSH agent integration
+      "EnableSSHAgent" = "true";
       "UseOpenSSH" = "true";
     };
     "Browser" = {
       "EnableBrowserIntegration" = "true";
       "Enabled" = " true";
       "AllowedBrowsers" = "firefox";
-
     };
     "Database" = {
       "DefaultDatabasePath" = "${keepassdb_path}";
-      "AutoOpenDatabases" = "true"; # Automatically open last used databases
+      "AutoOpenDatabases" = "true";
     };
   };
 
@@ -99,37 +107,33 @@ let
           lib.generators.mkValueStringDefault { } v;
     } "=";
   };
-  api_keys = [
-    "GH_TOKEN"
-    "OPENAI_API_KEY"
-    "TODOIST_API_TOKEN"
-    "BROWSERLESS_API_KEY"
-    # Add more API keys as needed
-  ];
+
 in {
-  # Enable KeePassXC
-  home.packages = with pkgs; [
-    keepassxc
-    keepmenu
-    pinentry-gtk2
-    # keepass-secrets-script
-  ];
+  options = {
+    settings = lib.mkOption {
+      type = lib.types.submodule {
+        options.keepassxc = lib.mkOption {
+          type = lib.types.submodule {
+            options.enable =
+              lib.mkEnableOption "Enable custom KeePass configuration";
+          };
+        };
+      };
+    };
+  };
 
-  #   home.activation = {
-  #   generateKeepassSecrets = lib.hm.dag.entryAfter ["writeBoundary"] ''
-  #     $DRY_RUN_CMD ${pkgs.bash}/bin/bash ${post-activation-script}
-  #   '';
-  # };
+  config = lib.mkIf config.settings.keepassxc.enable {
+    home.packages = with pkgs; [ keepassxc keepmenu pinentry-gtk2 ];
 
-  # Create a regular file if it doesn't already exist
-  home.activation.copyKeepassxcConfig =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          if [ ! -f ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini ]; then
-            mkdir -p ${config.home.homeDirectory}/.config/keepassxc
-            cat << EOF > ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
-      ${customToINI keepassxcConfig}
-      EOF
-            chmod 600 ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
-          fi
-    '';
+    home.activation.copyKeepassxcConfig =
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            if [ ! -f ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini ]; then
+              mkdir -p ${config.home.homeDirectory}/.config/keepassxc
+              cat << EOF > ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
+        ${customToINI keepassxcConfig}
+        EOF
+              chmod 600 ${config.home.homeDirectory}/.config/keepassxc/keepassxc.ini
+            fi
+      '';
+  };
 }

@@ -104,4 +104,12 @@ in {
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  settings.thunderbird.enable = !settings.isServer;
+  settings.keepassxc.enable = !settings.isServer;
+  settings.nextcloudcli.enable = !settings.isServer;
+  settings.wezterm.enable = !settings.isServer;
+  # settings.remmina.enable = !settings.isServer;
+  settings.remmina.enable = settings.work;
+  settings.minimalNvim = !settings.isServer;
 }

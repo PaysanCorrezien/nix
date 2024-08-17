@@ -1,16 +1,10 @@
 # option list
 # https://gitlab.com/Remmina/Remmina/-/wikis/Remmina-Config-File-Options
 #
-{ config, lib, pkgs, ... }: {
-  home.packages = [ pkgs.remmina ];
+{ config, pkgs, lib, ... }:
 
-  # NOTE: 
-  # dump from my current basic ocnfig. 
-  # removed the secret parts 
-  # i disable password storing
-  # only real change it the alt home to toggle fullscreen on / off
-  # and key grab by alt + end
-  home.file.".config/remmina/remmina.pref".text = ''
+let
+  remminaPrefContent = ''
     [remmina_pref]
     datadir_path=/home/${config.home.username}/.local/share/remmina
     remmina_file_name=%G_%P_%N_%h
@@ -66,11 +60,9 @@
     fullscreen_toolbar_visibility=0
     auto_scroll_step=10
     hostkey=65508
-    # Set the hostkey (modifier key) to Left Alt
     hostkey=65513
-    # Set the grab key to End
     shortcutkey_grab=65367
-    shortcutkey_fullscreen=65360  # Home
+    shortcutkey_fullscreen=65360
     shortcutkey_autofit=49
     shortcutkey_nexttab=65363
     shortcutkey_prevtab=65361
@@ -104,5 +96,24 @@
     name=
     ignore-tls-errors=1
   '';
-}
 
+in {
+  options = {
+    settings = lib.mkOption {
+      type = lib.types.submodule {
+        options.remmina = lib.mkOption {
+          type = lib.types.submodule {
+            options.enable =
+              lib.mkEnableOption "Enable custom Remmina configuration";
+          };
+        };
+      };
+    };
+  };
+
+  config = lib.mkIf config.settings.remmina.enable {
+    home.packages = [ pkgs.remmina ];
+
+    home.file.".config/remmina/remmina.pref".text = remminaPrefContent;
+  };
+}

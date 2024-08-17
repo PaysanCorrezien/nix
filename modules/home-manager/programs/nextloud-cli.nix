@@ -1,4 +1,4 @@
-{ inputs, lib, config, pkgs, sops-nix, ... }:
+# { inputs, lib, config, pkgs, sops-nix, ... }:
 
 # TODO: sops url + name 
 # prompt for creds on install or launch the CLI
@@ -6,15 +6,15 @@
 # dont use readfile and make it work more directly
 # Import the sops module to ensure it can be used here
 
-# Import the sops module to ensure it can be used here
-let
+#FIXME: This is a workaround to ensure that the secrets are read from the correct location
+# this doestn work on first init i need to find a better way to do this but 
+# i cant make the sops.templates work passed from system nixosmodules as of now
+{ config, pkgs, lib, ... }:
 
-  #FIXME: This is a workaround to ensure that the secrets are read from the correct location
-  # this doestn work on first init i need to find a better way to do this but 
-  # i cant make the sops.templates work passed from system nixosmodules as of now
+let
   readSecretFile = file:
     lib.optionalString (builtins.pathExists file) (builtins.readFile file);
-  # NOTE: workaround because Home Manager doesn't seem to be able to read config.sops.secrets.nextcloudUrl if defined by global module?
+
   nextcloudUrl = readSecretFile "/run/secrets/nextcloudUrl";
   nextcloudUser = readSecretFile "/run/secrets/nextcloudUser";
   passwordLocalPath = "${config.home.homeDirectory}/Documents/Password";
@@ -24,20 +24,17 @@ let
   musicLocalPath = "${config.home.homeDirectory}/Documents/Music";
   musicRemotePath = "/Musique";
   projetLocalPath = "${config.home.homeDirectory}/Documents/Projets";
-  projetRemotePath = "/Work/Projet"; # Fixed spelling from 'projetRemotPath'
-  nextcloudExclude =
-    builtins.readFile ./nextcloud_exclude.txt; # gitignore for nextcloud
+  projetRemotePath = "/Work/Projet";
+  nextcloudExclude = builtins.readFile ./nextcloud_exclude.txt;
   excludeFile =
     "${config.home.homeDirectory}/.config/Nextcloud/sync-exclude.lst";
   stateFile =
     "${config.home.homeDirectory}/.config/Nextcloud/.nextcloud_cfg_written";
   nextcloudLocal =
     "${config.home.homeDirectory}/.config/Nextcloud/nextcloud.cfg";
-
   nextcloudConfig = ''
     [General]
     showInExplorerNavigationPane=true
-
     [Accounts]
     version=2
     0\\version=1
@@ -71,57 +68,46 @@ let
     0\\Folders\\4\\virtualFilesMode=off
     0\\Folders\\4\\version=2
   '';
+
 in {
-  home.packages = with pkgs; [ nextcloud-client ];
-  home.file."${excludeFile}".text = nextcloudExclude; # gitignore file write
+  options = {
+    settings = lib.mkOption {
+      type = lib.types.submodule {
+        options.nextcloudcli = lib.mkOption {
+          type = lib.types.submodule {
+            options.enable =
+              lib.mkEnableOption "Enable custom Nextcloud configuration";
+          };
+        };
+      };
+    };
+  };
 
-  home.activation.copyNextcloudConfig = lib.mkAfter ''
-    if [ ! -f ${stateFile} ]; then
-      echo "Creating Nextcloud config directory"
-      mkdir -p "${config.home.homeDirectory}"/.config/Nextcloud
-      echo "Writing config to ${nextcloudLocal}"
-     echo "${nextcloudConfig}" > ${nextcloudLocal}
+  config = lib.mkIf config.settings.nextcloudcli.enable {
+    home.packages = with pkgs; [ nextcloud-client ];
 
-      chown dylan:users ${nextcloudLocal}
-      chmod 644 ${nextcloudLocal}
+    home.file."${excludeFile}".text = nextcloudExclude;
 
-      # Create local sync folders if they don't exist
-      echo "Creating local sync folders"
-      mkdir -p ${passwordLocalPath}
-      mkdir -p ${musicLocalPath}
-      mkdir -p ${wallpaperLocalPath}
-      mkdir -p ${projetLocalPath}
-
-      # Create state file to indicate that the configuration has been written
-      echo "Creating state file"
-      touch ${stateFile}
-    else
-      echo "State file exists, skipping configuration"
-    fi
-  '';
+    home.activation.copyNextcloudConfig = lib.mkAfter ''
+      if [ ! -f ${stateFile} ]; then
+        echo "Creating Nextcloud config directory"
+        mkdir -p "${config.home.homeDirectory}"/.config/Nextcloud
+        echo "Writing config to ${nextcloudLocal}"
+        echo "${nextcloudConfig}" > ${nextcloudLocal}
+        chown ${config.home.username}:users ${nextcloudLocal}
+        chmod 644 ${nextcloudLocal}
+        # Create local sync folders if they don't exist
+        echo "Creating local sync folders"
+        mkdir -p ${passwordLocalPath}
+        mkdir -p ${musicLocalPath}
+        mkdir -p ${wallpaperLocalPath}
+        mkdir -p ${projetLocalPath}
+        # Create state file to indicate that the configuration has been written
+        echo "Creating state file"
+        touch ${stateFile}
+      else
+        echo "State file exists, skipping configuration"
+      fi
+    '';
+  };
 }
-# The systemd service and timer definitions can be uncommented and adjusted as needed
-# systemd.user.services.nextcloud-autosync = {
-#   Unit = {
-#     Description = "Auto sync Nextcloud";
-#     After = "network-online.target"; 
-#   };
-#   Service = {
-#     Type = "simple";
-#     Environment = "nextcloud_key=${nextcloudKey} nextcloud_url=${nextcloudUrl} nextcloud_user=${nextcloudUser}";
-#     ExecStart = "${pkgs.nextcloud-client}/bin/nextcloudcmd -h -n --user ${nextcloudUser} --password ${nextcloudKey} --path $HOME/Documents/Music/ ${nextcloudUrl}/remote.php/webdav/Musique && ${pkgs.nextcloud-client}/bin/nextcloudcmd -h -n --user ${nextcloudUser} --password ${nextcloudKey} --path $HOME/Documents/Password/ ${nextcloudUrl}/remote.php/webdav/Password";
-#     TimeoutStopSec = "180";
-#     KillMode = "process";
-#     KillSignal = "SIGINT";
-#   };
-#   Install.WantedBy = ["multi-user.target"];
-# };
-
-# systemd.user.timers.nextcloud-autosync = {
-#   Unit.Description = "Automatic sync files with Nextcloud every hour";
-#   Timer.OnBootSec = "5min";
-#   Timer.OnUnitActiveSec = "60min";
-#   Install.WantedBy = ["multi-user.target" "timers.target"];
-# };
-
-# systemd.user.startServices = true;
