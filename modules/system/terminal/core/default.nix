@@ -20,7 +20,7 @@
     ripgrep
     wget
     # TODO: work on taiscale autosetup for all device 
-    tailscale
+    # tailscale
   ];
 }
 

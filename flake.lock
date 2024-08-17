@@ -8,16 +8,17 @@
         ]
       },
       "locked": {
-        "dirtyRev": "4bb996926e5e49f9e3d00b338d7a55247268e322-dirty",
-        "dirtyShortRev": "4bb9969-dirty",
-        "lastModified": 1721780268,
+        "lastModified": 1723897566,
         "narHash": "sha256-a2qTYqG24X2Cm1o3wMZPEPAncKqzGjoq4mRFMGsQQws=",
-        "type": "git",
-        "url": "file:///home/dylan/repo/clovis"
+        "owner": "paysancorrezien",
+        "repo": "clovis",
+        "rev": "fe88665575d711aeafba2f556785618a3176a30e",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/dylan/repo/clovis"
+        "owner": "paysancorrezien",
+        "repo": "clovis",
+        "type": "github"
       }
     },
     "disko": {
@@ -142,16 +143,17 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "dirtyRev": "c35b144b4f62f1ed8d161aa880c9d7bba58f7288-dirty",
-        "dirtyShortRev": "c35b144-dirty",
-        "lastModified": 1720035875,
-        "narHash": "sha256-DNsfab6YU1paj0uji72zYqPqGQ0oWcNOhqPuQlnAPgE=",
-        "type": "git",
-        "url": "file:///home/dylan/repo/keybswitch"
+        "lastModified": 1723897617,
+        "narHash": "sha256-LXvUMvWiplQAAR0VLKgUMUaHFS6wqqhsbasQ7Wygqhc=",
+        "owner": "paysancorrezien",
+        "repo": "keybswitch",
+        "rev": "5e9d58fbf805b9acf2e6dd030e9646963dcf5b6d",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/dylan/repo/keybswitch"
+        "owner": "paysancorrezien",
+        "repo": "keybswitch",
+        "type": "github"
       }
     },
     "keybswitch-src": {
