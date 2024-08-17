@@ -13,7 +13,7 @@ USER_NAME="dylan"
 get_password() {
     if ! command -v dialog &> /dev/null; then
         echo "Installing dialog..."
-        nix-env -iA nixos.dialog
+        nix-env -iA nixos.dialog &> /dev/null;
     fi
     password=$(dialog --passwordbox "Enter password for $USER_NAME:" 0 0 2>&1 >/dev/tty)
     echo "$password"
@@ -73,23 +73,21 @@ sudo nix --experimental-features "nix-command flakes" run github:nix-community/d
 echo "Installing NixOS with configuration: $CONFIG"
 sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace
 
-#TODO: use move from /tmo/ location instead ?
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
-echo "Cloning configuration repository to $FINAL_REPO_DIR..."
-sudo mkdir -p "$FINAL_REPO_DIR"
-sudo git clone "$REPO_URL" "$FINAL_REPO_DIR"
+echo "Moving configuration repository to $FINAL_REPO_DIR..."
+sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
+sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
 
 # Set passwords for the installed system
 echo "Setting passwords in the new system"
 sudo nixos-enter --root /mnt <<EOF
 # Set passwords
 echo "debug inside nix system : $USER_PASSWORD "
-echo '$USER_NAME:$USER_PASSWORD' | chpasswd
-echo 'root:$USER_PASSWORD' | chpasswd
-
+echo "$USER_NAME:$USER_PASSWORD" | chpasswd
+echo "root:$USER_PASSWORD" | chpasswd
 
 #TEST: maybe its useless
-sudo chown -R "$USER_NAME:$USER_NAME" "/mnt/home/$USER_NAME/.config"
+chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME/.config"
 EOF
 
 # Clean up temporary directory
