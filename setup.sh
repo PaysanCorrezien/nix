@@ -3,17 +3,23 @@ set -e
 
 # Function to prompt for password
 get_password() {
-	while true; do
-		read -s -p "Enter password for $1: " password
-		echo
-		read -s -p "Confirm password: " password2
-		echo
-		[ "$password" = "$password2" ] && break
-		echo "Passwords do not match. Please try again."
-	done
-	echo "$password"
+    while true; do
+        read -s -p "Enter password for $1: " password
+        echo
+        read -s -p "Confirm password: " password2
+        echo
+        [ "$password" = "$password2" ] && break
+        echo "Passwords do not match. Please try again."
+    done
+    echo "$password"
 }
 
+# Prompt for username with default
+read -p "Enter username (default: dylan): " USER_NAME
+USER_NAME=${USER_NAME:-dylan}
+
+# Set user and root password early
+USER_PASSWORD=$(get_password "user $USER_NAME and root")
 
 # Clean up existing temporary directory if it exists
 TEMP_REPO_DIR="/tmp/nixos-config"
@@ -26,10 +32,6 @@ fi
 echo "Installing required packages..."
 nix-env -iA nixos.git nixos.fzf
 
-# Prompt for username with default
-read -p "Enter username (default: dylan): " USER_NAME
-USER_NAME=${USER_NAME:-dylan}
-
 # Clone the repository to a temporary location
 REPO_URL="https://github.com/paysancorrezien/nix.git"
 TEMP_REPO_DIR="/tmp/nixos-config"
@@ -39,12 +41,10 @@ git clone "$REPO_URL" "$TEMP_REPO_DIR"
 # Get available configurations
 echo "Fetching available NixOS configurations..."
 CONFIGS=($(ls "$TEMP_REPO_DIR"/hosts/*.nix | xargs -n1 basename | sed 's/\.nix$//'))
-
 if [ ${#CONFIGS[@]} -eq 0 ]; then
-	echo "No NixOS configurations found in the hosts directory."
-	exit 1
+    echo "No NixOS configurations found in the hosts directory."
+    exit 1
 fi
-
 
 # Present available configurations
 echo "Available NixOS configurations:"
@@ -55,7 +55,6 @@ done
 # Use fzf to select configuration
 echo "Please select a configuration using fzf:"
 CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height=10 --layout=reverse --prompt="Select configuration > ")
-
 if [ -z "$CONFIG" ]; then
     echo "No configuration selected. Exiting."
     exit 1
@@ -68,17 +67,23 @@ echo "Setting up the disk"
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
 
 echo "Installing NixOS with configuration: $CONFIG"
-sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lockfile --show-trace --no-root-password
+sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace --no-root-password
 
-# Set user and root password
-USER_PASSWORD=$(get_password "user $USER_NAME and root")
+# Create user and set passwords for the installed system
+echo "Creating user $USER_NAME and setting passwords in the new system"
+sudo nixos-enter <<EOF
+# Create user if it doesn't exist
+if ! id "$USER_NAME" &>/dev/null; then
+    useradd -m -s /bin/bash "$USER_NAME"
+    # Add user to wheel group for sudo access
+    usermod -aG wheel "$USER_NAME"
+fi
 
-# Set passwords for the installed system
-echo "Setting password for user $USER_NAME in the new system"
-echo "$USER_NAME:$USER_PASSWORD" | sudo chpasswd -R /mnt
+# Set passwords
+echo "$USER_NAME:$USER_PASSWORD" | chpasswd
+echo "root:$USER_PASSWORD" | chpasswd
+EOF
 
-echo "Setting root password in the new system"
-echo "root:$USER_PASSWORD" | sudo chpasswd -R /mnt
 
 # Clone the repository to the user's .config/nix directory in the installed system
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
