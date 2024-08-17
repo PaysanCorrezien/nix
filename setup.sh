@@ -39,12 +39,19 @@ fi
 
 # Present available configurations
 echo "Available NixOS configurations:"
-select CONFIG in "${CONFIGS[@]}"; do
-	if [ -n "$CONFIG" ]; then
-		break
-	else
-		echo "Invalid selection. Please try again."
-	fi
+for i in "${!CONFIGS[@]}"; do 
+    echo "$((i+1)). ${CONFIGS[i]}"
+done
+
+while true; do
+    read -p "Enter the number of your chosen configuration: " choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#CONFIGS[@]}" ]; then
+        CONFIG="${CONFIGS[$((choice-1))]}"
+        echo "You selected: $CONFIG"
+        break
+    else
+        echo "Invalid selection. Please enter a number between 1 and ${#CONFIGS[@]}."
+    fi
 done
 
 echo "Setting up the disk"

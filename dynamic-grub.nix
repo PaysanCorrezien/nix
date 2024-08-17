@@ -7,6 +7,7 @@
     efiSupport = true;
     device = "nodev";
     forceInstall = true;
+    efiInstallAsRemovable = true;
     useOSProber = false;
     extraEntries = ''
       menuentry "Reboot" {
@@ -19,9 +20,10 @@
 
   };
   boot.loader.efi = {
-    canTouchEfiVariables = true;
+    # canTouchEfiVariables = true;
     efiSysMountPoint = "/boot";
   };
+  boot.kernelParams = [ "root=/dev/disk/by-partlabel/disk-main-root" ];
 }
 
 # boot.loader.grub.copyKernels = true;
