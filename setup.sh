@@ -14,6 +14,14 @@ get_password() {
 	echo "$password"
 }
 
+
+# Clean up existing temporary directory if it exists
+TEMP_REPO_DIR="/tmp/nixos-config"
+if [ -d "$TEMP_REPO_DIR" ]; then
+    echo "Removing existing temporary directory..."
+    rm -rf "$TEMP_REPO_DIR"
+fi
+
 # Install necessary packages
 echo "Installing required packages..."
 nix-env -iA nixos.git
