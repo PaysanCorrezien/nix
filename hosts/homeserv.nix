@@ -2,7 +2,7 @@
 { config, pkgs, ... }:
 
 {
-  config.settings = {
+  settings = {
     username = "dylan";
     isServer = true;
     locale = "fr_FR.UTF-8";
@@ -12,9 +12,8 @@
     work = false;
     gaming = false;
     tailscale.enable = true;
-    windowManager = "gnome";
-    displayServer = "xorg";
-    ai.enable = true;
+    windowManager = null;
+    displayServer = null;
     social.enable = false;
     architecture = "x86_64";
     tailscaleIP = "100.100.110.20";
@@ -33,6 +32,9 @@
     defaultGateway.interface = "enp7s0";
     defaultGateway.address = "192.168.1.1";
     networkmanager.enable = true;
+
+    # : allow SSH and Docker ports
+    firewall.allowedTCPPorts = [ 22 2376 2377 7946 4789 ];
     interfaces = {
       enp7s0 = { # Replace with your actual network interface
         useDHCP = false;
@@ -50,12 +52,9 @@
 
   hardware.opengl = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    #    driSupport = true;
+    #    driSupport32Bit = true;
   };
-
-  # Firewall configuration (example: allow SSH and Docker ports)
-  networking.firewall.allowedTCPPorts = [ 22 2376 2377 7946 4789 ];
 
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 
