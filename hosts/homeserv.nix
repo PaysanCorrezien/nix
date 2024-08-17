@@ -49,10 +49,9 @@
   # Install NVIDIA drivers and configure Docker to use NVIDIA runtime
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  hardware.opengl = {
-    enable = true;
-    driSupport32Bit = true;
-  };
+  hardware.graphics.enable = true;
+  hardware.graphics.enable32Bit = true;
+  hardware.nvidia-container-toolkit.enable = true;
 
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 

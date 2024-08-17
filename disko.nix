@@ -54,4 +54,16 @@ in {
       };
     };
   };
+  # Override the conflicting fileSystems configurations
+  fileSystems = {
+    "/" = lib.mkForce {
+      device = "/dev/disk/by-partlabel/disk-main-root";
+      fsType = "ext4";
+    };
+    "/boot" = lib.mkForce {
+      device = "/dev/disk/by-partlabel/disk-main-ESP";
+      fsType = "vfat";
+    };
+  };
 }
+
