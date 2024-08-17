@@ -6,6 +6,7 @@ let
   # i want this to be able if needed to enable networkmanager quickly
   # and i cant get wifi no work with fix ip on networkmanage + networkmanager cant coexixst with a static ip defined 'outside'.... 💀
   # TODO: find abetter way to passs argument to nixos-rebuild switch to not use this poor method
+  # TODO: create a command or alias for this
   useDhcp = if builtins.getEnv "USE_DHCP" == "1" then
     true
   else if builtins.hasAttr "useDhcp" config.settings then

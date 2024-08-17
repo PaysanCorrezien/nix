@@ -37,7 +37,8 @@ in {
     ai.enable = false;
     social.enable = true;
     architecture = "x86_64";
-    tailscaleIP = "100.100.100.110";
+    autoSudo = true;
+    tailscaleIP = "100.69.180.101";
     minimalNvim = false;
     hostname = "workstation";
   };
