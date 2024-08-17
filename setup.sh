@@ -12,7 +12,6 @@ USER_NAME="dylan"
 # Function to prompt for password using dialog
 get_password() {
     if ! command -v dialog &> /dev/null; then
-        echo "Installing dialog..."
         nix-env -iA nixos.dialog &> /dev/null;
     fi
     password=$(dialog --passwordbox "Enter password for $USER_NAME:" 0 0 2>&1 >/dev/tty)
