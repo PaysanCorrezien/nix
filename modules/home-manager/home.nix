@@ -112,4 +112,6 @@ in {
   # settings.remmina.enable = !settings.isServer;
   settings.remmina.enable = settings.work;
   settings.minimalNvim = !settings.isServer;
+  settings.gnome.extra.enable =
+    !settings.isServer; # TODO: make gnone.nix enable its extra alone
 }
