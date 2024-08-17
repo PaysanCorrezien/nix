@@ -5,6 +5,8 @@ set -e
 set -x
 
 # Hardcode username for now
+# TODO: make this configurable here and in config ?
+# maybe write this to a fil that the flake read  for the username ?
 USER_NAME="dylan"
 
 # Function to prompt for password using dialog
@@ -71,31 +73,24 @@ sudo nix --experimental-features "nix-command flakes" run github:nix-community/d
 echo "Installing NixOS with configuration: $CONFIG"
 sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace
 
-# Create user and set passwords for the installed system
-echo "Creating user $USER_NAME and setting passwords in the new system"
-sudo nixos-enter --root /mnt <<EOF
-# Create user if it doesn't exist
-if ! id "$USER_NAME" &>/dev/null; then
-    useradd -m -s /bin/bash "$USER_NAME"
-    # Add user to wheel group for sudo access
-    usermod -aG wheel "$USER_NAME"
-fi
-
-# Set passwords
-echo "$USER_NAME:$USER_PASSWORD" | chpasswd
-echo "root:$USER_PASSWORD" | chpasswd
-
-# Debug output
-echo "Debug: User $USER_NAME created and password set"
-echo "Debug: Root password set"
-EOF
-
-# Clone the repository to the user's .config/nix directory in the installed system
+#TODO: use move from /tmo/ location instead ?
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
 echo "Cloning configuration repository to $FINAL_REPO_DIR..."
 sudo mkdir -p "$FINAL_REPO_DIR"
 sudo git clone "$REPO_URL" "$FINAL_REPO_DIR"
+
+# Set passwords for the installed system
+echo "Setting passwords in the new system"
+sudo nixos-enter --root /mnt <<EOF
+# Set passwords
+echo "debug inside nix system : $USER_PASSWORD "
+echo '$USER_NAME:$USER_PASSWORD' | chpasswd
+echo 'root:$USER_PASSWORD' | chpasswd
+
+
+#TEST: maybe its useless
 sudo chown -R "$USER_NAME:$USER_NAME" "/mnt/home/$USER_NAME/.config"
+EOF
 
 # Clean up temporary directory
 rm -rf "$TEMP_REPO_DIR"
@@ -103,3 +98,4 @@ rm -rf "$TEMP_REPO_DIR"
 echo "Installation complete. Please reboot into your new system."
 echo "You can now log in as $USER_NAME or root with the password you set."
 echo "Your NixOS configuration has been cloned to /home/$USER_NAME/.config/nix"
+#TODO: auto ssh key gen ?

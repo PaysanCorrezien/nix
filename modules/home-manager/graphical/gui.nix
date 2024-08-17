@@ -3,11 +3,9 @@
 let isServer = settings.isServer;
 
 in {
-  # imports = [
-  #
-  # ];
-
-  home.packages = with pkgs; [ xdotool ];
+  config = lib.mkIf config.settings.gnome.extra.enable {
+    home.packages = with pkgs; [ xdotool ];
+  };
 
 }
 
