@@ -24,7 +24,7 @@ fi
 
 # Install necessary packages
 echo "Installing required packages..."
-nix-env -iA nixos.git
+nix-env -iA nixos.git nixos.fzf
 
 # Prompt for username with default
 read -p "Enter username (default: dylan): " USER_NAME
@@ -52,17 +52,14 @@ for i in "${!CONFIGS[@]}"; do
     echo "$((i+1))) ${CONFIGS[i]}"
 done
 
-# User selection
-CONFIG=""
-while [ -z "$CONFIG" ]; do
-    echo "Enter the number of your chosen configuration:"
-    read choice
-    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#CONFIGS[@]}" ]; then
-        CONFIG="${CONFIGS[$((choice-1))]}"
-    else
-        echo "Invalid selection. Please enter a number between 1 and ${#CONFIGS[@]}."
-    fi
-done
+# Use fzf to select configuration
+echo "Please select a configuration using fzf:"
+CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height=10 --layout=reverse --prompt="Select configuration > ")
+
+if [ -z "$CONFIG" ]; then
+    echo "No configuration selected. Exiting."
+    exit 1
+fi
 
 echo "You selected: $CONFIG"
 echo "Installing NixOS with configuration: $CONFIG"
