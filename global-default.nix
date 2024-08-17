@@ -19,6 +19,7 @@ let
     architecture = lib.mkDefault "x86_64"; # Default architecture
     tailscaleIP = lib.mkDefault "100.100.100.120"; # Default Tailscale IP
     minimalNvim = lib.mkDefault false; # Default to full Neovim configuration
+    autoSudo = lib.mkDefault false;
   };
 in {
   options = {
@@ -109,6 +110,13 @@ in {
         default = globalDefaults.minimalNvim;
         description = "Use minimal Neovim configuration.";
       };
+      autoSudo = lib.mkOption {
+        type = lib.types.bool;
+        default = globalDefaults.autoSudo;
+        #NOTE: this is realy convenient for desktop because we rebuild config a lot, but it's not secure
+        description =
+          "this add users to sudoers / no password and allow access to home manager service for user";
+      };
     };
   };
 
@@ -131,6 +139,7 @@ in {
       architecture = globalDefaults.architecture;
       tailscaleIP = globalDefaults.tailscaleIP;
       minimalNvim = globalDefaults.minimalNvim;
+      autoSudo = globalDefaults.autoSudo;
     };
 
   };
