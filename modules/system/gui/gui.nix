@@ -1,4 +1,5 @@
 { lib, config, pkgs, ... }:
+
 let
   username = "dylan";
   isServer = config.settings.isServer;
@@ -7,7 +8,6 @@ in {
   imports = [
     ./dev/python.nix
     ./programs/espanso.nix
-    # ./programs/thunderbird.nix
     ./extra/work.nix
     ./extra/audio.nix
     ./extra/social.nix
@@ -16,11 +16,8 @@ in {
     ./extra/gnome.nix
     ./extra/ollama.nix
     ./extra/screensaver.nix
-    #FIXME: create separate flakes input, fetchtree breack reinstall
     ./extra/clovis.nix
     ./extra/keybswitch.nix
-    #
-    # ../home-manager/gnome/keybinds.nix
   ];
 
   options.settings.gui = {
@@ -31,21 +28,33 @@ in {
   config = lib.mkMerge [
     { settings.gui.enable = lib.mkDefault defaultGuiEnable; }
     (lib.mkIf config.settings.gui.enable {
-      # Enable automatic login for the user.
+      # Enable X server only if display server is not null
+      services.xserver.enable = config.settings.displayServer != null;
 
-      services.xserver.enable = true;
-      services.xserver.desktopManager.gnome.enable = true;
-      services.displayManager.sddm = {
-        enable = true;
-        wayland.enable = false;
-        theme = "catppuccin-mocha";
-        package = pkgs.kdePackages.sddm;
-        # extraPackages = with pkgs; [ catppucin-sddm ];
-        autoNumlock = true;
-        settings = { General = { displayManager = "x11"; }; };
-      };
-      # environment.systemPackages = [
-      # ];
+      # Configure display manager based on settings
+      services.displayManager =
+        lib.mkIf (config.settings.windowManager != null) {
+          sddm = {
+            enable = true;
+            wayland.enable = config.settings.displayServer == "wayland";
+            theme = "catppuccin-mocha";
+            package = pkgs.kdePackages.sddm;
+            autoNumlock = true;
+            settings = {
+              General = {
+                DisplayServer =
+                  if config.settings.displayServer == "wayland" then
+                    "wayland"
+                  else
+                    "x11";
+              };
+            };
+          };
+        };
+
+      # Enable GNOME desktop manager if windowManager is set to "gnome"
+      services.xserver.desktopManager.gnome.enable =
+        config.settings.windowManager == "gnome";
 
       hardware.pulseaudio.enable = false;
 
@@ -56,16 +65,14 @@ in {
         alsa.enable = true;
         alsa.support32Bit = true;
         pulse.enable = true;
-        # If you want to use JACK applications, uncomment this
-        #jack.enable = true;
       };
+
       services.printing.enable = true;
       services.usbmuxd.enable = true;
 
       environment.systemPackages = with pkgs; [
         helix
         zed-editor
-        # wezterm
         todoist-electron
         rofi
         obsidian
@@ -74,7 +81,6 @@ in {
         flameshot
         libimobiledevice
         ifuse
-        #flameshot need FIXME: for wayland launch via shortcut or find how to add to gnome allow list of app https://flameshot.org/docs/guide/wayland-help/
         (pkgs.catppuccin-sddm.override {
           flavor = "mocha";
           font = "Noto Sans";
@@ -82,18 +88,15 @@ in {
           background =
             "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
           loginBackground = true;
-          # ClockEnabled = true;
         })
         xdg-desktop-portal-gnome
         xdg-desktop-portal
-
       ];
 
       # NOTE: TODOIST 
       nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
 
-      # wake from sleep ? for main computer 
-      # FIXME: not enough to wake from suspend 
+      # wake from sleep for main computer 
       services.udev.extraRules = ''
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="removable", ATTR{power/wakeup}="enabled"
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="fixed", ATTR{power/wakeup}="enabled"
@@ -107,4 +110,3 @@ in {
     })
   ];
 }
-

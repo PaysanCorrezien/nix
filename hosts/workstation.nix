@@ -34,7 +34,7 @@ in {
     tailscale.enable = true;
     windowManager = "gnome";
     displayServer = "xorg";
-    ai.enable = false;
+    # ai.enable = false;
     social.enable = true;
     architecture = "x86_64";
     autoSudo = true;

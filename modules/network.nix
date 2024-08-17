@@ -10,7 +10,7 @@ in {
       interfaceName = "tailscale0";
       authKeyFile = tailscaleAuthKeyFile;
       extraUpFlags = [
-        "--ssh"
+        # "--ssh"
         "--hostname=${cfg.networking.hostName}"
         "--advertise-tags=tag:nixos${
           lib.optionalString cfg.settings.isServer ",tag:server"

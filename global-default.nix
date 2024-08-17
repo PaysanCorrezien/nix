@@ -3,22 +3,25 @@
 let
   globalDefaults = {
     username = lib.mkDefault "dylan";
-    hostname = lib.mkDefault "nixos"; # Default hostname
+    hostname = lib.mkDefault "nixos";
     isServer = lib.mkDefault false;
     locale = lib.mkDefault "fr_FR.UTF-8";
     virtualisation.enable = lib.mkDefault false;
     environment = lib.mkDefault "home";
-    isExperimental = lib.mkDefault false; # NOTE: this is not currently used
-    work = lib.mkDefault true; # NOTE: install work apps
+    isExperimental = lib.mkDefault false;
+    work = lib.mkDefault true;
     gaming = lib.mkDefault true;
-    tailscale.enable = lib.mkDefault false; # Enable Tailscale by default
-    windowManager = lib.mkDefault "gnome"; # Default window manager
-    displayServer = lib.mkDefault "xorg"; # Default display server
-    ai.enable = lib.mkDefault false; # Enable AI tools
-    social.enable = lib.mkDefault true; # NOTE: install social apps like discord
-    architecture = lib.mkDefault "x86_64"; # Default architecture
-    tailscaleIP = lib.mkDefault "100.100.100.120"; # Default Tailscale IP
-    minimalNvim = lib.mkDefault false; # Default to full Neovim configuration
+    tailscale.enable = lib.mkDefault false;
+    windowManager = lib.mkDefault "gnome";
+    displayServer = lib.mkDefault "xorg";
+    ai = {
+      server.enable = lib.mkDefault false;
+      client.enable = lib.mkDefault false;
+    };
+    social.enable = lib.mkDefault true;
+    architecture = lib.mkDefault "x86_64";
+    tailscaleIP = lib.mkDefault "100.100.100.120";
+    minimalNvim = lib.mkDefault false;
     autoSudo = lib.mkDefault false;
   };
 in {
@@ -83,17 +86,30 @@ in {
         type = lib.types.nullOr
           (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
         default = globalDefaults.windowManager;
-        description = "Choose window manager (gnome, plasma, xfce, hyprland).";
+        description =
+          "Choose window manager (gnome, plasma, xfce, hyprland) or null for terminal-only.";
       };
       displayServer = lib.mkOption {
         type = lib.types.nullOr (lib.types.enum [ "xorg" "wayland" ]);
         default = globalDefaults.displayServer;
-        description = "Choose display server (wayland, xorg).";
+        description =
+          "Choose display server (wayland, xorg) or null for terminal-only.";
       };
-      ai.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.ai.enable;
-        description = "Enable AI tools.";
+      ai = {
+        server = {
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = globalDefaults.ai.server.enable;
+            description = "Enable AI tools for server.";
+          };
+        };
+        client = {
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = globalDefaults.ai.client.enable;
+            description = "Enable AI tools for client.";
+          };
+        };
       };
       architecture = lib.mkOption {
         type = lib.types.enum [ "x86_64" "aarch64" "riscv64" ];
@@ -113,9 +129,8 @@ in {
       autoSudo = lib.mkOption {
         type = lib.types.bool;
         default = globalDefaults.autoSudo;
-        #NOTE: this is realy convenient for desktop because we rebuild config a lot, but it's not secure
         description =
-          "this add users to sudoers / no password and allow access to home manager service for user";
+          "Add users to sudoers with no password and allow access to home manager service for user.";
       };
     };
   };
@@ -135,12 +150,14 @@ in {
       tailscale.enable = globalDefaults.tailscale.enable;
       windowManager = globalDefaults.windowManager;
       displayServer = globalDefaults.displayServer;
-      ai.enable = globalDefaults.ai.enable;
+      ai = {
+        server.enable = globalDefaults.ai.server.enable;
+        client.enable = globalDefaults.ai.client.enable;
+      };
       architecture = globalDefaults.architecture;
       tailscaleIP = globalDefaults.tailscaleIP;
       minimalNvim = globalDefaults.minimalNvim;
       autoSudo = globalDefaults.autoSudo;
     };
-
   };
 }
