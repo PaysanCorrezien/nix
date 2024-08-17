@@ -37,22 +37,27 @@ if [ ${#CONFIGS[@]} -eq 0 ]; then
 	exit 1
 fi
 
+
 # Present available configurations
 echo "Available NixOS configurations:"
 for i in "${!CONFIGS[@]}"; do 
-    echo "$((i+1)). ${CONFIGS[i]}"
+    echo "$((i+1))) ${CONFIGS[i]}"
 done
 
-while true; do
-    read -p "Enter the number of your chosen configuration: " choice
+# User selection
+CONFIG=""
+while [ -z "$CONFIG" ]; do
+    echo "Enter the number of your chosen configuration:"
+    read choice
     if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#CONFIGS[@]}" ]; then
         CONFIG="${CONFIGS[$((choice-1))]}"
-        echo "You selected: $CONFIG"
-        break
     else
         echo "Invalid selection. Please enter a number between 1 and ${#CONFIGS[@]}."
     fi
 done
+
+echo "You selected: $CONFIG"
+echo "Installing NixOS with configuration: $CONFIG"
 
 echo "Setting up the disk"
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
