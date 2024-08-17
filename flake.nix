@@ -27,23 +27,21 @@
   outputs = { self, nixpkgs, home-manager, sops-nix, disko, clovis, keybswitch
     , ... }@inputs:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      mkSystem = hostname:
+        nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs nixpkgs; };
+          modules = [
+            ./imports.nix
+            (./hosts + "/${hostname}.nix")
+            ({ config, ... }: {
+              nixpkgs.hostPlatform = "${config.settings.architecture}-linux";
+            })
+          ];
+        };
     in {
       nixosConfigurations = {
-        lenovo = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs nixpkgs; };
-          modules = [ ./imports.nix ./hosts/lenovo.nix ];
-        };
-        workstation = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs nixpkgs; };
-          modules = [ ./imports.nix ./hosts/workstation.nix ];
-        };
+        lenovo = mkSystem "lenovo";
+        workstation = mkSystem "workstation";
       };
     };
 }

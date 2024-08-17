@@ -15,5 +15,4 @@
   ] ++ lib.optional (builtins.pathExists /etc/nixos/hardware-configuration.nix)
     /etc/nixos/hardware-configuration.nix;
 
-  nixpkgs.hostPlatform = "x86_64-linux";
 }
