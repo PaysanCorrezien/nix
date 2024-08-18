@@ -111,7 +111,8 @@ in {
   settings.wezterm.enable = !settings.isServer;
   # settings.remmina.enable = !settings.isServer;
   settings.remmina.enable = settings.work;
-  settings.minimalNvim = !settings.isServer;
+  settings.minimalNvim =
+    settings.isServer; # NOTE: only enable this for server this time
   settings.gnome.extra.enable =
     !settings.isServer; # TODO: make gnone.nix enable its extra alone
 }
