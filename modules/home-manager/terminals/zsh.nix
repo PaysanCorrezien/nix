@@ -92,10 +92,12 @@ in {
         ll = "ls -l";
         update = "sudo nixos-rebuild switch";
         sw = "~/.config/nix/scripts/rebuild.sh";
+        set-wp = ''
+          gsettings set org.gnome.desktop.background picture-uri "file://$(realpath $1)"'';
         switchkb = "switch-keyboard-layout";
         # NOTE: This alias is used to find the nix package of a binary, and open the path in the file manager
         np = ''
-                   function _findpkg() { 
+          function _findpkg() { 
             if [ -z "$1" ]; then 
               echo "Usage: findnixpkg <binary_name>"
               return 1
@@ -110,9 +112,7 @@ in {
             nix_store_path=$(readlink -f "$binary_path")
             yazi $(dirname "$nix_store_path")
           }; _findpkg'';
-
       };
     };
   };
 }
-

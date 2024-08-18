@@ -86,7 +86,8 @@ echo "$USER_NAME:$USER_PASSWORD" | chpasswd
 echo "root:$USER_PASSWORD" | chpasswd
 
 #TEST: maybe its useless
-chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME/.config"
+#FIXME: not properly set atm?
+chown -R "$USER_NAME:users" "/home/$USER_NAME/.config"
 EOF
 
 # Clean up temporary directory

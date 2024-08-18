@@ -25,21 +25,21 @@ in {
     virtualisation.docker = {
       enable = true;
       enableOnBoot = true;
-      # enableNvidia = true; # Enable NVIDIA runtime for Docker
-      daemon.settings = {
-        data-root = "/var/lib/docker"; # Change this path as needed
-      };
-      extraOptions = ''
-        {
-          "default-runtime": "nvidia",
-          "runtimes": {
-            "nvidia": {
-              "path": "nvidia-container-runtime",
-              "runtimeArgs": []
-            }
-          }
-        }
-      '';
+      enableNvidia = true; # Enable NVIDIA runtime for Docker
+      # daemon.settings = {
+      #   data-root = "/var/lib/docker"; # Change this path as needed
+      # };
+      # extraOptions = ''
+      #   {
+      #     "default-runtime": "nvidia",
+      #     "runtimes": {
+      #       "nvidia": {
+      #         "path": "nvidia-container-runtime",
+      #         "runtimeArgs": []
+      #       }
+      #     }
+      #   }
+      # '';
     };
     # Add CUDA and cuDNN for AI workloads
     environment.systemPackages = with pkgs; [

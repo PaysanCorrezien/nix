@@ -36,13 +36,13 @@ in {
       }];
     };
     environment.systemPackages = [ pkgs.tailscale ];
-    services.openssh = {
-      enable = true;
-      listenAddresses = [{
-        addr = cfg.settings.tailscaleIP;
-        port = 22;
-      }];
-    };
+    # services.openssh = {
+    #   enable = true;
+    #   listenAddresses = [{
+    #     addr = cfg.settings.tailscaleIP;
+    #     port = 22;
+    #   }];
+    # };
     # Replace the assertion with a warning
     warnings =
       lib.optional (cfg.settings.tailscale.enable && tailscaleAuthKey == "")
