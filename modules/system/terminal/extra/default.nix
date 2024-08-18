@@ -33,6 +33,7 @@ in {
       ripgrep-all
       stylua
       gcc
+      sshfs
     ]);
   };
 }
