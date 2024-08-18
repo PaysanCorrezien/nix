@@ -1,5 +1,4 @@
-# homeserver.nix
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   settings = {
@@ -17,17 +16,37 @@
     social.enable = false;
     architecture = "x86_64";
     tailscaleIP = "100.100.110.20";
-    hostname = "homeserver";
+    hostname = "homeserv";
     ai.server.enable = true;
   };
 
-  # Enable SSH
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+      KbdInteractiveAuthentication = false;
+      X11Forwarding = false;
+      AuthenticationMethods = "publickey";
+      UsePAM = false;
+    };
+    extraConfig = ''
+      AllowUsers ${config.settings.username}
+      PubkeyAuthentication yes
+      AllowTcpForwarding no
+      AllowAgentForwarding no
+      MaxAuthTries 10
+    '';
+  };
 
-  # TODO: make this automatic too , with card detection and only to the primary one ?
+  users.users.${config.settings.username} = {
+    openssh.authorizedKeys.keyFiles =
+      [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
+  };
+
   # Configure static IP dynamically
   networking = {
-    hostName = "homeserver"; # Define the hostname
+    hostName = "homeserv";
     defaultGateway.interface = "enp7s0";
     defaultGateway.address = "192.168.1.1";
     networkmanager.enable = true;
@@ -53,6 +72,14 @@
   hardware.graphics.enable32Bit = true;
   hardware.nvidia-container-toolkit.enable = true;
 
+  services.duplicati = {
+    enable = true;
+    port = 8200;
+    interface = "any";
+    # dataDirectory = "/var/lib/duplicati";
+    #NOTE: testing if running as user is fine
+    user = config.settings.username; 
+  };
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 
   # TODO: make a core config that is imported automatically for following settings
