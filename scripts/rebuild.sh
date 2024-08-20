@@ -40,6 +40,6 @@ else
 fi
 
 echo "restarting home manager now"
-systemctl restart home-manager-dylan.service
+sudo systemctl restart home-manager-dylan.service
 echo "Running Chezmoi update"
 $HOME/.local/bin/update-dotfiles "https://github.com/PaysanCorrezien/dotfiles"

@@ -5,6 +5,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+#FIXME: sync without ssh
 # Check if repo URL is provided
 if [ "$#" -ne 1 ]; then
 	echo -e "${RED}Error: Repository URL is required.${NC}"
