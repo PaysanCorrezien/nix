@@ -1,14 +1,24 @@
-# This example uses YAML anchors which allows reuse of multiple keys 
-# without having to repeat yourself.
-# Also see https://github.com/Mic92/dotfiles/blob/master/nixos/.sops.yaml
-# for a more complex example.
 keys:
-  - &dylan_user age1505hgkl2lxyly09p22zc6re2c2ptmfrqtgxm2hch3x4w8l075enqrdsj5f
-  # - &admin_bob age1505hgkl2lxyly09p22zc6re2c2ptmfrqtgxm2hch3x4w8l075enqrdsj5f
+  - &global_key age1505hgkl2lxyly09p22zc6re2c2ptmfrqtgxm2hch3x4w8l075enqrdsj5f
+  - &desktop_key age1tsnhdtmtad8akk6at5nwyr4fgj2h4wdh6advzpnltxgdz6ufw9xqv8qz28
+  - &homeserv_key age1q5zt5ajshkzatv4efthaek90nj0tlspr5mdvwhrmdcz6ydz5hg0sundywk
+
 creation_rules:
-  - path_regex: modules/sops/[^/]+\.(yaml|json|env|ini)$
+  #NOTE: here i give all key access to all key for my basic infos
+  #then more host specific key are only available by their respective key
+  - path_regex: modules/sops/kumo\.yaml$
     key_groups:
       - age:
-        - *dylan_user
-    # - pgp:
-      # - *admin_alice
+          - *global_key
+          - *desktop_key
+          - *homeserv_key
+
+  - path_regex: modules/sops/pasokon\.yaml$
+    key_groups:
+      - age:
+          - *desktop_key
+
+  - path_regex: modules/sops/ie\.yaml$
+    key_groups:
+      - age:
+          - *homeserv_key

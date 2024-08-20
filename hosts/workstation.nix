@@ -40,7 +40,8 @@ in {
     autoSudo = true;
     tailscaleIP = "100.69.180.101";
     hostname = "workstation";
-  };
+    useDhcp = false;
+    };
 
   config.networking = {
     hostName = config.settings.hostname;

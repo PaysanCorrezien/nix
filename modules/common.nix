@@ -25,6 +25,12 @@ in {
       LC_TIME = settings.locale;
     };
   };
+
+  settings.sops = {
+    enableGlobal = true;
+    machineType = "desktop";  # or "homeserver" or "vps"
+  };
+
   # Configure console keymap
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -50,5 +56,8 @@ in {
     backupFileExtension =
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };
+  #   sharedModules = [
+  #   inputs.sops-nix.homeManagerModules.sops
+  # ];
   };
 }

@@ -15,6 +15,7 @@ let
   readSecretFile = file:
     lib.optionalString (builtins.pathExists file) (builtins.readFile file);
 
+  # NOTE: https://github.com/Mic92/sops-nix/issues/498
   nextcloudUrl = readSecretFile "/run/secrets/nextcloudUrl";
   nextcloudUser = readSecretFile "/run/secrets/nextcloudUser";
   passwordLocalPath = "${config.home.homeDirectory}/Documents/Password";
