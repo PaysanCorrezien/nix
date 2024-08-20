@@ -29,6 +29,7 @@ in {
     ./gnome/settings.nix
     ./programs/nvim.nix
     ./programs/remmina.nix
+
     ./programs/keepassxc.nix
     ./programs/thunderbird.nix
     # ./programs/keybswitch.nix

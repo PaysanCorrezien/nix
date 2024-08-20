@@ -37,6 +37,7 @@ in {
     }
 
 
+#TEST: is this realy still usefull ?
     (lib.mkIf cfg.enableGlobal {
       sops.secrets = {
         "tailscale_auth_key" = {

@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 
+#TODO:: move all this out of here , and inside their related file
+# find a way to genreate the doc for the options
 let
   globalDefaults = {
     username = lib.mkDefault "dylan";

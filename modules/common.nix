@@ -26,10 +26,6 @@ in {
     };
   };
 
-  settings.sops = {
-    enableGlobal = true;
-    machineType = "desktop";  # or "homeserver" or "vps"
-  };
 
   # Configure console keymap
   nixpkgs.config.allowUnfree = true;

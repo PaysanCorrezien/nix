@@ -41,7 +41,11 @@ in {
     tailscaleIP = "100.69.180.101";
     hostname = "workstation";
     useDhcp = false;
+    sops = { #NOTE: from sops.nix file 
+    enableGlobal = true;
+    machineType = "desktop";  # or "homeserver" or "vps"
     };
+  };
 
   config.networking = {
     hostName = config.settings.hostname;
@@ -72,6 +76,7 @@ in {
       address = "192.168.1.1";
       interface = "wlp4s0";
     };
+
 
     nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];
   };
