@@ -6,16 +6,18 @@ let
   # i want this to be able if needed to enable networkmanager quickly
   # and i cant get wifi no work with fix ip on networkmanage + networkmanager cant coexixst with a static ip defined 'outside'.... 💀
   # TODO: find abetter way to passs argument to nixos-rebuild switch to not use this poor method
-  useDhcp = if builtins.getEnv "USE_DHCP" == "1" then
-    true
-  else if builtins.hasAttr "useDhcp" config.settings then
-    config.settings.useDhcp
-  else
-    false;
+  useDhcp =
+    if builtins.getEnv "USE_DHCP" == "1" then
+      true
+    else if builtins.hasAttr "useDhcp" config.settings then
+      config.settings.useDhcp
+    else
+      false;
 
   wifiKey = lib.optionalString (builtins.pathExists "/run/secrets/wifi_homekey")
     (builtins.readFile "/run/secrets/wifi_homekey");
-in {
+in
+{
   options.settings.useDhcp = lib.mkOption {
     type = lib.types.bool;
     default = false;
@@ -42,9 +44,10 @@ in {
     tailscaleIP = "100.69.180.101";
     hostname = "workstation";
     useDhcp = false;
-    sops = { #NOTE: from sops.nix file 
-    enableGlobal = true;
-    machineType = "desktop";  # or "homeserver" or "vps"
+    sops = {
+      #NOTE: from sops.nix file 
+      enableGlobal = true;
+      machineType = "desktop"; # or "homeserver" or "vps"
     };
   };
 

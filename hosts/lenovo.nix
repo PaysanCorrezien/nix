@@ -7,16 +7,18 @@ let
   # and i cant get wifi no work with fix ip on networkmanage + networkmanager cant coexixst with a static ip defined 'outside'.... 💀
   # TODO: find abetter way to passs argument to nixos-rebuild switch to not use this poor method
   # TODO: create a command or alias for this
-  useDhcp = if builtins.getEnv "USE_DHCP" == "1" then
-    true
-  else if builtins.hasAttr "useDhcp" config.settings then
-    config.settings.useDhcp
-  else
-    false;
+  useDhcp =
+    if builtins.getEnv "USE_DHCP" == "1" then
+      true
+    else if builtins.hasAttr "useDhcp" config.settings then
+      config.settings.useDhcp
+    else
+      false;
 
   wifiKey = lib.optionalString (builtins.pathExists "/run/secrets/wifi_homekey")
     (builtins.readFile "/run/secrets/wifi_homekey");
-in {
+in
+{
   options.settings.useDhcp = lib.mkOption {
     type = lib.types.bool;
     default = false;

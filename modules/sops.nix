@@ -2,7 +2,8 @@
 
 let
   cfg = config.settings.sops;
-in {
+in
+{
   imports = [
     inputs.sops-nix.nixosModules.sops
   ];
@@ -19,16 +20,16 @@ in {
             };
           };
         };
-        default = {};
+        default = { };
         description = "Sops-related settings";
       };
     };
-    default = {};
+    default = { };
   };
 
-   config = lib.mkMerge [
+  config = lib.mkMerge [
     {
-   environment.systemPackages = with pkgs; [ sops age ];
+      environment.systemPackages = with pkgs; [ sops age ];
       sops = {
         defaultSopsFormat = "yaml";
         #NOTE: except a key name specific by host ? maybe find a more appropriate way than this now ? based on nixos.config hostname directly ?
@@ -37,7 +38,7 @@ in {
     }
 
 
-#TEST: is this realy still usefull ?
+    #TEST: is this realy still usefull ?
     (lib.mkIf cfg.enableGlobal {
       sops.secrets = {
         "tailscale_auth_key" = {
@@ -45,7 +46,7 @@ in {
           group = "root";
           mode = "0440";
         };
-#NOTE: for home manager , but may be usefull on others host later
+        #NOTE: for home manager , but may be usefull on others host later
         "nextcloudUrl" = {
           sopsFile = ./sops/kumo.yaml;
           owner = "dylan";

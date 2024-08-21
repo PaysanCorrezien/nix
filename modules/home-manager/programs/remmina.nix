@@ -97,7 +97,8 @@ let
     ignore-tls-errors=1
   '';
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

@@ -2,7 +2,8 @@
 let
   windowManager = config.settings.windowManager;
   cfg = config.settings;
-in {
+in
+{
   # gsconnect need these
   # networking.firewall.allowedTCPPorts = [ 1714 1764 ];
   # networking.firewall.allowedUDPPorts = [ 1714 1764 ];

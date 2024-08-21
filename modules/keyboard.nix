@@ -5,7 +5,8 @@ let
   debugSettings = builtins.trace
     "keyboard.nix: config.settings = ${builtins.toJSON config.settings}"
     config.settings;
-in {
+in
+{
   # Configure keymap in X11
   services.xserver = {
     xkb.layout = "us,fr";

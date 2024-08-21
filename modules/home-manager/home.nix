@@ -13,8 +13,10 @@ let
     cp ${settingsFilePath}.init ${settingsFilePath}
     chmod u+w ${settingsFilePath}
   '';
-in {
-  imports = [ # Configuration via home.nix
+in
+{
+  imports = [
+    # Configuration via home.nix
     ./programs/nextloud-cli.nix
     ./graphical/gui.nix
     ./mime-type.nix
@@ -116,12 +118,16 @@ in {
   settings.minimalNvim =
     settings.isServer; # NOTE: only enable this for server this time
 
-  settings.gnome.extra.enable = lib.mkIf (
-  !isServer &&
-  settings.windowManager == "gnome"
-) true;
-  settings.plasma.extra.enable = lib.mkIf (
-  !isServer &&
-  settings.windowManager == "plasma"
-) true;
+  settings.gnome.extra.enable = lib.mkIf
+    (
+      !isServer &&
+      settings.windowManager == "gnome"
+    )
+    true;
+  settings.plasma.extra.enable = lib.mkIf
+    (
+      !isServer &&
+      settings.windowManager == "plasma"
+    )
+    true;
 }

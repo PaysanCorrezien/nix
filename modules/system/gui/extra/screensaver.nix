@@ -4,7 +4,8 @@ let
   lockScript = pkgs.writeShellScript "lock-screen" ''
     ${pkgs.xscreensaver}/bin/xscreensaver-command -lock
   '';
-in {
+in
+{
   # Install XScreenSaver
   environment.systemPackages = with pkgs; [ xscreensaver ];
 

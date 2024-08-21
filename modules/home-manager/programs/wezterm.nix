@@ -10,7 +10,8 @@ let
     return require("utils.config"):new():add("config"):add "mappings"
   '';
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

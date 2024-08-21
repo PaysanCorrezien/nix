@@ -4,7 +4,8 @@ let
   cfg = config.settings.terminal.extras;
   isServer =
     config.settings.isServer; # assuming this is where your isServer boolean is set
-in {
+in
+{
   imports = [
     # ../home-manager/gnome/keybinds.nix
     ./dev.nix

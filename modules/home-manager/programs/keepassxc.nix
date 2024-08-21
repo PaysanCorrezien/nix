@@ -97,18 +97,20 @@ let
   };
 
   customToINI = lib.generators.toINI {
-    mkKeyValue = lib.generators.mkKeyValueDefault {
-      mkValueString = v:
-        if lib.isBool v then
-          (if v then "true" else "false")
-        else if lib.isString v then
-          v
-        else
-          lib.generators.mkValueStringDefault { } v;
-    } "=";
+    mkKeyValue = lib.generators.mkKeyValueDefault
+      {
+        mkValueString = v:
+          if lib.isBool v then
+            (if v then "true" else "false")
+          else if lib.isString v then
+            v
+          else
+            lib.generators.mkValueStringDefault { } v;
+      } "=";
   };
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

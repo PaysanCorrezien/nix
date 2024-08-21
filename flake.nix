@@ -31,8 +31,16 @@
       inputs.home-manager.follows = "home-manager";
     };
   };
-  outputs = { self, nixpkgs, home-manager, sops-nix, disko, clovis, keybswitch
-    , ... }@inputs:
+  outputs =
+    { self
+    , nixpkgs
+    , home-manager
+    , sops-nix
+    , disko
+    , clovis
+    , keybswitch
+    , ...
+    }@inputs:
     let
       mkSystem = hostname:
         nixpkgs.lib.nixosSystem {
@@ -45,7 +53,8 @@
             })
           ];
         };
-    in {
+    in
+    {
       nixosConfigurations = {
         lenovo = mkSystem "lenovo";
         workstation = mkSystem "workstation";

@@ -11,12 +11,13 @@ let
   # Find all available drives
   availableDrives =
     builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0")
-    (builtins.attrNames (builtins.readDir /dev));
+      (builtins.attrNames (builtins.readDir /dev));
   # Find the best drive
   bestDrive = "/dev/" + lib.head (lib.sort (a: b: scoreDrive a > scoreDrive b)
     (builtins.filter (d: lib.hasPrefix "nvme" d || lib.hasPrefix "sd" d)
       availableDrives));
-in {
+in
+{
   disko.devices = {
     disk = {
       main = {

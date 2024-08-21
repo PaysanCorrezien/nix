@@ -4,7 +4,8 @@ let
   username = "dylan";
   isServer = config.settings.isServer;
   defaultGuiEnable = !isServer; # Default to true if not a server
-in {
+in
+{
   imports = [
     ./dev/python.nix
     ./programs/espanso.nix
@@ -39,7 +40,7 @@ in {
             wayland.enable = config.settings.displayServer == "wayland";
             theme = "catppuccin-mocha";
             # package = pkgs.kdePackages.sddm;
-                        package = lib.mkForce pkgs.kdePackages.sddm;
+            package = lib.mkForce pkgs.kdePackages.sddm;
             autoNumlock = true;
             settings = {
               General = {

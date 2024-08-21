@@ -99,7 +99,8 @@ let
     fi
   '';
   # TODO: make it so it genrates the config file for the VMs
-in {
+in
+{
   config = lib.mkIf cfg {
     # Enable QEMU/KVM virtualization
     virtualisation.libvirtd = {

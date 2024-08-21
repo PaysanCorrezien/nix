@@ -11,7 +11,8 @@ let
       pyyaml
       pyudev
     ]);
-in {
+in
+{
   environment.systemPackages = with pkgs; [
     myPython
     gtk3
@@ -26,7 +27,7 @@ in {
   environment.variables = {
     PYTHONPATH = with pkgs;
       lib.makeSearchPathOutput "lib"
-      "python${myPython.pythonVersion}/site-packages" [
+        "python${myPython.pythonVersion}/site-packages" [
         myPython
         python3Packages.pygobject3
         python3Packages.pycairo

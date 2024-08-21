@@ -27,7 +27,8 @@ let
     comment = "Launch Clovis with work configuration";
   };
 
-in {
+in
+{
   imports = [ inputs.clovis.nixosModules.default ];
 
   programs.clovis = { enable = true; };

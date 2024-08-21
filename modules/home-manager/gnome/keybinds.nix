@@ -4,7 +4,8 @@ let
   flameshot-gui = pkgs.writeShellScriptBin "flameshot-gui"
     "${pkgs.flameshot}/bin/flameshot gui";
 
-in {
+in
+{
   config = lib.mkIf config.settings.gnome.extra.enable {
     dconf.settings = {
       "org/gnome/settings-daemon/plugins/media-keys" = {

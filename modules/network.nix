@@ -2,7 +2,8 @@
 let
   cfg = config;
   tailscaleAuthKeyFile = config.sops.secrets.tailscale_auth_key.path;
-in {
+in
+{
   config = lib.mkIf (cfg.settings.tailscale.enable) {
 
     services.tailscale = {

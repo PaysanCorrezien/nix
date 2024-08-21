@@ -54,7 +54,8 @@ let
     yaml-language-server
   ];
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

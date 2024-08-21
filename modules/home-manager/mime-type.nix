@@ -5,13 +5,13 @@
 {
   # Define user-specific packages
   home.packages = with pkgs; [
-  #   firefox
+    #   firefox
     xdg-utils
   ];
 
   # Define MIME type associations
   xdg.mimeApps = {
-    enable= true;
+    enable = true;
     defaultApplications = {
       "text/html" = "firefox.desktop";
       "text/xml" = "firefox.desktop";

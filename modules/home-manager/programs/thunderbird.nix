@@ -29,7 +29,8 @@ let
     port = readSecretFileAsInt "thunderbird/account2/port";
   };
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

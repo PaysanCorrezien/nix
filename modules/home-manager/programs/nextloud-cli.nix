@@ -70,7 +70,8 @@ let
     0\\Folders\\4\\version=2
   '';
 
-in {
+in
+{
   options = {
     settings = lib.mkOption {
       type = lib.types.submodule {

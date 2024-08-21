@@ -1,4 +1,4 @@
-{ inputs,plasma-manager, config, pkgs, lib, ... }:
+{ inputs, plasma-manager, config, pkgs, lib, ... }:
 #NOTE: home manager cant inherit config it fail with darwin error
 let settings = config.settings;
 in {
@@ -53,8 +53,8 @@ in {
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };
     sharedModules = [
-  #   inputs.sops-nix.homeManagerModules.sops
-            inputs.plasma-manager.homeManagerModules.plasma-manager
+      #   inputs.sops-nix.homeManagerModules.sops
+      inputs.plasma-manager.homeManagerModules.plasma-manager
     ];
   };
 

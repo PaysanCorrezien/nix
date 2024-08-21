@@ -72,7 +72,8 @@ let
           fi
         }
   '';
-in {
+in
+{
   options.myZshConfig.envType = lib.mkOption {
     type = lib.types.str;
     default = "HOME";

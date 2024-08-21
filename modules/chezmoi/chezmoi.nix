@@ -5,7 +5,8 @@ let
     #!/bin/bash
     ${builtins.readFile ../../scripts/chezmoi.sh}
   '';
-in {
+in
+{
   home.packages = with pkgs; [ chezmoi chezmoiUpdateScript ];
 
   # Make the script directly accessible

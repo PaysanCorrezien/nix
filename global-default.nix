@@ -25,7 +25,8 @@ let
     tailscaleIP = lib.mkDefault "100.100.100.120";
     autoSudo = lib.mkDefault false;
   };
-in {
+in
+{
   options = {
     settings = {
       username = lib.mkOption {

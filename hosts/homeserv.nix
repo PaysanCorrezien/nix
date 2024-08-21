@@ -18,6 +18,12 @@
     tailscaleIP = "100.100.110.20";
     hostname = "homeserv";
     ai.server.enable = true;
+    sops = {
+      #NOTE: from sops.nix file 
+      enableGlobal = true;
+      machineType = "homeserver"; # or "homeserver" or "vps"
+    };
+
   };
 
   services.openssh = {
@@ -52,9 +58,18 @@
     networkmanager.enable = true;
 
     # : allow SSH and Docker ports
-    firewall.allowedTCPPorts = [ 22 2376 2377 7946 4789 ];
+    firewall.allowedTCPPorts = [
+      22
+      2376
+      2377
+      7946
+      4789
+      # duplicati 
+      8200
+    ];
     interfaces = {
-      enp7s0 = { # Replace with your actual network interface
+      enp7s0 = {
+        # Replace with your actual network interface
         useDHCP = false;
         ipv4.addresses = [{
           address = "192.168.1.165";
@@ -78,7 +93,7 @@
     interface = "any";
     # dataDirectory = "/var/lib/duplicati";
     #NOTE: testing if running as user is fine
-    user = config.settings.username; 
+    user = config.settings.username;
   };
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 
@@ -110,15 +125,15 @@
   # systemd.targets.hibernate.enable = false;
   # systemd.targets.hybrid-sleep.enable = false;
 
-environment.systemPackages = with pkgs; [
-davfs2
-];
-services.davfs2 = {
-  enable = true;
-};
-services.rsyncd = {
-  enable = true;
-};
+  environment.systemPackages = with pkgs; [
+    davfs2
+  ];
+  services.davfs2 = {
+    enable = true;
+  };
+  services.rsyncd = {
+    enable = true;
+  };
   # Enable thermal management
   # services.thermald.enable = true;
 }
