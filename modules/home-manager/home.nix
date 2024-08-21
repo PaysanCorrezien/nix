@@ -35,6 +35,7 @@ in {
     # ./programs/keybswitch.nix
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
+    ./kde/settings.nix
 
   ];
   # home.programs.chezmoi = {
@@ -114,6 +115,13 @@ in {
   settings.remmina.enable = settings.work;
   settings.minimalNvim =
     settings.isServer; # NOTE: only enable this for server this time
-  settings.gnome.extra.enable =
-    !settings.isServer; # TODO: make gnone.nix enable its extra alone
+
+  settings.gnome.extra.enable = lib.mkIf (
+  !isServer &&
+  settings.windowManager == "gnome"
+) true;
+  settings.plasma.extra.enable = lib.mkIf (
+  !isServer &&
+  settings.windowManager == "plasma"
+) true;
 }

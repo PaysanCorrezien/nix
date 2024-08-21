@@ -110,6 +110,15 @@
   # systemd.targets.hibernate.enable = false;
   # systemd.targets.hybrid-sleep.enable = false;
 
+environment.systemPackages = with pkgs; [
+davfs2
+];
+services.davfs2 = {
+  enable = true;
+};
+services.rsyncd = {
+  enable = true;
+};
   # Enable thermal management
   # services.thermald.enable = true;
 }

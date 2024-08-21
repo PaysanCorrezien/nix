@@ -220,6 +220,29 @@
         "type": "github"
       }
     },
+    "plasma-manager": {
+      "inputs": {
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1724187112,
+        "narHash": "sha256-S+nYkVVAzobmVxBmwUlznzHnuOt613aA7wE7MHllYyI=",
+        "owner": "nix-community",
+        "repo": "plasma-manager",
+        "rev": "df4d1d36d0c29d3cc655c4e35d0f6ebecd6d7303",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "plasma-manager",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "clovis": "clovis",
@@ -228,6 +251,7 @@
         "home-manager": "home-manager",
         "keybswitch": "keybswitch",
         "nixpkgs": "nixpkgs_2",
+        "plasma-manager": "plasma-manager",
         "sops-nix": "sops-nix"
       }
     },

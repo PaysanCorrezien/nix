@@ -33,6 +33,7 @@ in {
     gaming = true;
     tailscale.enable = true;
     windowManager = "gnome";
+    # windowManager  = "plasma";
     displayServer = "xorg";
     # ai.enable = false;
     social.enable = true;

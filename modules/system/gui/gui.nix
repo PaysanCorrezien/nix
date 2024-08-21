@@ -38,7 +38,8 @@ in {
             enable = true;
             wayland.enable = config.settings.displayServer == "wayland";
             theme = "catppuccin-mocha";
-            package = pkgs.kdePackages.sddm;
+            # package = pkgs.kdePackages.sddm;
+                        package = lib.mkForce pkgs.kdePackages.sddm;
             autoNumlock = true;
             settings = {
               General = {
@@ -55,6 +56,10 @@ in {
       # Enable GNOME desktop manager if windowManager is set to "gnome"
       services.xserver.desktopManager.gnome.enable =
         config.settings.windowManager == "gnome";
+
+      # Enable KDE desktop manager if windowManager is set to "kde"
+      services.xserver.desktopManager.plasma6.enable =
+        config.settings.windowManager == "plasma";
 
       hardware.pulseaudio.enable = false;
 
