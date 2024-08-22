@@ -11,6 +11,7 @@ thunderbird:
         email: ENC[AES256_GCM,data:AWOmGHTsuXb6Pauez1I5+CU57vUi,iv:SxpbBYP8VExs1fVj26mNfZzFmvyyeEVWSOCQB39mmCE=,tag:XUOGgfuxTNFzk74cBV7m5Q==,type:str]
         server: ENC[AES256_GCM,data:NnFZjr/40f/O4NN/eSM6mFLhIOkV,iv:/+QsuKYTdjJ+wU4/mr5zhUIvLnhifv+tcQF7FCGqBH0=,tag:a4ndyPjg9akbU7A62J8vfQ==,type:str]
         port: ENC[AES256_GCM,data:IhEs,iv:ScAmpdtsf34SKlFEgNJUW1CqKogCwd17JuQVzK5lUYE=,tag:1OY3RBE4FQ4iEbZ329nYBQ==,type:str]
+atuin_sync_address: ENC[AES256_GCM,data:CIHAbAlaeSxEF6cYJTFzfXXm58L1i4Dyxw==,iv:WUFwkPTEJ9TzXm53nL23weo7eWQSo62CkY1lUXfYAnQ=,tag:FyUaHgHIe3wF2hovayL/CQ==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -26,8 +27,8 @@ sops:
             VGFsQWE1RFlkTDRERHV1QkFFNVBQUzgKCYWzc8A1AUewthxIP2Aoff14UNyWHGiL
             0HthYbBDaLOCbnmGJ6qIfrDSZp/1xWNWkGNM3p2VUGNYzoSHNiud/w==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-08-20T22:34:04Z"
-    mac: ENC[AES256_GCM,data:IyrE5r35/X/4X/sSi44oPs27PcGf9o0BCjw4F0eAYnqosmV3qMK9YxeAy+xDEoGNdUMd0M6Gx7XYRXrkFCXzo2/w9IUoOXlvmHNUkjV+5s+Llt1oPyiUf7c9P8IIMKX2LhcAbqUnBc3GydIuEiuE4+bJC9NmSr7Vz+3pExVGHxA=,iv:NwPkIz/T3FzQ+vGseLZNHW5CAGbM73PZHFBfPVRVqhs=,tag:Ywha1k3HTq0kUW5Aa7zZXA==,type:str]
+    lastmodified: "2024-08-22T22:22:53Z"
+    mac: ENC[AES256_GCM,data:HoB8Os+vATkC/VsqDU7V3sRROpKD1yqyeczumpRVtzxaX+DqsCx7dzbhyapYtT+S6bZ29W5pAFR7fc91FSvOnQJl5Fz7yYY73jMdFSCQxQnTg/0hF9WPBoj6BbnOXhPKBOUQEkWEuEd+A4nVrsNo7lltUOywT6J0Ad9xK4TbliE=,iv:mzP0Jkp3PSs+bOR8UvY9vMPmdSfzBQrfP5hZqW8Nir4=,tag:1Syoiz4i0/iaxnC5h9cH/Q==,type:str]
     pgp: []
     unencrypted_suffix: _unencrypted
     version: 3.9.0

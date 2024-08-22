@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }:
+{ lib, hostName,pkgs, config, ... }:
 
 let
   customZshInit = pkgs.writeText "custom-zsh-init" ''
@@ -31,6 +31,7 @@ let
         HISTFILE=~/.zsh_history
         HISTSIZE=100000
         SAVEHIST=20000
+        FUNCNEST=150
         setopt hist_expire_dups_first hist_ignore_dups hist_ignore_space hist_verify inc_append_history SHARE_HISTORY
 
         # make case insentive completion + filename
@@ -71,6 +72,7 @@ let
             print -sr -- ''${=''${LASTHIST%%'\n'}}
           fi
         }
+        export SOPS_AGE_KEY_FILE="/var/lib/secrets/${hostName}.txt"
   '';
 in
 {

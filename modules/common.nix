@@ -48,7 +48,9 @@ in {
   hardware.i2c.enable = true;
   boot.kernelModules = [ "i2c-dev" ];
   home-manager = {
-    extraSpecialArgs = { inherit inputs settings; };
+    extraSpecialArgs = { inherit inputs settings;
+    hostName = config.networking.hostName;  
+    };
     backupFileExtension =
       "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
     users = { "dylan" = import ../modules/home-manager/home.nix; };

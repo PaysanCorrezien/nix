@@ -1,18 +1,18 @@
 # home.nix
-{ lib, config, pkgs, inputs, settings, ... }:
+{ lib,hostName, config, pkgs, inputs, settings, ... }:
 let
   isServer = settings.isServer;
   # Function to write settings to $HOME/.settings.nix
   # Serialize the settings to JSON
   # NOTE: dump all settings to ~/.settings.nix.json to troubleshoot
-  serializedSettings = builtins.toJSON settings;
-  settingsFilePath = "${config.home.homeDirectory}/.settings.nix.json";
-  # Create a writable copy of the settings file
-  setPermissionsScript = ''
-    rm -f ${settingsFilePath}
-    cp ${settingsFilePath}.init ${settingsFilePath}
-    chmod u+w ${settingsFilePath}
-  '';
+  # serializedSettings = builtins.toJSON settings;
+  # settingsFilePath = "${config.home.homeDirectory}/.settings.nix.json";
+  # # Create a writable copy of the settings file
+  # setPermissionsScript = ''
+  #   rm -f ${settingsFilePath}
+  #   cp ${settingsFilePath}.init ${settingsFilePath}
+  #   chmod u+w ${settingsFilePath}
+  # '';
 in
 {
   imports = [
@@ -53,11 +53,11 @@ in
   home.homeDirectory = "/home/dylan";
 
   # Write the settings to an initial file in the home directory
-  home.file.".settings.nix.json.init".text = serializedSettings;
-  home.activation.setSettingsPermissions =
-    lib.hm.dag.entryAfter [ "writeTextFile" ] ''
-      ${setPermissionsScript}
-    '';
+  # home.file.".settings.nix.json.init".text = serializedSettings;
+  # home.activation.setSettingsPermissions =
+  #   lib.hm.dag.entryAfter [ "writeTextFile" ] ''
+  #     ${setPermissionsScript}
+  #   '';
 
   #FIXME: print nothing
   home.sessionVariables = { IS_SERVER = toString isServer; };
@@ -102,9 +102,8 @@ in
   #
   home.sessionVariables = {
     EDITOR = "nvim";
-    # LD_LIBRARY_PATH = lib.concatStringsSep ":" ([
-    #   "${pkgs.sqlite}/lib"
-    # ] ++ lib.optional (config.home.sessionVariables ? LD_LIBRARY_PATH) config.home.sessionVariables.LD_LIBRARY_PATH);
+#NOTE: not certain its any uefull
+        SOPS_AGE_KEY_FILE = "/var/lib/secrets/${hostName}.txt";
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

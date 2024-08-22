@@ -30,10 +30,14 @@ in
   config = lib.mkMerge [
     {
       environment.systemPackages = with pkgs; [ sops age ];
+      #NOTE: why isnt sops.nix settings it for me???
+      # environment.variables.SOPS_AGE_KEY_FILE = "/var/lib/secrets/${cfg.machineType}.txt";
+      environment.variables.SOPS_AGE_KEY_FILE = "/var/lib/secrets/${config.networking.hostName}.txt";
       sops = {
         defaultSopsFormat = "yaml";
         #NOTE: except a key name specific by host ? maybe find a more appropriate way than this now ? based on nixos.config hostname directly ?
-        age.keyFile = "/var/lib/secrets/${cfg.machineType}.txt";
+        age.keyFile = "/var/lib/secrets/${config.networking.hostName}.txt";
+        # age.keyFile = "/var/lib/secrets/${cfg.machineType}.txt";
       };
     }
 
@@ -98,6 +102,10 @@ in
           owner = "dylan";
         };
         "thunderbird/account2/port" = {
+          sopsFile = ./sops/pasokon.yaml;
+          owner = "dylan";
+        };
+        "atuin_sync_address" = {
           sopsFile = ./sops/pasokon.yaml;
           owner = "dylan";
         };
