@@ -97,44 +97,13 @@
   };
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 
-  # TODO: make a core config that is imported automatically for following settings
-  # Configure console keymap
-  # # Enable sound with pipewire.
-  # sound.enable = true;
-  # hardware.pulseaudio.enable = false;
-  # security.rtkit.enable = true;
-  # services.pipewire = {
-  #   enable = true;
-  #   alsa.enable = true;
-  #   alsa.support32Bit = true;
-  #   pulse.enable = true;
-  #   # If you want to use JACK applications, uncomment this
-  #   #jack.enable = true;
-  #
-  #   # use the example session manager (no others are packaged yet so this is enabled by default,
-  #   # no need to redefine it in your config for now)
-  #   #media-session.enable = true;
-  # };
-  # Disable auto-suspend in GDM
-  # services.xserver.displayManager.gdm.autoSuspend = false;
-
-  # Keep power management enabled, but prevent sleep and hibernate
-  # powerManagement.enable = true;
-  # systemd.targets.sleep.enable = false;
-  # systemd.targets.suspend.enable = false;
-  # systemd.targets.hibernate.enable = false;
-  # systemd.targets.hybrid-sleep.enable = false;
 
   environment.systemPackages = with pkgs; [
     davfs2
+    rclone
   ];
   services.davfs2 = {
     enable = true;
   };
-  services.rsyncd = {
-    enable = true;
-  };
-  # Enable thermal management
-  # services.thermald.enable = true;
 }
 
