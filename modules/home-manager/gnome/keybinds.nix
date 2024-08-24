@@ -6,6 +6,7 @@ let
 
 in
 {
+  #TODO: maybe do an if gui enable instead
   config = lib.mkIf config.settings.gnome.extra.enable {
     dconf.settings = {
       "org/gnome/settings-daemon/plugins/media-keys" = {
