@@ -114,10 +114,26 @@ in
 
     (lib.mkIf (cfg.machineType == "homeserver") {
       sops.secrets = {
-        # "homeserver_secret" = {
-        #   sopsFile = ./sops/ie.yaml;
-        #   owner = "dylan";
-        # };
+        "nextcloudUsername" = {
+          sopsFile = ./sops/ie.yaml;
+          owner = "dylan";
+        };
+        "discordWebhookUrl" = {
+          sopsFile = ./sops/ie.yaml;
+          owner = "dylan";
+        };
+        "sync_password" = {
+          sopsFile = ./sops/ie.yaml;
+          owner = "dylan";
+        };
+        "sync_localDir" = {
+          sopsFile = ./sops/ie.yaml;
+          owner = "dylan";
+        };
+        "sync_remoteDir" = {
+          sopsFile = ./sops/ie.yaml;
+          owner = "dylan";
+        };
       };
     })
 

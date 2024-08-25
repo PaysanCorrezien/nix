@@ -50,6 +50,9 @@
       [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
   };
 
+  imports = [
+    (./. + "/specific-confs/music-sync.nix")
+];
   # Configure static IP dynamically
   networking = {
     hostName = "homeserv";
