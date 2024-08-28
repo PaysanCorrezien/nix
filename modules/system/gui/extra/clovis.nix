@@ -1,8 +1,6 @@
 { config, lib, pkgs, inputs, ... }:
 
-let
-  clovis-pkg = inputs.clovis.packages.${pkgs.system}.default;
-
+let cfg = config.settings.isServer;
   makeDesktopFile = { name, exec, comment }:
     pkgs.writeText "${name}.desktop" ''
       [Desktop Entry]
@@ -26,12 +24,12 @@ let
     exec = "${clovis-pkg}/bin/clovis launch work";
     comment = "Launch Clovis with work configuration";
   };
-
+  clovis-pkg = inputs.clovis.packages.${pkgs.system}.default;
 in
 {
+  
   imports = [ inputs.clovis.nixosModules.default ];
-
-  programs.clovis = { enable = true; };
+  config = lib.mkIf (!cfg) {
 
   # Create the .desktop files and place them in the applications directory
   environment.systemPackages = [
@@ -42,4 +40,7 @@ in
       cp ${work-clovis-desktop} $out/share/applications/work-clovis.desktop
     '')
   ];
+  };
+
 }
+

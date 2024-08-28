@@ -1,11 +1,16 @@
-{ config, pkgs, ... }:
+{ config,lib, pkgs, ... }:
 
 let
   lockScript = pkgs.writeShellScript "lock-screen" ''
     ${pkgs.xscreensaver}/bin/xscreensaver-command -lock
   '';
+  # cfg = config.displayServer;
+  # NOTE: use the default settings instead of mine ? 
+    cfg = config.services.xserver.displayManager;
 in
 {
+    config = lib.mkIf (cfg != null) {
+
   # Install XScreenSaver
   environment.systemPackages = with pkgs; [ xscreensaver ];
 
@@ -47,4 +52,5 @@ in
   environment.etc."xscreensaver/config".text = ''
     # ... (keep the same XScreenSaver settings as before)
   '';
+};
 }
