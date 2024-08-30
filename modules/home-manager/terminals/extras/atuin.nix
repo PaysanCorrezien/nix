@@ -16,7 +16,7 @@ in {
         auto_sync = true;
         sync_frequency = "5m";
         sync_address = "${secrets}";
-        search_mode = "prefix";
+        # search_mode = "prefix";
         enter_accept = false; #NOTE: enter doesnt rerun but paste to zsh
       };
     };
