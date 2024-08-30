@@ -2,9 +2,8 @@
 let
   # Function to score drives based on type and performance expectations
   scoreDrive = drive:
-    if lib.hasPrefix "nvme" drive then 100  # NVMe drives (including NVMe M.2)
-    else if lib.hasPrefix "sd" drive && (lib.hasInfix "ssd" drive || lib.hasInfix "m2" drive) then 90  # SATA SSDs and M.2 SATA drives
-    else if lib.hasPrefix "sd" drive then 80  # Regular SATA drives
+    if lib.hasPrefix "nvme" drive then 100
+    else if lib.hasPrefix "sd" drive then 80
     else if lib.hasPrefix "vd" drive then 70  # Virtual drives
     else if lib.hasPrefix "xvd" drive then 60 # Xen virtual drives
     else if lib.hasPrefix "hd" drive then 50  # IDE drives
@@ -46,7 +45,7 @@ in
           type = "gpt";
           partitions = {
             ESP = {
-              name = "ESP";
+              name = "disk-main-ESP";
               size = "500M";
               type = "EF00";
               content = {
@@ -56,6 +55,7 @@ in
               };
             };
             root = {
+              name = "disk-main-root";
               size = "100%";
               content = {
                 type = "filesystem";
@@ -69,19 +69,22 @@ in
     };
   };
 
-  # Override the conflicting fileSystems configurations
-  fileSystems = lib.mkMerge [
-    (lib.traceSeq ["[Disko] Configuring root filesystem"] {
-      "/" = lib.mkForce {
-        device = "/dev/disk/by-partlabel/disk-main-root";
-        fsType = "ext4";
-      };
-    })
-    (lib.traceSeq ["[Disko] Configuring boot filesystem"] {
-      "/boot" = lib.mkForce {
-        device = "/dev/disk/by-partlabel/disk-main-ESP";
-        fsType = "vfat";
-      };
-    })
-  ];
+  # Filesystem configurations
+  fileSystems = {
+    "/" = lib.mkForce {
+      device = "/dev/disk/by-partlabel/disk-main-root";
+      fsType = "ext4";
+    };
+    "/boot" = lib.mkForce {
+      device = "/dev/disk/by-partlabel/disk-main-ESP";
+      fsType = "vfat";
+    };
+  };
+
+  # Provide feedback on configuration
+  system.activationScripts.diskoReport = ''
+    echo "[Disko] Installation drive: ${bestDrive}"
+    echo "[Disko] Root partition: $(readlink -f /dev/disk/by-partlabel/disk-main-root)"
+    echo "[Disko] Boot partition: $(readlink -f /dev/disk/by-partlabel/disk-main-ESP)"
+  '';
 }
