@@ -13,8 +13,8 @@ let
     else if lib.hasPrefix "fd" drive then 10   # Floppy drives
     else 0; # Any other type of drive
 
-  # Comprehensive list of potential drives
-  potentialDrives = 
+  # Comprehensive list of potential drives that exist on the system
+  potentialDrives = lib.filter (drive: builtins.pathExists drive) (
     (map (i: "/dev/nvme${toString i}n1") (lib.range 0 7)) ++
     (map (c: "/dev/sd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
     (map (c: "/dev/vd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
@@ -23,7 +23,8 @@ let
     (map (i: "/dev/mmcblk${toString i}") (lib.range 0 9)) ++
     (map (i: "/dev/loop${toString i}") (lib.range 0 7)) ++
     (map (i: "/dev/sr${toString i}") (lib.range 0 3)) ++
-    (map (i: "/dev/fd${toString i}") (lib.range 0 3));
+    (map (i: "/dev/fd${toString i}") (lib.range 0 3))
+  );
 
   # Function to select the best drive
   selectBestDrive = drives:
