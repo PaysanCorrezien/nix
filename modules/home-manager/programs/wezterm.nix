@@ -1,8 +1,5 @@
 { config, pkgs, lib, ... }:
 
-#TODO: migrate all my wezterm config to nix
-# find a way to import plugins ? 
-# and create config recursively from a wezterm subfolder or external github repo?
 let
   weztermExtraConfig = ''
     require "events.update-status"
@@ -10,16 +7,19 @@ let
     return require("utils.config"):new():add("config"):add "mappings"
   '';
 
+  nixpkgs-24-05 = fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/957d95fc8b9bf1eb60d43f8d2eba352b71bbf2be.tar.gz";
+    sha256 = "sha256:0jkxg1absqsdd1qq4jy70ccx4hia3ix891a59as95wacnsirffsk";
+  };
+
+  wezterm-24-05 = (import nixpkgs-24-05 {}).wezterm;
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.wezterm = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable =
-              lib.mkEnableOption "Enable custom Wezterm configuration";
-          };
+  options.settings = lib.mkOption {
+    type = lib.types.submodule {
+      options.wezterm = lib.mkOption {
+        type = lib.types.submodule {
+          options.enable = lib.mkEnableOption "Enable custom Wezterm configuration";
         };
       };
     };
@@ -30,7 +30,7 @@ in
       enable = true;
       enableBashIntegration = true;
       enableZshIntegration = true;
-      package = pkgs.wezterm;
+      package = wezterm-24-05;
       extraConfig = weztermExtraConfig;
     };
   };

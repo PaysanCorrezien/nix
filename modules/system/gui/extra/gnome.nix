@@ -14,11 +14,19 @@ in
   # environment.systemPackages = with pkgs; [ calls ]; unfortunately, cant call as of now in kdeconnect
   # NOTE: some related issue
   # https://discourse.nixos.org/t/gsconnect-does-not-work-with-gdm/46271
+  #
   # https://github.com/NixOS/nixpkgs/issues/116388#issuecomment-2257169355
-  programs.kdeconnect = {
-  enable = true;
-  package = pkgs.gnomeExtensions.gsconnect;
-};
+  config = lib.mkIf (windowManager == "gnome") {
+    programs.kdeconnect = {
+      enable = true;
+      package = pkgs.gnomeExtensions.gsconnect;
+    };
+  };
+#   # programs.kdeconnect = {
+#   #
+#   # enable = true;
+#   # package = pkgs.gnomeExtensions.gsconnect;
+# };
 
   # environment.gnome.excludePackages =
   #   if cfg.windowManager == "gnome" && cfg.isServer == false then

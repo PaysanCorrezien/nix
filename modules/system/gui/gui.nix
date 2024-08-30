@@ -19,6 +19,7 @@ in
     ./extra/screensaver.nix
     ./extra/clovis.nix
     ./extra/keybswitch.nix
+    ./extra/kde.nix
   ];
 
   options.settings.gui = {
