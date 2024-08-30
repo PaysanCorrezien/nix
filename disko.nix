@@ -1,6 +1,6 @@
 {config, lib, ... }:
+
 let
-  # Function to score drives based on type and performance expectations
   scoreDrive = drive:
     if lib.hasPrefix "nvme" drive then 100
     else if lib.hasPrefix "sd" drive then 80
@@ -13,8 +13,9 @@ let
     else if lib.hasPrefix "fd" drive then 10   # Floppy drives
     else 0; # Any other type of drive
 
-potentialDrives = builtins.trace "Potential drives: ${builtins.toString potentialDrives}" (
-  lib.filter (drive: builtins.pathExists drive) (
+# potentialDrives = builtins.trace "Potential drives: ${builtins.toString potentialDrives}" (
+
+  allPossibleDrives = 
     (map (i: "/dev/nvme${toString i}n1") (lib.range 0 7)) ++
     (map (c: "/dev/sd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
     (map (c: "/dev/vd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
@@ -23,9 +24,12 @@ potentialDrives = builtins.trace "Potential drives: ${builtins.toString potentia
     (map (i: "/dev/mmcblk${toString i}") (lib.range 0 9)) ++
     (map (i: "/dev/loop${toString i}") (lib.range 0 7)) ++
     (map (i: "/dev/sr${toString i}") (lib.range 0 3)) ++
-    (map (i: "/dev/fd${toString i}") (lib.range 0 3))
-  )
-  );
+    (map (i: "/dev/fd${toString i}") (lib.range 0 3));
+
+  potentialDrives = lib.filter (drive: builtins.pathExists drive) allPossibleDrives;
+
+  debugPotentialDrives = builtins.trace "Potential drives: ${builtins.toString potentialDrives}" potentialDrives;
+
 
   # Function to select the best drive
   selectBestDrive = drives:
@@ -44,7 +48,7 @@ in
     disk = {
       main = {
         type = "disk";
-        device = lib.mkDefault (selectBestDrive potentialDrives);
+        device = lib.mkDefault (selectBestDrive debugPotentialDrives);
         content = {
           type = "gpt";
           partitions = {
