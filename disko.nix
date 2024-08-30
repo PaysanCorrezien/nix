@@ -1,6 +1,7 @@
 { lib, ... }:
 let
-  # Function to score drives based on type and performance expectations
+  # Function to score drives based on type and performance expectations.
+  # Higher scores indicate better performance or preference.
   scoreDrive = drive:
     if lib.hasPrefix "nvme" drive then 100
     else if lib.hasPrefix "sd" drive then 80
@@ -13,12 +14,12 @@ let
     else if lib.hasPrefix "fd" drive then 10   # Floppy drives
     else 0; # Any other type of drive
 
-  # Find all available drives
+  # Find all available drives, excluding certain known devices.
   availableDrives =
     builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0" && d != "loop0" && d != "sr0" && d != "fd0")
       (builtins.attrNames (builtins.readDir /dev));
 
-  # Find the best drive, with a fallback
+  # Find the best drive based on the scoring function, with a fallback mechanism.
   bestDrive = 
     let
       validDrives = builtins.filter (d: 
@@ -45,9 +46,9 @@ let
       else if builtins.pathExists "/dev/loop0" then "/dev/loop0"
       else if builtins.pathExists "/dev/sr0" then "/dev/sr0"
       else if builtins.pathExists "/dev/fd0" then "/dev/fd0"
-      else throw "No suitable drive found for installation";  # Throw an error if no drives are found
+      else throw "No suitable drive found for installation. Please check your hardware configuration.";  # Enhanced error message
 
-  # Use traceSeq to provide feedback
+  # Use traceSeq to provide feedback during evaluation.
   _ = lib.traceSeq ["[Disko] Selected drive for installation: ${bestDrive}"] null;
 in
 {
@@ -84,7 +85,7 @@ in
     };
   };
 
-  # Filesystem configurations
+  # Filesystem configurations for the selected drive.
   fileSystems = {
     "/" = lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-root";
@@ -96,7 +97,7 @@ in
     };
   };
 
-  # Provide feedback on configuration
+  # Provide feedback on the selected drive and partitions during system activation.
   system.activationScripts.diskoReport = ''
     echo "[Disko] Installation drive: ${bestDrive}"
     echo "[Disko] Root partition: $(readlink -f /dev/disk/by-partlabel/disk-main-root)"
