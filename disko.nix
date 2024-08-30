@@ -39,7 +39,7 @@ in
           type = "gpt";
           partitions = {
             ESP = {
-              name = "ESP";
+              name = "disk-main-ESP";
               size = "500M";
               type = "EF00";
               content = {
@@ -49,6 +49,7 @@ in
               };
             };
             root = {
+              name = "disk-main-root";
               size = "100%";
               content = {
                 type = "filesystem";
@@ -64,11 +65,11 @@ in
   # Override the conflicting fileSystems configurations
   fileSystems = {
     "/" = lib.mkForce {
-      device = "/dev/disk/by-partlabel/root";
+      device = "/dev/disk/by-partlabel/disk-main-root";
       fsType = "ext4";
     };
     "/boot" = lib.mkForce {
-      device = "/dev/disk/by-partlabel/ESP";
+      device = "/dev/disk/by-partlabel/disk-main-ESP";
       fsType = "vfat";
     };
   };
