@@ -4,7 +4,8 @@ let cfg = config.settings.isServer;
 in {
   config = lib.mkIf (!cfg) {
     environment.systemPackages = with pkgs; [
-      termusic
+      # TODO: fix 
+      # termusic
       yt-dlp
       cmus
       mpv

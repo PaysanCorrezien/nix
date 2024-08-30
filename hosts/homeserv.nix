@@ -18,6 +18,7 @@
     tailscaleIP = "100.100.110.20";
     hostname = "homeserv";
     ai.server.enable = true;
+    autoSudo = true;
     sops = {
       #NOTE: from sops.nix file 
       enableGlobal = true;
@@ -68,6 +69,7 @@
       7946
       4789
       # duplicati 
+      # TODO: move this to a random port
       8200
     ];
     interfaces = {
@@ -102,8 +104,10 @@
 
 
   environment.systemPackages = with pkgs; [
-    davfs2
+    davfs2 # webdav
     rclone
+    hdparm #DISK management/wake
+    ntfs3g
   ];
   services.davfs2 = {
     enable = true;

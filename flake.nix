@@ -59,6 +59,7 @@
         lenovo = mkSystem "lenovo";
         workstation = mkSystem "workstation";
         homeserv = mkSystem "homeserv";
+        ionos = mkSystem "ionos";
       };
     };
 }
