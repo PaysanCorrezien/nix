@@ -1,7 +1,6 @@
-{ lib, ... }:
+{config, lib, ... }:
 let
-  # Function to score drives based on type and performance expectations.
-  # Higher scores indicate better performance or preference.
+  # Function to score drives based on type and performance expectations
   scoreDrive = drive:
     if lib.hasPrefix "nvme" drive then 100
     else if lib.hasPrefix "sd" drive then 80
@@ -14,49 +13,35 @@ let
     else if lib.hasPrefix "fd" drive then 10   # Floppy drives
     else 0; # Any other type of drive
 
-  # Find all available drives, excluding certain known devices.
-  availableDrives =
-    builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0" && d != "loop0" && d != "sr0" && d != "fd0")
-      (builtins.attrNames (builtins.readDir /dev));
+  # Comprehensive list of potential drives
+  potentialDrives = 
+    (map (i: "/dev/nvme${toString i}n1") (lib.range 0 7)) ++
+    (map (c: "/dev/sd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
+    (map (c: "/dev/vd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
+    (map (c: "/dev/xvd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
+    (map (c: "/dev/hd${c}") (lib.stringToCharacters "abcdefghijklmnop")) ++
+    (map (i: "/dev/mmcblk${toString i}") (lib.range 0 9)) ++
+    (map (i: "/dev/loop${toString i}") (lib.range 0 7)) ++
+    (map (i: "/dev/sr${toString i}") (lib.range 0 3)) ++
+    (map (i: "/dev/fd${toString i}") (lib.range 0 3));
 
-  # Find the best drive based on the scoring function, with a fallback mechanism.
-  bestDrive = 
+  # Function to select the best drive
+  selectBestDrive = drives:
     let
-      validDrives = builtins.filter (d: 
-        lib.hasPrefix "nvme" d || 
-        lib.hasPrefix "sd" d || 
-        lib.hasPrefix "vd" d ||
-        lib.hasPrefix "xvd" d ||
-        lib.hasPrefix "hd" d ||
-        lib.hasPrefix "mmcblk" d ||
-        lib.hasPrefix "loop" d ||
-        lib.hasPrefix "sr" d ||
-        lib.hasPrefix "fd" d
-      ) availableDrives;
-      sortedDrives = lib.sort (a: b: scoreDrive a > scoreDrive b) validDrives;
+      scoredDrives = map (drive: { name = drive; score = scoreDrive (lib.last (lib.splitString "/" drive)); }) drives;
+      sortedDrives = lib.sort (a: b: a.score > b.score) scoredDrives;
     in
       if builtins.length sortedDrives > 0
-      then "/dev/" + (builtins.head sortedDrives)
-      else if builtins.pathExists "/dev/sda" then "/dev/sda"
-      else if builtins.pathExists "/dev/nvme0n1" then "/dev/nvme0n1"
-      else if builtins.pathExists "/dev/vda" then "/dev/vda"
-      else if builtins.pathExists "/dev/xvda" then "/dev/xvda"
-      else if builtins.pathExists "/dev/hda" then "/dev/hda"
-      else if builtins.pathExists "/dev/mmcblk0" then "/dev/mmcblk0"
-      else if builtins.pathExists "/dev/loop0" then "/dev/loop0"
-      else if builtins.pathExists "/dev/sr0" then "/dev/sr0"
-      else if builtins.pathExists "/dev/fd0" then "/dev/fd0"
-      else throw "No suitable drive found for installation. Please check your hardware configuration.";  # Enhanced error message
+      then (builtins.head sortedDrives).name
+      else throw "No suitable drive found for installation. Please check your hardware configuration.";
 
-  # Use traceSeq to provide feedback during evaluation.
-  _ = lib.traceSeq ["[Disko] Selected drive for installation: ${bestDrive}"] null;
 in
 {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = bestDrive;
+        device = lib.mkDefault (selectBestDrive potentialDrives);
         content = {
           type = "gpt";
           partitions = {
@@ -85,7 +70,7 @@ in
     };
   };
 
-  # Filesystem configurations for the selected drive.
+  # Filesystem configurations
   fileSystems = {
     "/" = lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-root";
@@ -97,9 +82,9 @@ in
     };
   };
 
-  # Provide feedback on the selected drive and partitions during system activation.
+  # Provide feedback on configuration
   system.activationScripts.diskoReport = ''
-    echo "[Disko] Installation drive: ${bestDrive}"
+    echo "[Disko] Installation drive: $(readlink -f ${config.disko.devices.disk.main.device})"
     echo "[Disko] Root partition: $(readlink -f /dev/disk/by-partlabel/disk-main-root)"
     echo "[Disko] Boot partition: $(readlink -f /dev/disk/by-partlabel/disk-main-ESP)"
   '';
