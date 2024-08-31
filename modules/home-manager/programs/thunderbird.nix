@@ -15,19 +15,72 @@ let
     let content = readSecretFile name;
     in if content == "" then null else lib.toInt content;
 
-  account1 = {
+  # Function to check if all required secrets for an account exist
+  accountSecretsExist = prefix:
+    (readSecretFile "${prefix}/name") != "" &&
+    (readSecretFile "${prefix}/email") != "" &&
+    (readSecretFile "${prefix}/server") != "" &&
+    (readSecretFileAsInt "${prefix}/port") != null;
+
+  # Only define accounts if secrets exist
+  account1 = if accountSecretsExist "thunderbird/account1" then {
     name = readSecretFile "thunderbird/account1/name";
     email = readSecretFile "thunderbird/account1/email";
     server = readSecretFile "thunderbird/account1/server";
     port = readSecretFileAsInt "thunderbird/account1/port";
-  };
+  } else null;
 
-  account2 = {
+  account2 = if accountSecretsExist "thunderbird/account2" then {
     name = readSecretFile "thunderbird/account2/name";
     email = readSecretFile "thunderbird/account2/email";
     server = readSecretFile "thunderbird/account2/server";
     port = readSecretFileAsInt "thunderbird/account2/port";
+  } else null;
+
+  # Function to create an email account configuration
+  mkEmailAccount = account: name: {
+    ${name} = {
+      primary = name == "gmail";
+      address = account.email;
+      realName = account.name;
+      userName = account.email;
+      imap = {
+        host = account.server;
+        port = account.port;
+        tls.enable = true;
+      };
+      smtp = {
+        host = if name == "gmail" then "smtp.gmail.com" else "smtp.office365.com";
+        port = 587;
+        tls.enable = true;
+      };
+      thunderbird = {
+        enable = true;
+        profiles = [ "default" ];
+        settings = id: {
+          "mail.server.server_${id}.authMethod" = 10;
+          "mail.server.server_${id}.oauth2.issuer" = 
+            if name == "gmail" then "accounts.google.com" 
+            else "https://login.microsoftonline.com";
+          "mail.server.server_${id}.oauth2.scope" = 
+            if name == "gmail" then "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar"
+            else "https://outlook.office365.com/.default";
+          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+          "mail.smtpserver.smtp_${id}.oauth2.issuer" = 
+            if name == "gmail" then "accounts.google.com" 
+            else "https://login.microsoftonline.com";
+          "mail.smtpserver.smtp_${id}.oauth2.scope" = 
+            if name == "gmail" then "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar"
+            else "https://outlook.office365.com/.default";
+        };
+      };
+    };
   };
+
+  # Create email accounts only if secrets exist
+  emailAccounts = 
+    (if account1 != null then mkEmailAccount account1 "gmail" else {}) //
+    (if account2 != null then mkEmailAccount account2 "outlook" else {});
 
 in
 {
@@ -90,13 +143,10 @@ in
             "mail.server.default.authMethod" = 10;
             "mail.smtpserver.default.authMethod" = 10;
             "mail.rights.version" = 3;
-            "datareporting.policy.dataSubmissionPolicyBypassNotification" =
-              true;
+            "datareporting.policy.dataSubmissionPolicyBypassNotification" = true;
             "browser.messaging-system.whatsNewPanel.enabled" = false;
-            "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" =
-              false;
-            "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" =
-              false;
+            "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false;
+            "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
             "browser.preferences.moreFromMozilla" = false;
             "datareporting.healthreport.uploadEnabled" = false;
             "toolkit.telemetry.enabled" = false;
@@ -117,69 +167,7 @@ in
       };
     };
 
-    accounts.email.accounts = {
-      gmail = {
-        primary = true;
-        address = account1.email;
-        realName = account1.name;
-        userName = account1.email;
-        imap = {
-          host = account1.server;
-          port = account1.port;
-          tls.enable = true;
-        };
-        smtp = {
-          host = "smtp.gmail.com";
-          port = 587;
-          tls.enable = true;
-        };
-        thunderbird = {
-          enable = true;
-          profiles = [ "default" ];
-          settings = id: {
-            "mail.server.server_${id}.authMethod" = 10;
-            "mail.server.server_${id}.oauth2.issuer" = "accounts.google.com";
-            "mail.server.server_${id}.oauth2.scope" =
-              "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar";
-            "mail.smtpserver.smtp_${id}.authMethod" = 10;
-            "mail.smtpserver.smtp_${id}.oauth2.issuer" = "accounts.google.com";
-            "mail.smtpserver.smtp_${id}.oauth2.scope" =
-              "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar";
-          };
-        };
-      };
-      outlook = {
-        address = account2.email;
-        realName = account2.name;
-        userName = account2.email;
-        imap = {
-          host = "outlook.office365.com";
-          port = 993;
-          tls.enable = true;
-        };
-        smtp = {
-          host = "smtp.office365.com";
-          port = 587;
-          tls.enable = true;
-        };
-        thunderbird = {
-          enable = true;
-          profiles = [ "default" ];
-          settings = id: {
-            "mail.server.server_${id}.authMethod" = 10;
-            "mail.server.server_${id}.oauth2.issuer" =
-              "https://login.microsoftonline.com";
-            "mail.server.server_${id}.oauth2.scope" =
-              "https://outlook.office365.com/.default";
-            "mail.smtpserver.smtp_${id}.authMethod" = 10;
-            "mail.smtpserver.smtp_${id}.oauth2.issuer" =
-              "https://login.microsoftonline.com";
-            "mail.smtpserver.smtp_${id}.oauth2.scope" =
-              "https://outlook.office365.com/.default";
-          };
-        };
-      };
-    };
+    accounts.email.accounts = emailAccounts;
 
     xdg.mimeApps.defaultApplications = {
       "x-scheme-handler/mailto" = [ "thunderbird.desktop" ];
