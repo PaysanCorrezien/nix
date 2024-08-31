@@ -1,45 +1,19 @@
 { lib, ... }:
 let
-  # Function to score drives, preferring NVMe
-  scoreDrive = drive:
-    if lib.hasPrefix "nvme" drive then 100
-    else if lib.hasPrefix "sd" drive then 80
-    else if lib.hasPrefix "vd" drive then 70  # Virtual drives
-    else if lib.hasPrefix "xvd" drive then 60 # Xen virtual drives
-    else if lib.hasPrefix "hd" drive then 50  # IDE drives
-    else if lib.hasPrefix "mmcblk" drive then 40 # SD cards / eMMC
-    else 0; # Any other type of drive
-
-  # Find all available drives
-  availableDrives =
-    builtins.filter (d:
-      builtins.pathExists ("/dev/" + d) &&
-      (lib.hasPrefix "nvme" d || lib.hasPrefix "sd" d || lib.hasPrefix "vd" d || 
-       lib.hasPrefix "xvd" d || lib.hasPrefix "hd" d || lib.hasPrefix "mmcblk" d) &&
-      !(lib.hasSuffix "p" d) &&  # Exclude partition devices
-      d != "nbd0"  # Exclude network block device
-    ) (builtins.attrNames (builtins.readDir /dev));
-
-  # Find the best drive
-  bestDrive = "/dev/" + lib.head (lib.sort (a: b: scoreDrive a > scoreDrive b) availableDrives);
-
-  # Debug information
-  debugInfo = ''
-    Available drives: ${builtins.toString availableDrives}
-    Selected drive: ${bestDrive}
-  '';
+  diskSelection = import ./drive.nix { inherit lib; };
+  selectedDrive = diskSelection.selectedDrive;
 in
 {
   # Output debug information
   system.extraSystemBuilderCmds = ''
-    echo '${debugInfo}' > $out/disko-debug-info.txt
+    echo '${diskSelection.debugInfo}' > /tmp/disko_debug_info.txt
   '';
 
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = bestDrive;
+        device = selectedDrive;
         content = {
           type = "gpt";
           partitions = {
@@ -67,7 +41,7 @@ in
       };
     };
   };
-  # Filesystem configurations
+
   fileSystems = {
     "/" = lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-root";

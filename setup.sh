@@ -11,11 +11,11 @@ USER_NAME="dylan"
 
 # Function to prompt for password using dialog
 get_password() {
-    if ! command -v dialog &> /dev/null; then
-        nix-env -iA nixos.dialog &> /dev/null;
-    fi
-    password=$(dialog --passwordbox "Enter password for $USER_NAME:" 0 0 2>&1 >/dev/tty)
-    echo "$password"
+	if ! command -v dialog &>/dev/null; then
+		nix-env -iA nixos.dialog &>/dev/null
+	fi
+	password=$(dialog --passwordbox "Enter password for $USER_NAME:" 0 0 2>&1 >/dev/tty)
+	echo "$password"
 }
 
 # Set user password early
@@ -28,8 +28,8 @@ echo "Debug: Password is $USER_PASSWORD"
 # Clean up existing temporary directory if it exists
 TEMP_REPO_DIR="/tmp/nixos-config"
 if [ -d "$TEMP_REPO_DIR" ]; then
-    echo "Removing existing temporary directory..."
-    rm -rf "$TEMP_REPO_DIR"
+	echo "Removing existing temporary directory..."
+	rm -rf "$TEMP_REPO_DIR"
 fi
 
 # Install necessary packages
@@ -45,26 +45,46 @@ git clone "$REPO_URL" "$TEMP_REPO_DIR"
 echo "Fetching available NixOS configurations..."
 CONFIGS=($(ls "$TEMP_REPO_DIR"/hosts/*.nix | xargs -n1 basename | sed 's/\.nix$//'))
 if [ ${#CONFIGS[@]} -eq 0 ]; then
-    echo "No NixOS configurations found in the hosts directory."
-    exit 1
+	echo "No NixOS configurations found in the hosts directory."
+	exit 1
 fi
 
 # Present available configurations
 echo "Available NixOS configurations:"
-for i in "${!CONFIGS[@]}"; do 
-    echo "$((i+1))) ${CONFIGS[i]}"
+for i in "${!CONFIGS[@]}"; do
+	echo "$((i + 1))) ${CONFIGS[i]}"
 done
 
 # Use fzf to select configuration
 echo "Please select a configuration using fzf:"
 CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height=10 --layout=reverse --prompt="Select configuration > ")
 if [ -z "$CONFIG" ]; then
-    echo "No configuration selected. Exiting."
-    exit 1
+	echo "No configuration selected. Exiting."
+	exit 1
 fi
 
 echo "You selected: $CONFIG"
 echo "Installing NixOS with configuration: $CONFIG"
+
+# Run the disk selector and capture its output
+DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
+
+# Extract the selected drive from the disk info
+SELECTED_DRIVE=$(echo "$DISK_INFO" | grep "Selected drive:" | awk '{print $NF}')
+
+echo "Disk Information:"
+echo "$DISK_INFO"
+echo
+echo "Selected drive for installation: $SELECTED_DRIVE"
+echo
+
+# Confirmation prompt
+read -p "Do you want to proceed with the installation on $SELECTED_DRIVE? (y/n) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo "Installation aborted."
+	exit 1
+fi
 
 echo "Setting up the disk"
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
