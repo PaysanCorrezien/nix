@@ -39,9 +39,10 @@ in
     displayServer = "xorg";
     social.enable = true;
     architecture = "x86_64";
-    tailscaleIP = "100.100.100.110";
+    tailscaleIP = "100.100.100.111";
     autoSudo = true;
     hostname = "lenovo";
+    useDhcp = false;
     sops = {
       #NOTE: from sops.nix file 
       enableGlobal = true;
@@ -69,14 +70,14 @@ in
     interfaces.wlp4s0 = lib.mkIf (!useDhcp) {
       useDHCP = false;
       ipv4.addresses = [{
-        address = "192.168.1.110";
+        address = "192.168.1.111";
         prefixLength = 24;
       }];
     };
 
     defaultGateway = lib.mkIf (!useDhcp) {
       address = "192.168.1.1";
-      interface = "wlp4s0";
+      interface = "wl01";
     };
 
     nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];

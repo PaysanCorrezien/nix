@@ -37,11 +37,10 @@ in
     windowManager = "gnome";
     # windowManager  = "plasma";
     displayServer = "xorg";
-    # ai.enable = false;
     social.enable = true;
     architecture = "x86_64";
     autoSudo = true;
-    tailscaleIP = "100.69.180.101";
+    tailscaleIP = "100.69.180.110";
     hostname = "workstation";
     useDhcp = false;
     sops = {
