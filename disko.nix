@@ -1,6 +1,6 @@
 { lib, ... }:
 let
-  diskSelection = import ./drive.nix { inherit lib; };
+  diskSelection = import ./diskselect.nix { inherit lib; };
   selectedDrive = diskSelection.selectedDrive;
 in
 {
