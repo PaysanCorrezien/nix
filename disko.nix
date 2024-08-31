@@ -12,7 +12,7 @@ let
 
 # Find all available drives
 availableDrives =
-  builtins.filter (d: builtins.pathExists ("/dev/" + d) && d != "nvme0")
+  builtins.filter (d: builtins.pathExists ("/dev/" + d))
     (builtins.attrNames (builtins.readDir /dev));
 
 # Find the best drive
@@ -37,9 +37,8 @@ in
           partitions = {
             ESP = {
               name = "ESP";
-              size = "500M";
-              # start = "1MiB";
-              # end = "512MiB";
+              start = "1MiB";
+              end = "512MiB";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -48,15 +47,13 @@ in
               };
             };
             root = {
-              # start = "513MiB";
-              # end = "100%";
-              size = "100%";
-              # type = "8300";
+              name = "root";
+              start = "512MiB";
+              end = "100%";
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
-                # extraArgs = [ "-L" "nixos" ];
               };
             };
           };
@@ -73,6 +70,7 @@ in
     "/boot" = lib.mkForce {
       device = "/dev/disk/by-partlabel/disk-main-ESP";
       fsType = "vfat";
+      options = [ "umask=0077" "dmask=0077" "fmask=0077" ];
     };
   };
 }
