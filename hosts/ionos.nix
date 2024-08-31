@@ -64,7 +64,7 @@
     openssh.authorizedKeys.keyFiles =
       [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
   };
-  # users.groups.dylan = { };
+  users.groups.dylan = { };
   # # services.getty.autologinUser = "dylan";
   # TODO: remove this once test done
   services.getty.autologinUser = "dylan";
