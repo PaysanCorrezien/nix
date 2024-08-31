@@ -78,10 +78,10 @@ echo
 echo "Selected drive for installation: $SELECTED_DRIVE"
 echo
 
-# Confirmation prompt
-read -p "Do you want to proceed with the installation on $SELECTED_DRIVE? (y/n) " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+# Confirmation prompt using fzf
+CONFIRMATION=$(echo -e "Yes\nNo" | fzf --prompt="Do you want to proceed with the installation on $SELECTED_DRIVE? " --height=20%)
+
+if [[ $CONFIRMATION != "Yes" ]]; then
 	echo "Installation aborted."
 	exit 1
 fi
