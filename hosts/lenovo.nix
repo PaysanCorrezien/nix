@@ -40,7 +40,13 @@ in
     social.enable = true;
     architecture = "x86_64";
     tailscaleIP = "100.100.100.110";
+    autoSudo = true;
     hostname = "lenovo";
+    sops = {
+      #NOTE: from sops.nix file 
+      enableGlobal = true;
+      machineType = "desktop"; # or "homeserver" or "vps"
+    };
   };
 
   config.networking = {
