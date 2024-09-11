@@ -7,6 +7,7 @@
     inputs.disko.nixosModules.disko
     inputs.home-manager.nixosModules.home-manager
     ./modules/sops.nix
+    ./modules/ssh.nix
     ./modules/common.nix
     ./modules/system/gui/gui.nix
     ./modules/system/terminal/terminal.nix
