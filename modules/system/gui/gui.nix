@@ -8,6 +8,7 @@ in
 {
   imports = [
     ./dev/python.nix
+    ./dev/pwsh.nix
     ./programs/espanso.nix
     ./extra/work.nix
     ./extra/audio.nix

@@ -1,26 +1,53 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  cfg = lib.mkIf (pkgs ? settings.isServer) pkgs.settings.isServer;
-  powershell-editor-services = pkgs.fetchFromGitHub {
-    owner = "PowerShell";
-    repo = "PowerShellEditorServices";
-    rev = "v3.20.1";  # Replace with the latest version
-    sha256 = "sha256-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";  # Replace with the correct hash
+  cfg = config.settings.isServer;
+  powershell-editor-services = pkgs.stdenv.mkDerivation rec {
+    pname = "powershell-editor-services";
+    version = "3.20.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "PowerShell";
+      repo = "PowerShellEditorServices";
+      rev = "v${version}";
+      sha256 = "sha256-6RwqYi+4rLLXOBUQ9CuFG8AmV802IoOyO5+yOBlX+jQ=";
+    };
+    dontBuild = true;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/modules/PowerShellEditorServices
+      cp -r ./* $out/modules/PowerShellEditorServices/
+      runHook postInstall
+    '';
+    meta = with lib; {
+      description = "A common platform for PowerShell development support in editors and hosted applications";
+      homepage = "https://github.com/PowerShell/PowerShellEditorServices";
+      license = licenses.mit;
+      platforms = platforms.all;
+    };
   };
 in
 {
-  pkgs = lib.mkIf (!cfg) {
-    powershell-editor-services = pkgs.stdenv.mkDerivation {
-      name = "powershell-editor-services";
-      src = powershell-editor-services;
-
-      dontBuild = true;  # No build needed, we're just copying files
-
-      installPhase = ''
-        mkdir -p $out
-        cp -r $src/* $out/
-      '';
-    };
+  
+  config = lib.mkIf (!cfg) {
+  nixpkgs.config.packageOverrides = pkgs: {
+    powershell-editor-services = powershell-editor-services;
   };
+
+  environment.systemPackages = with pkgs; [
+    powershell
+    powershell-editor-services
+  ];
+
+  # Set the environment variable for Zsh
+  programs.zsh = {
+    interactiveShellInit = ''
+      export POWERSHELL_EDITOR_SERVICES_PATH="${powershell-editor-services}"
+    '';
+  };
+
+  # Optionally, you can also set it for other shells if needed
+  environment.shellInit = ''
+    export POWERSHELL_EDITOR_SERVICES_PATH="${powershell-editor-services}"
+  '';
+};
 }
