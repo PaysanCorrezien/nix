@@ -42,8 +42,8 @@ in
     autoSudo = true;
     tailscaleIP = "100.69.180.110";
     hostname = "workstation";
-    # useDhcp = false;
-    useDhcp = true;
+    useDhcp = false;
+    # useDhcp = true;
         disko = {
         mainDisk = "/dev/nvme0n1";  # Set this for your laptop with NVMe
     };

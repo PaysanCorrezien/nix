@@ -2,7 +2,9 @@
 let cfg = settings.terminal.extras;
 in {
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [ aichat aider-chat];
+    home.packages = with pkgs; [ aichat 
+    # aider-chat
+    ];
 
     programs.zsh = {
       shellAliases.ai = "aichat";

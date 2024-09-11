@@ -130,7 +130,7 @@ in
       pciutils
       looking-glass-client # For GPU passthrough
       quickemu
-      quickgui
+      # quickgui
       samba
       wmctrl
       launchScript
