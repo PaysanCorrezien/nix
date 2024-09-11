@@ -125,7 +125,7 @@ in
   };
 
   config = lib.mkIf config.settings.keepassxc.enable {
-    home.packages = with pkgs; [ keepassxc keepmenu pinentry-gtk2 bitwarden-cli ];
+    home.packages = with pkgs; [ keepassxc keepmenu pinentry-gtk2 bitwarden-cli bitwarden-desktop];
 
     home.activation.copyKeepassxcConfig =
       lib.hm.dag.entryAfter [ "writeBoundary" ] ''
