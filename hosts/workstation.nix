@@ -42,9 +42,13 @@ in
     autoSudo = true;
     tailscaleIP = "100.69.180.110";
     hostname = "workstation";
-    useDhcp = false;
+    # useDhcp = false;
+    useDhcp = true;
+        disko = {
+        mainDisk = "/dev/nvme0n1";  # Set this for your laptop with NVMe
+    };
     sops = {
-      #NOTE: from sops.nix file 
+      #NOTE: from sops.nix file
       enableGlobal = true;
       machineType = "desktop"; # or "homeserver" or "vps"
     };
@@ -80,9 +84,7 @@ in
       interface = "wlp4s0";
     };
 
-
     nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];
   };
-
 }
 

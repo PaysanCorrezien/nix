@@ -1,5 +1,6 @@
 keys:
   - &global_key age1505hgkl2lxyly09p22zc6re2c2ptmfrqtgxm2hch3x4w8l075enqrdsj5f
+  # NOTE: workstation + laptop
   - &desktop_key age1tsnhdtmtad8akk6at5nwyr4fgj2h4wdh6advzpnltxgdz6ufw9xqv8qz28
   - &homeserv_key age1q5zt5ajshkzatv4efthaek90nj0tlspr5mdvwhrmdcz6ydz5hg0sundywk
 

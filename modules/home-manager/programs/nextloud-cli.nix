@@ -5,6 +5,7 @@
 # force sync with cmd or 
 # dont use readfile and make it work more directly
 # Import the sops module to ensure it can be used here
+# FIXME: it create file because creds get populated so its doesnt work at first 
 
 #FIXME: This is a workaround to ensure that the secrets are read from the correct location
 # this doestn work on first init i need to find a better way to do this but 

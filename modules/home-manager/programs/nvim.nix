@@ -20,7 +20,7 @@ let
     docker-compose-language-service
     dockerfile-language-server-nodejs
     vscode-extensions.dbaeumer.vscode-eslint
-    vscode-extensions.ms-vscode.powershell
+    # vscode-extensions.ms-vscode.powershell
     hadolint
     vscode-langservers-extracted
     lua-language-server

@@ -3,7 +3,7 @@ set -e
 
 # Uncomment the next line for debugging
 set -x
-
+# TODO: allow passing argument for password, host, username
 # Hardcode username for now
 # TODO: make this configurable here and in config ?
 # maybe write this to a fil that the flake read  for the username ?
@@ -90,7 +90,8 @@ echo "Setting up the disk"
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
 
 echo "Installing NixOS with configuration: $CONFIG"
-sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace
+#TEST: capture output for debug, and --impure seems mandatory for laptop?
+sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace --impure >/tmp/nixos-install.log 2>&1
 
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
 echo "Moving configuration repository to $FINAL_REPO_DIR..."
