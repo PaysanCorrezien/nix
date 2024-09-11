@@ -15,8 +15,8 @@
     displayServer = null;
     social.enable = false;
     architecture = "x86_64";
-    tailscaleIP = "100.100.150.30";
-    hostname = "ionos";
+    tailscaleIP = "100.100.110.30";
+    hostname = "chi";
     ai.server.enable = false;
     sops = {
       #NOTE: from sops.nix file 
@@ -45,15 +45,6 @@
     '';
   };
 
-  #NOTE: https://github.com/nix-community/nixos-anywhere-examples/blob/main/flake.nix
-  # cloud-init for vps
-  # do not use DHCP, as DigitalOcean provisions IPs using cloud-init
-  networking.useDHCP = lib.mkForce false;
-
-  services.cloud-init = {
-    enable = true;
-    network.enable = true;
-  };
 
   # NOTE: this si for vm test
   # virtualisation.vmVariant = lib.mkMerge [
@@ -78,9 +69,10 @@
   users.groups.dylan = { };
   # # services.getty.autologinUser = "dylan";
   # TODO: remove this once test done
-  # services.getty.autologinUser = "dylan";
+  services.getty.autologinUser = "dylan";
   # Enable sudo for the wheel group
   security.sudo.wheelNeedsPassword = false;
 
 }
+
 
