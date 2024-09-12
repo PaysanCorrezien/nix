@@ -66,6 +66,16 @@ fi
 echo "You selected: $CONFIG"
 echo "Installing NixOS with configuration: $CONFIG"
 
+# Age key management
+AGE_KEY_TEMP=$(find /tmp -maxdepth 1 -name "*.age" | head -n 1)
+if [ -n "$AGE_KEY_TEMP" ]; then
+	echo "Age key found: $AGE_KEY_TEMP"
+	AGE_KEY_DEST="/mnt/var/secrets/${CONFIG}.age"
+	echo "Age key will be moved to: $AGE_KEY_DEST"
+else
+	echo "No Age key found in /tmp. Skipping Age key setup."
+fi
+
 # Run the disk selector and capture its output
 DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
 
@@ -98,6 +108,14 @@ echo "Moving configuration repository to $FINAL_REPO_DIR..."
 sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
 sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
 
+# Move and rename Age key to the installed system
+if [ -n "$AGE_KEY_TEMP" ]; then
+	echo "Moving Age key to the installed system..."
+	sudo mkdir -p "$(dirname "$AGE_KEY_DEST")"
+	sudo mv "$AGE_KEY_TEMP" "$AGE_KEY_DEST"
+	echo "Age key moved, renamed to ${CONFIG}.age, and permissions set."
+fi
+
 # Set passwords for the installed system
 echo "Setting passwords in the new system"
 sudo nixos-enter --root /mnt <<EOF
@@ -105,6 +123,12 @@ sudo nixos-enter --root /mnt <<EOF
 echo "debug inside nix system : $USER_PASSWORD "
 echo "$USER_NAME:$USER_PASSWORD" | chpasswd
 echo "root:$USER_PASSWORD" | chpasswd
+ Set permissions for the Age key
+if [ -f "$AGE_KEY_DEST" ]; then
+    chmod 600 "$AGE_KEY_DEST"
+    chown root:root "$AGE_KEY_DEST"
+    echo "Age key permissions and ownership set."
+fi
 
 #TEST: maybe its useless
 #FIXME: not properly set atm?
@@ -113,6 +137,11 @@ EOF
 
 # Clean up temporary directory
 rm -rf "$TEMP_REPO_DIR"
+
+# Add this at the end of your script
+if [ -f "$AGE_KEY_DEST" ]; then
+	echo "Age key has been placed at $AGE_KEY_DEST in the new system"
+fi
 
 echo "Installation complete. Please reboot into your new system."
 echo "You can now log in as $USER_NAME or root with the password you set."
