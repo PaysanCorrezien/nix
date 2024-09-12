@@ -5,7 +5,7 @@ in {
   config = lib.mkIf (!cfg) {
     environment.systemPackages = with pkgs; [
       # TODO: fix 
-      # termusic
+      termusic
       yt-dlp
       cmus
       mpv

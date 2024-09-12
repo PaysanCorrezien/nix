@@ -46,6 +46,7 @@ let
     nodenv
     jdk21
     poppler_utils
+    harper
   ];
 
   minimalPackages = with pkgs; [
