@@ -41,6 +41,8 @@ let
         # Load completion system
         autoload -Uz compinit
         compinit
+        export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+
 
         # Additional initialization commands
         eval "$(zoxide init zsh)"
@@ -63,6 +65,10 @@ let
           # history list, but not written to the history file".
           return 2
         }
+        # ~/.zshrc
+        export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
+        zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+        source <(carapace _carapace)
 
         # zsh hook called before the prompt is printed.  See zshmisc(1).
         function precmd() {
