@@ -9,6 +9,7 @@
     ./cava.nix
     ./ytfzf.nix
     ./aichat.nix
+    ./nushell.nix
     ./atuin.nix
   ];
 }

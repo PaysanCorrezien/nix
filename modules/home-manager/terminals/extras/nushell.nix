@@ -1,6 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config,settings, lib, pkgs, ... }:
 
-{
+let cfg = settings.terminal.extras;
+in {
+  config = lib.mkIf cfg.enable {
   programs.nushell = {
     enable = true;
 
@@ -93,6 +95,7 @@
   programs.carapace = {
     enable = true;
     enableNushellIntegration = true;
+    enableZshIntegration = true;
   };
   # Enable zoxide
   programs.zoxide = {
@@ -105,7 +108,6 @@
     enable = true;
     enableNushellIntegration = true;
   };
-
 
   home.packages = with pkgs; [
     starship
@@ -122,5 +124,6 @@
   programs.thefuck.enable = true;
   programs.thefuck.enableNushellIntegration = true;
   services.gpg-agent.enableNushellIntegration = true;
+  };
 
 }
