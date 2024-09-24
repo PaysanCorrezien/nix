@@ -1,9 +1,7 @@
 { lib, config, pkgs, ... }:
 
-#TODO: move or remove this ?
 let
   cfg = config.settings.isServer;
-
   myPython = pkgs.python3.withPackages (ps:
     with ps; [
       pillow
@@ -13,10 +11,12 @@ let
       pycairo
       pyyaml
       pyudev
+      beautifulsoup4
+      openpyxl
+      rich
     ]);
 in
 {
-
   config = lib.mkIf (!cfg) {
     environment.systemPackages = with pkgs; [
       myPython
@@ -27,8 +27,8 @@ in
       atk
       pango
       harfbuzz
+      ruff-lsp
     ];
-
     environment.variables = {
       PYTHONPATH = with pkgs;
         lib.makeSearchPathOutput "lib"
@@ -55,6 +55,10 @@ in
           harfbuzz
         ];
     };
+    # Add this section to create an alias for your script
+    environment.shellAliases = {
+      "console" = "python3 ~/repo/pythonautomation/console.py";
+       "excel-tool" = "python3 ~/repo/pythonautomation/excel_viewer.py";
+    };
   };
 }
-
