@@ -87,15 +87,8 @@ in {
     shellAliases = {
       n = "nvim";
       y = "yazi";
-      sw = "~/.config/nix/scripts/rebuild.sh";
-
+      # sw = "~/.config/nix/scripts/rebuild.sh";
     };
-  };
-  # Enable Carapace for better completions
-  programs.carapace = {
-    enable = true;
-    enableNushellIntegration = true;
-    enableZshIntegration = true;
   };
   # Enable zoxide
   programs.zoxide = {
@@ -110,9 +103,6 @@ in {
   };
 
   home.packages = with pkgs; [
-    starship
-    zoxide
-    carapace
     nushellPlugins.query
     nushellPlugins.gstat
     nushellPlugins.polars
@@ -121,8 +111,6 @@ in {
   ];
 
   programs.yazi.enableNushellIntegration = true;
-  programs.thefuck.enable = true;
-  programs.thefuck.enableNushellIntegration = true;
   services.gpg-agent.enableNushellIntegration = true;
   };
 

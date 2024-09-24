@@ -11,6 +11,8 @@
     ./aichat.nix
     ./nushell.nix
     ./atuin.nix
+    ./thefuck.nix
+    ./carapace.nix
   ];
 }
 
