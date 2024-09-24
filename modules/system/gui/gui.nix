@@ -3,7 +3,8 @@
 let
   username = "dylan";
   isServer = config.settings.isServer;
-  defaultGuiEnable = !isServer; # Default to true if not a server
+  isWSL = config.wsl.enable or false;
+  defaultGuiEnable = !(isServer || isWSL); # Default to false if server or WSL
 in
 {
   imports = [
@@ -114,7 +115,7 @@ in
       powerManagement.powertop.enable = true;
 
       # Enable the OpenSSH daemon.
-      services.openssh.enable = true;
+      # services.openssh.enable = true;
     })
   ];
 }

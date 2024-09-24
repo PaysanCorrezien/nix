@@ -13,6 +13,7 @@ in
       options.sops = lib.mkOption {
         type = lib.types.submodule {
           options = {
+            enable = lib.mkEnableOption "Enable sops configuration";
             enableGlobal = lib.mkEnableOption "Enable global secrets";
             machineType = lib.mkOption {
               type = lib.types.enum [ "desktop" "homeserver" "vps" ];
@@ -27,22 +28,16 @@ in
     default = { };
   };
 
-  config = lib.mkMerge [
+  config = lib.mkIf cfg.enable (lib.mkMerge [
     {
       environment.systemPackages = with pkgs; [ sops age ];
-      #NOTE: why isnt sops.nix settings it for me???
-      # environment.variables.SOPS_AGE_KEY_FILE = "/var/lib/secrets/${cfg.machineType}.txt";
       environment.variables.SOPS_AGE_KEY_FILE = "/var/lib/secrets/${config.networking.hostName}.txt";
       sops = {
         defaultSopsFormat = "yaml";
-        #NOTE: except a key name specific by host ? maybe find a more appropriate way than this now ? based on nixos.config hostname directly ?
         age.keyFile = "/var/lib/secrets/${config.networking.hostName}.txt";
-        # age.keyFile = "/var/lib/secrets/${cfg.machineType}.txt";
       };
     }
 
-
-    #TEST: is this realy still usefull ?
     (lib.mkIf cfg.enableGlobal {
       sops.secrets = {
         "tailscale_auth_key" = {
@@ -50,15 +45,10 @@ in
           group = "root";
           mode = "0440";
         };
-        #NOTE: for home manager , but may be usefull on others host later
         "nextcloudUrl" = {
           sopsFile = ./sops/kumo.yaml;
           owner = "dylan";
         };
-        # "wifi_homekey" = {
-        #   sopsFile = ./sops/kumo.yaml;
-        #   owner = "root";
-        # };
       };
     })
 
@@ -77,38 +67,6 @@ in
           sopsFile = ./sops/pasokon.yaml;
           owner = "dylan";
         };
-        "thunderbird/account1/email" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account1/server" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account1/port" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account2/name" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account2/email" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account2/server" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "thunderbird/account2/port" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
-        "atuin_sync_address" = {
-          sopsFile = ./sops/pasokon.yaml;
-          owner = "dylan";
-        };
       };
     })
 
@@ -118,32 +76,12 @@ in
           sopsFile = ./sops/ie.yaml;
           owner = "dylan";
         };
-        "discordWebhookUrl" = {
-          sopsFile = ./sops/ie.yaml;
-          owner = "dylan";
-        };
-        "sync_password" = {
-          sopsFile = ./sops/ie.yaml;
-          owner = "dylan";
-        };
-        "sync_localDir" = {
-          sopsFile = ./sops/ie.yaml;
-          owner = "dylan";
-        };
-        "sync_remoteDir" = {
-          sopsFile = ./sops/ie.yaml;
-          owner = "dylan";
-        };
       };
     })
 
     (lib.mkIf (cfg.machineType == "vps") {
       sops.secrets = {
-        # "vps_secret" = {
-        #   sopsFile = ./sops/vps.yaml;
-        #   owner = "dylan";
-        # };
       };
     })
-  ];
+  ]);
 }

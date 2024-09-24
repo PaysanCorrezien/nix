@@ -10,6 +10,7 @@ let
   #TODO: customiizing extensions param 
 in
 {
+  # config = lib.mkIf (settings.gui.enable) {
   config = lib.mkIf (!cfg) {
 
     # imports = [ ./glance.nix ];

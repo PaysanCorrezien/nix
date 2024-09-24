@@ -14,9 +14,9 @@ let
         # Custom Zsh configurations
         source $HOME/.config/zsh/aliases.zsh
         source $HOME/.config/zsh/exports.zsh
-        source $HOME/.config/zsh/wsl.zsh
-        # source $HOME/.config/zsh/nnn.zsh
         source $HOME/.config/zsh/bindings.zsh
+        # source $HOME/.config/zsh/wsl.zsh
+        # source $HOME/.config/zsh/nnn.zsh
         # source $HOME/.config/zsh/wezterm.sh
 
           if [[ -f $HOME/.config/zsh/secrets.zsh ]]; then

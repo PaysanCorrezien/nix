@@ -1,18 +1,7 @@
 # home.nix
-{ lib,hostName, config, pkgs, inputs, settings, ... }:
+{ lib, hostName, config, pkgs, inputs, settings, ... }:
 let
   isServer = settings.isServer;
-  # Function to write settings to $HOME/.settings.nix
-  # Serialize the settings to JSON
-  # NOTE: dump all settings to ~/.settings.nix.json to troubleshoot
-  # serializedSettings = builtins.toJSON settings;
-  # settingsFilePath = "${config.home.homeDirectory}/.settings.nix.json";
-  # # Create a writable copy of the settings file
-  # setPermissionsScript = ''
-  #   rm -f ${settingsFilePath}
-  #   cp ${settingsFilePath}.init ${settingsFilePath}
-  #   chmod u+w ${settingsFilePath}
-  # '';
 in
 {
   imports = [
@@ -25,108 +14,50 @@ in
     ./browser/firefox.nix
     ./terminals/default.nix
     ./terminals/zsh.nix
-    # ./terminals/fonts.nix
-    # ./terminals/rust.nix
     ./gnome/extensions.nix
     ./gnome/settings.nix
     ./programs/nvim.nix
     ./programs/remmina.nix
-
     ./programs/keepassxc.nix
     ./programs/thunderbird.nix
-    # ./programs/keybswitch.nix
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
     ./kde/settings.nix
-
   ];
-  # home.programs.chezmoi = {
-  #   enable = true;
-  #   repoUrl =
-  #     "https://github.com/PaysanCorrezien/dotfiles"; # Replace with your actual repo URL
-  #   autoApply = true; # Set to false if you want to apply changes manually
-  # };
-  #
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
-  home.username = "dylan";
-  home.homeDirectory = "/home/dylan";
 
-  # Write the settings to an initial file in the home directory
-  # home.file.".settings.nix.json.init".text = serializedSettings;
-  # home.activation.setSettingsPermissions =
-  #   lib.hm.dag.entryAfter [ "writeTextFile" ] ''
-  #     ${setPermissionsScript}
-  #   '';
-
-  #FIXME: print nothing
-  home.sessionVariables = { IS_SERVER = toString isServer; };
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "23.11"; # Please read the comment before changing.
-
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
+  home = {
+    username = "dylan";
+    homeDirectory = "/home/dylan";
+    stateVersion = "23.11"; # Please read the comment before changing.
+    sessionVariables = {
+      EDITOR = "nvim";
+      IS_SERVER = toString isServer;
+      SOPS_AGE_KEY_FILE = "/var/lib/secrets/${hostName}.txt";
+    };
+    file = { };
   };
 
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. If you don't want to manage your shell through Home
-  # Manager then you have to manually source 'hm-session-vars.sh' located at
-  # either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/dylan/etc/profile.d/hm-session-vars.sh
-  #
-  home.sessionVariables = {
-    EDITOR = "nvim";
-#NOTE: not certain its any uefull
-        SOPS_AGE_KEY_FILE = "/var/lib/secrets/${hostName}.txt";
-  };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  settings.thunderbird.enable = !settings.isServer;
-  settings.keepassxc.enable = !settings.isServer;
-  settings.nextcloudcli.enable = !settings.isServer;
-  settings.wezterm.enable = !settings.isServer;
-  # settings.remmina.enable = !settings.isServer;
-  settings.remmina.enable = settings.work;
-  settings.minimalNvim =
-    settings.isServer; # NOTE: only enable this for server this time
+  # GUI-related settings
+  settings = {
+    thunderbird.enable = settings.gui.enable;
+    # keepassxc.enable = settings.gui.enable;
+    keepassxc.enable = !settings.isServer;
+    nextcloudcli.enable = settings.gui.enable;
+    # wezterm.enable = settings.gui.enable;
+    wezterm.enable = !settings.isServer;
+    remmina.enable = settings.gui.enable;
+    minimalNvim = settings.isServer;
+  };
 
+  # Window manager specific settings
   settings.gnome.extra.enable = lib.mkIf
-    (
-      !isServer &&
-      settings.windowManager == "gnome"
-    )
+    (!isServer && settings.windowManager == "gnome")
     true;
+
   settings.plasma.extra.enable = lib.mkIf
-    (
-      !isServer &&
-      settings.windowManager == "plasma"
-    )
+    (!isServer && settings.windowManager == "plasma")
     true;
 }

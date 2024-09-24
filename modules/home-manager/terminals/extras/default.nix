@@ -1,6 +1,9 @@
-{ config, pkgs, ... }:
+{settings,lib, config, pkgs, ... }:
+  let cfg = settings.terminal.extras;
 
+in
 {
+
   imports = [
     ./btop.nix
     ./rust.nix
@@ -14,5 +17,11 @@
     ./thefuck.nix
     ./carapace.nix
   ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+  imagemagick
+  rustscan
+  ];
+  };
 }
 

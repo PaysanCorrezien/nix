@@ -59,21 +59,25 @@ let
     tab_mode=0
     fullscreen_toolbar_visibility=0
     auto_scroll_step=10
-    hostkey=65508
-    hostkey=65513
-    shortcutkey_grab=65367
-    shortcutkey_fullscreen=65360
-    shortcutkey_autofit=49
-    shortcutkey_nexttab=65363
-    shortcutkey_prevtab=65361
-    shortcutkey_scale=115
-    shortcutkey_clipboard=98
-    shortcutkey_multimon=65365
-    shortcutkey_viewonly=109
-    shortcutkey_screenshot=65481
-    shortcutkey_minimize=65478
-    shortcutkey_disconnect=65473
-    shortcutkey_toolbar=116
+    hostkey=192
+    #F14 serve as hostkey ( launch5 in gnome)
+    # if i need to use mod combo later :
+    # https://gitlab.com/Remmina/Remmina/-/merge_requests/2523 
+    hostkey=269025093
+    shortcutkey_grab=65367          # End key
+    shortcutkey_fullscreen=65360    # Home key
+    shortcutkey_autofit=114         # R key
+    shortcutkey_nexttab=65363       # Right Arrow key
+    shortcutkey_prevtab=65361       # Left Arrow key
+    shortcutkey_scale=115           # S key
+    shortcutkey_clipboard=98        # B key
+    shortcutkey_multimon=65365      # Page Up key
+    shortcutkey_viewonly=109        # M key
+    shortcutkey_screenshot=65481    # F12 key
+    shortcutkey_minimize=65478      # F9 key
+    shortcutkey_disconnect=65473    # F4 key
+    shortcutkey_toolbar=116         # T key
+
     vte_shortcutkey_copy=99
     vte_shortcutkey_paste=118
     vte_shortcutkey_select_all=97

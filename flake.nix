@@ -30,6 +30,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    nixos-wsl = {
+      url = "github:nix-community/nixos-wsl";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     { self
@@ -39,6 +43,7 @@
     , disko
     , clovis
     , keybswitch
+    , nixos-wsl
     , ...
     }@inputs:
     let
@@ -61,6 +66,7 @@
         chi = mkSystem "chi";
         homeserv = mkSystem "homeserv";
         ionos = mkSystem "ionos";
+        wsl = mkSystem "wsl";
       };
     };
 }

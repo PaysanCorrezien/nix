@@ -49,6 +49,7 @@ in
     };
     sops = {
       #NOTE: from sops.nix file
+      enable = true;
       enableGlobal = true;
       machineType = "desktop"; # or "homeserver" or "vps"
     };

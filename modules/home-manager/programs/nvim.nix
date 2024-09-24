@@ -47,6 +47,7 @@ let
     jdk21
     poppler_utils
     harper
+    gnumake # for avante build
   ];
 
   minimalPackages = with pkgs; [

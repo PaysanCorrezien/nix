@@ -14,6 +14,10 @@ let
       beautifulsoup4
       openpyxl
       rich
+      textual
+      evtx
+      python-dotenv
+      fuzzywuzzy
     ]);
 in
 {
@@ -59,6 +63,7 @@ in
     environment.shellAliases = {
       "console" = "python3 ~/repo/pythonautomation/console.py";
        "excel-tool" = "python3 ~/repo/pythonautomation/excel_viewer.py";
+       "git-tracker" = "python3 ~/repo/pythonautomation/git_tracker.py";
     };
   };
 }
