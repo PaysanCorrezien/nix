@@ -114,6 +114,7 @@ echo "Installation completed"
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
 echo "Moving configuration repository to $FINAL_REPO_DIR..."
 sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
+#FIX:: move this properly
 sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
 
 # Move and rename Age key to the installed system

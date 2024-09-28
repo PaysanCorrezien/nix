@@ -29,6 +29,7 @@
     };
 
   };
+  networking.hostName = config.settings.hostname;
 
   services.openssh = {
     enable = true;
