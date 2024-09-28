@@ -58,6 +58,7 @@
       nixosConfigurations = {
         lenovo = mkSystem "lenovo";
         workstation = mkSystem "workstation";
+        chi = mkSystem "chi";
         homeserv = mkSystem "homeserv";
         ionos = mkSystem "ionos";
       };

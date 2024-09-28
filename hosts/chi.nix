@@ -27,7 +27,6 @@
         mainDisk = "/dev/sda";
     };
 
-
   };
 
   services.openssh = {
@@ -76,7 +75,6 @@
   services.getty.autologinUser = "dylan";
   # Enable sudo for the wheel group
   security.sudo.wheelNeedsPassword = false;
-
 }
 
 

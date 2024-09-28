@@ -77,6 +77,7 @@ else
 fi
 
 # Run the disk selector and capture its output
+#FIX:  this make detect a prompt and either use the provide disk of current system or auto install
 DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
 
 # Extract the selected drive from the disk info
