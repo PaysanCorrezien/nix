@@ -33,7 +33,6 @@ check_network_access() {
 	fi
 }
 
-# Function to check Git status and prompt for pull
 check_git_status_and_pull() {
 	local repo_path="$1"
 	echo "🔍 Checking Git status for $repo_path"
@@ -43,16 +42,56 @@ check_git_status_and_pull() {
 	fi
 	if check_network_access; then
 		if git -C "$repo_path" fetch &>/dev/null; then
-			# -C run in a specific directory
-			# The -uno option stands for --untracked-files=no
 			local status=$(git -C "$repo_path" status -uno)
 			if echo "$status" | grep -qE "(Your branch is behind|Votre branche est en retard)"; then
 				echo "📥 There are changes available on the remote repository for $repo_path."
 				read -p "Do you want to pull the latest changes? (y/n): " answer
 				if [ "$answer" = "y" ]; then
-					echo "🔄 Pulling latest changes..."
-					git -C "$repo_path" pull
-					echo "✅ Pull complete"
+					echo "🔄 Attempting to pull latest changes..."
+					if ! git -C "$repo_path" pull; then
+						echo "❌ Pull failed. You have uncommitted changes."
+						git -C "$repo_path" status
+						echo "Uncommitted changes:"
+						git -C "$repo_path" diff
+
+						while true; do
+							echo "Choose an action:"
+							echo "1) Commit changes"
+							echo "2) Stash changes"
+							echo "3) Discard changes"
+							echo "4) Skip pull"
+							read -p "Enter your choice (1-4): " choice
+
+							case $choice in
+							1)
+								read -p "Enter commit message: " commit_msg
+								git -C "$repo_path" commit -am "$commit_msg"
+								git -C "$repo_path" pull
+								break
+								;;
+							2)
+								git -C "$repo_path" stash
+								git -C "$repo_path" pull
+								git -C "$repo_path" stash pop
+								break
+								;;
+							3)
+								git -C "$repo_path" reset --hard
+								git -C "$repo_path" clean -fd
+								git -C "$repo_path" pull
+								break
+								;;
+							4)
+								echo "⏭️ Skipping pull"
+								break
+								;;
+							*)
+								echo "Invalid choice. Please try again."
+								;;
+							esac
+						done
+					fi
+					echo "✅ Pull process complete"
 				else
 					echo "⏭️ Skipping pull"
 				fi
