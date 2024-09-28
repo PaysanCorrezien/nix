@@ -21,14 +21,10 @@ in
     };
 
     networking = {
-      firewall = {
-        trustedInterfaces = [ "tailscale0" ];
-        allowedTCPPorts = [ 22 ];
-      };
-      interfaces.tailscale0.ipv4.addresses = [{
-        address = cfg.settings.tailscaleIP;
-        prefixLength = 32;
-      }];
+      # firewall = {
+      #   trustedInterfaces = [ "tailscale0" ];
+      #   allowedTCPPorts = [ 22 ];
+      # };
     };
 
     environment.systemPackages = [ pkgs.tailscale ];

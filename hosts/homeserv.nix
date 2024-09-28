@@ -21,6 +21,7 @@
     autoSudo = true;
     sops = {
       #NOTE: from sops.nix file 
+      enable = true;
       enableGlobal = true;
       machineType = "homeserver"; # or "homeserver" or "vps"
     };

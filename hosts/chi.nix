@@ -11,11 +11,11 @@
     work = false;
     gaming = false;
     tailscale.enable = true;
+    tailscaleIP = "100.90.6.1";
     windowManager = null;
     displayServer = null;
     social.enable = false;
     architecture = "x86_64";
-    tailscaleIP = "100.100.110.30";
     hostname = "chi";
     ai.server.enable = false;
     sops = {
@@ -75,7 +75,7 @@
   users.groups.dylan = { };
   # # services.getty.autologinUser = "dylan";
   # TODO: remove this once test done
-  services.getty.autologinUser = "dylan";
+  # services.getty.autologinUser = "dylan";
   # Enable sudo for the wheel group
   security.sudo.wheelNeedsPassword = false;
 }
