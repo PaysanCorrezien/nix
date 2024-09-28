@@ -20,6 +20,7 @@
     ai.server.enable = false;
     sops = {
       #NOTE: from sops.nix file 
+      enable = true;
       enableGlobal = true;
       machineType = "vps"; # or "homeserver" or "vps"
     };

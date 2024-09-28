@@ -103,6 +103,7 @@ echo "🔄 Restarting home manager now"
 sudo systemctl restart home-manager-dylan.service
 echo "✅ Home manager restarted"
 
+#TODO: if server dont run this ?
 echo "🔄 Running Chezmoi update"
 $HOME/.local/bin/update-dotfiles "https://github.com/PaysanCorrezien/dotfiles"
 echo "✅ Chezmoi update complete"

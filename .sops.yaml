@@ -3,9 +3,10 @@ keys:
   # NOTE: workstation + laptop
   - &desktop_key age1tsnhdtmtad8akk6at5nwyr4fgj2h4wdh6advzpnltxgdz6ufw9xqv8qz28
   - &homeserv_key age1q5zt5ajshkzatv4efthaek90nj0tlspr5mdvwhrmdcz6ydz5hg0sundywk
+  - &chi_key age1afp3zwj6hgvn47hr7jzyqh3lz7c972nynua98ga25tz4ts0kk5mss527vq
 
 creation_rules:
-  #NOTE: here i give all key access to all key for my basic infos
+  #NOTE: here i give all key access to my basic infos
   #then more host specific key are only available by their respective key
   - path_regex: modules/sops/kumo\.yaml$
     key_groups:
@@ -13,6 +14,7 @@ creation_rules:
           - *global_key
           - *desktop_key
           - *homeserv_key
+          - *chi_key
 
   - path_regex: modules/sops/pasokon\.yaml$
     key_groups:
