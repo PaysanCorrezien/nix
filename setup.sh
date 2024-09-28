@@ -102,7 +102,14 @@ sudo nix --experimental-features "nix-command flakes" run github:nix-community/d
 
 echo "Installing NixOS with configuration: $CONFIG"
 #TEST: capture output for debug, and --impure seems mandatory for laptop?
-sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace --impure >/tmp/nixos-install.log 2>&1
+(
+	sudo nixos-install --flake "$TEMP_REPO_DIR"#$CONFIG --show-trace --impure > >(tee /tmp/nixos-install.log) 2>&1 &
+	echo $! >/tmp/nixos-install.pid
+)
+echo "Installation started in the background. You can monitor the progress in /tmp/nixos-install.log"
+echo "Waiting for installation to complete..."
+wait $(cat /tmp/nixos-install.pid)
+echo "Installation completed"
 
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
 echo "Moving configuration repository to $FINAL_REPO_DIR..."
