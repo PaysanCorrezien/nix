@@ -46,7 +46,7 @@ check_git_status_and_pull() {
 			# -C run in a specific directory
 			# The -uno option stands for --untracked-files=no
 			local status=$(git -C "$repo_path" status -uno)
-			if echo "$status" | grep -q "Your branch is behind"; then
+			if echo "$status" | grep -qE "(Your branch is behind|Votre branche est en retard)"; then
 				echo "📥 There are changes available on the remote repository for $repo_path."
 				read -p "Do you want to pull the latest changes? (y/n): " answer
 				if [ "$answer" = "y" ]; then
