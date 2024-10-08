@@ -52,15 +52,18 @@
       "org/gnome/desktop/background" = {
         #FIXME: make use of relative path here
         picture-uri =
-          "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+          # "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+          "file:///home/dylan/.wallpaper.png";
         picture-uri-dark =
-          "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+          # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+          "file:///home/dylan/.wallpaper.png";
         picture-options = "zoom"; # Set wallpaper display option
       };
       # dont seems to work right now need to find what is missing
       "org/gnome/desktop/screensaver" = {
         picture-uri =
-          "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+          "file:///home/dylan/.wallpaper.png";
+          # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
         primary-color =
           "#b7bdf8"; # catppuccin machia lavender             # Default primary color for screensaver
         secondary-color =

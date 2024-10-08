@@ -1,4 +1,4 @@
-{ lib, hostName,pkgs, config, ... }:
+{ lib, hostName, pkgs, config, ... }:
 
 let
   customZshInit = pkgs.writeText "custom-zsh-init" ''
@@ -96,28 +96,51 @@ in
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       historySubstringSearch.enable = true;
-      initExtra = lib.readFile customZshInit;
+#TODO: reload wezterm so it also update its wallpaper ?
+      initExtra = lib.readFile customZshInit + ''
+        function set-wp() {
+          local wallpaper_path="$HOME/.wallpaper.png"
+        
+          if [ -f "$1" ]; then
+            local ext="''${1##*.}"
+          
+            if [ "$ext" = "png" ]; then
+              cp "$1" "$wallpaper_path"
+            else
+              convert "$1" "$wallpaper_path"
+            fi
+          
+            if [ $? -eq 0 ]; then
+              echo "Wallpaper set: $1 converted and moved to $wallpaper_path"
+              gsettings set org.gnome.desktop.background picture-uri "file://$wallpaper_path"
+            else
+              echo "Error: Failed to convert or copy the image."
+              return 1
+            fi
+          else
+            echo "File not found: $1"
+            return 1
+          fi
+        }
+      '';
       shellAliases = {
         ll = "ls -l";
         update = "sudo nixos-rebuild switch";
         sw = "~/.config/nix/scripts/rebuild.sh";
-        set-wp = ''
-          gsettings set org.gnome.desktop.background picture-uri "file://$(realpath $1)"'';
         switchkb = "switch-keyboard-layout";
-        # NOTE: This alias is used to find the nix package of a binary, and open the path in the file manager
         np = ''
           function _findpkg() { 
             if [ -z "$1" ]; then 
               echo "Usage: findnixpkg <binary_name>"
               return 1
             fi
-            
+          
             binary_path=$(which "$1")
             if [ -z "$binary_path" ]; then 
               echo "Binary $1 not found"
               return 1
             fi
-            
+          
             nix_store_path=$(readlink -f "$binary_path")
             yazi $(dirname "$nix_store_path")
           }; _findpkg'';
