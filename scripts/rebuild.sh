@@ -45,6 +45,23 @@ check_git_status_and_pull() {
 			local status=$(git -C "$repo_path" status -uno)
 			if echo "$status" | grep -qE "(Your branch is behind|Votre branche est en retard)"; then
 				echo "📥 There are changes available on the remote repository for $repo_path."
+
+				# Get the range of commits to be pulled
+				local current_branch=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
+				local remote_branch="origin/$current_branch"
+				local commit_range="$current_branch..$remote_branch"
+
+				# Display commit information
+				echo "Commits to be pulled:"
+				git -C "$repo_path" log --pretty=format:"%h - %s (%cr) <%an>" --abbrev-commit --date=relative $commit_range |
+					while IFS= read -r line; do
+						commit_hash=$(echo $line | cut -d' ' -f1)
+						commit_stats=$(git -C "$repo_path" show --stat --oneline $commit_hash | tail -n 1)
+						echo "$line"
+						echo "    $commit_stats"
+						echo
+					done
+
 				read -p "Do you want to pull the latest changes? (y/n): " answer
 				if [ "$answer" = "y" ]; then
 					echo "🔄 Attempting to pull latest changes..."
@@ -53,7 +70,6 @@ check_git_status_and_pull() {
 						git -C "$repo_path" status
 						echo "Uncommitted changes:"
 						git -C "$repo_path" diff
-
 						while true; do
 							echo "Choose an action:"
 							echo "1) Commit changes"
@@ -61,7 +77,6 @@ check_git_status_and_pull() {
 							echo "3) Discard changes"
 							echo "4) Skip pull"
 							read -p "Enter your choice (1-4): " choice
-
 							case $choice in
 							1)
 								read -p "Enter commit message: " commit_msg
