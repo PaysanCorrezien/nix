@@ -25,6 +25,11 @@
       enableGlobal = true;
       machineType = "homeserver"; # or "homeserver" or "vps"
     };
+     disko = {
+        mainDisk = "/dev/sda";
+        layout = "standard";
+    };
+
 
   };
 
