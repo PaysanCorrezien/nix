@@ -9,7 +9,6 @@ in {
     virtualisation.docker = {
       enable = true;
       enableOnBoot = true;
-      enableNvidia = true; # Enable NVIDIA runtime for Docker
       rootless = {
         enable = true;
         setSocketVariable = true;
