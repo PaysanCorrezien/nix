@@ -2,6 +2,9 @@
 homeManagerBackupFileExtension="HomeManagerBAK"
 defaultFlakePath="/home/dylan/.config/nix"
 
+# Global variable for network status
+NETWORK_AVAILABLE=false
+
 echo "🚀 Starting Nix rebuild process..."
 
 if [ "$PWD" != "$HOME/.config/nix" ]; then
@@ -26,9 +29,11 @@ check_network_access() {
 	echo "🌐 Checking network connectivity..."
 	if ping -c 1 google.com &>/dev/null; then
 		echo "✅ Network is accessible"
+		NETWORK_AVAILABLE=true
 		return 0
 	else
 		echo "❌ No network access"
+		NETWORK_AVAILABLE=false
 		return 1
 	fi
 }
@@ -40,7 +45,7 @@ check_git_status_and_pull() {
 		echo "⚠️ Warning: $repo_path is not a Git repository."
 		return 1
 	fi
-	if check_network_access; then
+	if $NETWORK_AVAILABLE; then
 		if git -C "$repo_path" fetch &>/dev/null; then
 			local status=$(git -C "$repo_path" status -uno)
 			if echo "$status" | grep -qE "(Your branch is behind|Votre branche est en retard)"; then
@@ -116,6 +121,8 @@ check_git_status_and_pull() {
 		else
 			echo "❌ Failed to fetch from remote"
 		fi
+	else
+		echo "⚠️ No network access. Skipping Git operations."
 	fi
 }
 
@@ -127,8 +134,15 @@ if [ ! -d "$flakePath" ]; then
 	exit 1
 fi
 
-# Check Git status and prompt for pull if changes are available
-check_git_status_and_pull "$flakePath"
+# Check network access
+check_network_access
+
+# Check Git status and prompt for pull if changes are available (only if network is available)
+if $NETWORK_AVAILABLE; then
+	check_git_status_and_pull "$flakePath"
+else
+	echo "⚠️ No network access. Skipping Git operations."
+fi
 
 echo "🧹 Deleting backup files with extension .$homeManagerBackupFileExtension that prevent home manager rebuild"
 find ~ -type f -name "*.$homeManagerBackupFileExtension" -delete
@@ -141,6 +155,10 @@ echo "🏷️ Flake name: $flakeName"
 
 # Capture and print the rebuild command
 rebuildCommand="sudo nixos-rebuild switch --flake \"$flakeName\" --impure --show-trace"
+if ! $NETWORK_AVAILABLE; then
+	rebuildCommand+=" --option substitute false"
+	echo "⚠️ Running in offline mode. Binary substitutions disabled."
+fi
 echo "🛠️ Rebuilding now with command:"
 echo "$rebuildCommand"
 
@@ -157,9 +175,12 @@ echo "🔄 Restarting home manager now"
 sudo systemctl restart home-manager-dylan.service
 echo "✅ Home manager restarted"
 
-#TODO: if server dont run this ?
-echo "🔄 Running Chezmoi update"
-$HOME/.local/bin/update-dotfiles "https://github.com/PaysanCorrezien/dotfiles"
-echo "✅ Chezmoi update complete"
+if $NETWORK_AVAILABLE; then
+	echo "🔄 Running Chezmoi update"
+	$HOME/.local/bin/update-dotfiles "https://github.com/PaysanCorrezien/dotfiles"
+	echo "✅ Chezmoi update complete"
+else
+	echo "⚠️ Skipping Chezmoi update due to no network access"
+fi
 
 echo "🎉 All processes completed successfully!"
