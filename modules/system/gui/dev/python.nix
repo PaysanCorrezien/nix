@@ -18,6 +18,9 @@ let
       evtx
       python-dotenv
       fuzzywuzzy
+      yt-dlp
+      pyqt5
+      google-api-python-client
     ]);
 in
 {
