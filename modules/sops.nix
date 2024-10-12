@@ -49,6 +49,10 @@ in
           sopsFile = ./sops/kumo.yaml;
           owner = "dylan";
         };
+        "atuin_sync_address" = {
+          sopsFile = ./sops/kumo.yaml;
+          owner = "dylan";
+        };
       };
     })
 

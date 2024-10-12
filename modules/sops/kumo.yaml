@@ -1,5 +1,6 @@
 nextcloudUrl: ENC[AES256_GCM,data:Wc4uWaJtiN4zvm/YtiRnJf9KhHa9x8bY2vHqdek+Cx5PkR/a,iv:xSOF3O6VhWXA9DRdYpT4rd3o+BUdcHnWKRKUl1oTU4c=,tag:duB6mENE8BY6GVVLyjfwAw==,type:str]
 tailscale_auth_key: ENC[AES256_GCM,data:lAxheHCgOAr2MVjsx5lzWQ+rpx/TbactiKoisNafn/Xu/cNVLB0VZUSbSpRLk9lJh0vt9cUIf6WYyKt2fBU=,iv:8nbXb42QOS9BoO3mj3rvMUMhic7xSQYXY2e0mkfAgYo=,tag:84Af9FJtwDLw1nZYrfzGWw==,type:str]
+atuin_sync_address: ENC[AES256_GCM,data:36XLY7eMw5RUt5O0YVUCA6t4itwUJpktwA==,iv:6WFwKtpPGTlwsY5LOn7HvY0WjznYVUaYlAMH30wDDBM=,tag:Ve98Bnvg3Y0SNQl5A8T1cQ==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -42,8 +43,8 @@ sops:
             eGpRd3V1aGxJU1hYM0paTHJMdDJhT1EKeyivD+IsPqTN2r0XN5xu9o5Gnk3gjlhC
             A+wtaw8wvl77KiRNKNK9NpvLZcMRWWXEa+2K/QH1IavpTrvM46wqmg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-08-20T22:33:39Z"
-    mac: ENC[AES256_GCM,data:gmnI9CcetdSnYxP8u3v15WkwQhVLfeUPNUMXkaUqfmxPDH9DtiK1LJjjX1s4ZiA4SIGj9XU9vkI85kUmmynyB7dl4b/fv9JqWV28bQuIKbm/CLrAA6SWE/VUnXRbQZr3JeOOycaaZOg8dvClWfpGQhbWzdEOONaopnV4f6zU6hM=,iv:ITSDKJd3Wmq0wBa3G34lecC6mvKMdNISqSj+yr399Bo=,tag:4eIXmQbZZGgxPts7JImUcg==,type:str]
+    lastmodified: "2024-10-09T20:13:53Z"
+    mac: ENC[AES256_GCM,data:SV5mfjwPUc8ML4Mi/0NDvjTNGUcQtFFiWZWg4ZvO48KqhegCfdo5+fbROH9BZ/B9wLys8wPGWxgnaXXqpRLyxAzZbbb69huSAK56+Y6GkvGU00SmrDUSrsjgV9gay3kUjL3xe76VXxLbZgxqN4n6r364CwqwjFMcwlGNVEYNcR0=,iv:rX2qdWCjPKZBakPvjBeJJxqYCsDPJQ+01/patovtwiU=,tag:MkYi4+XqQWZ+3NzWy6ovkA==,type:str]
     pgp: []
     unencrypted_suffix: _unencrypted
     version: 3.9.0
