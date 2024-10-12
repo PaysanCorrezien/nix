@@ -153,9 +153,8 @@ in
         con-split-vertical = [ "<Alt>v" ];
         con-stacked-layout-toggle = [ "" ];
         con-tabbed-layout-toggle = [ "" ];
-        con-tabbed-showtab-decoration-toggle = [ "<Control><Alt>y" ];
         focus-border-toggle = [ "" ];
-        prefs-tiling-toggle = [ "" ];
+        con-tabbed-showtab-decoration-toggle = [ "<Control><Alt>y" ];
         window-focus-down = [ "<Alt>j" ];
         window-focus-left = [ "<Alt>h" ];
         window-focus-right = [ "<Alt>l" ];
@@ -184,9 +183,9 @@ in
         window-swap-left = [ "<Control><Alt>h" ];
         window-swap-right = [ "<Control><Alt>l" ];
         window-swap-up = [ "<Control><Alt>k" ];
-        window-toggle-always-float = [ "" ];
-        window-toggle-float = [ "" ];
-        workspace-active-tile-toggle = [ "" ];
+        window-toggle-always-float = [ "<Super><Shift>f" ];
+        window-toggle-float = [ "<Super>f" ]; # make windowws float
+        workspace-active-tile-toggle = [ "<Super>t" ]; # toggle active  mode again
       };
     };
   };
