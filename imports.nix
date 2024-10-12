@@ -11,8 +11,9 @@
     ./modules/common.nix
     ./modules/system/gui/gui.nix
     ./modules/system/terminal/terminal.nix
+    # ./modules/monitoring/default.nix
     ./dynamic-grub.nix
-    ./modules/network.nix
+    ./modules/network/default.nix
   ] ++ lib.optional (builtins.pathExists /etc/nixos/hardware-configuration.nix)
     /etc/nixos/hardware-configuration.nix;
 
