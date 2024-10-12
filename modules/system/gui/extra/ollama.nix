@@ -2,7 +2,6 @@
 
 let
   userName = "dylan";
-#TODO: rename this to docker / nvidia ?
  cfg = config.settings.ai.server.enable;
 in {
   config = lib.mkIf (cfg) {

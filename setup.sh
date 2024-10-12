@@ -78,6 +78,7 @@ fi
 
 # Run the disk selector and capture its output
 #FIX:  this make detect a prompt and either use the provide disk of current system or auto install
+#FIX : currently deebut disk from diskselect is not working anymore
 DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
 
 # Extract the selected drive from the disk info
@@ -109,6 +110,7 @@ echo "Installing NixOS with configuration: $CONFIG"
 echo "Installation started in the background. You can monitor the progress in /tmp/nixos-install.log"
 echo "Waiting for installation to complete..."
 wait $(cat /tmp/nixos-install.pid)
+# FIX: this never get run we never reach here
 echo "Installation completed"
 
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
