@@ -22,6 +22,7 @@ in
     ./extra/clovis.nix
     ./extra/keybswitch.nix
     ./extra/kde.nix
+    ./extra/tablet.nix
   ];
 
   options.settings.gui = {
@@ -80,12 +81,14 @@ in
       services.usbmuxd.enable = true;
 
       environment.systemPackages = with pkgs; [
+      #TODO: move these programs
         helix
         zed-editor
         todoist-electron
         rofi
-        obsidian
+        obsidian #TODO: boostrap obsidian
         libnotify
+        gimp-with-plugins
         todoist
         flameshot
         libimobiledevice
@@ -105,7 +108,7 @@ in
       # NOTE: TODOIST 
       nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
 
-      # wake from sleep for main computer 
+      # wake from sleep for main computer
       services.udev.extraRules = ''
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="removable", ATTR{power/wakeup}="enabled"
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="fixed", ATTR{power/wakeup}="enabled"
