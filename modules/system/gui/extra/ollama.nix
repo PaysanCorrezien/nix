@@ -2,12 +2,17 @@
 
 let
   userName = "dylan";
+#TODO: rename this to docker / nvidia ?
  cfg = config.settings.ai.server.enable;
 in {
   config = lib.mkIf (cfg) {
     virtualisation.docker = {
       enable = true;
       enableOnBoot = true;
+      logDriver = "json-file";
+      extraOptions = ''
+      --log-opt max-size=10m --log-opt max-file=3
+    '';
       rootless = {
         enable = true;
         setSocketVariable = true;
@@ -24,5 +29,7 @@ in {
       lazydocker
     ];
     };
+    #TODO: create alias for docker-compose tasks
 }
+
 

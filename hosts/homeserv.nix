@@ -17,7 +17,7 @@
     architecture = "x86_64";
     tailscaleIP = "100.100.110.20";
     hostname = "homeserv";
-    # ai.server.enable = true;
+    ai.server.enable = true;
     autoSudo = true;
     sops = {
       #NOTE: from sops.nix file 
@@ -92,11 +92,17 @@
   };
 
   # Install NVIDIA drivers and configure Docker to use NVIDIA runtime
-  # services.xserver.videoDrivers = [ "nvidia" ];
+   services.xserver.videoDrivers = [ "nvidia" ];
 
-  # hardware.graphics.enable = true;
-  # hardware.graphics.enable32Bit = true;
-  # hardware.nvidia-container-toolkit.enable = true;
+   hardware.graphics.enable = true;
+   hardware.graphics.enable32Bit = true;
+   hardware.nvidia-container-toolkit.enable = true;
+    hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
+  };
 
   services.duplicati = {
     enable = true;
@@ -114,9 +120,11 @@
     rclone
     hdparm #DISK management/wake
     ntfs3g
+    jq
   ];
   services.davfs2 = {
     enable = true;
   };
 }
+
 

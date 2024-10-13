@@ -2,6 +2,7 @@
 
 let
   # Trace the entire config.settings set for debugging
+  # TODO: move this to somewhere more global , and format its output better so it more readable
   debugSettings = builtins.trace
     "keyboard.nix: config.settings = ${builtins.toJSON config.settings}"
     config.settings;
