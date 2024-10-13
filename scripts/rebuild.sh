@@ -126,6 +126,37 @@ check_git_status_and_pull() {
 	fi
 }
 
+dump_metadata() {
+	local repo_path="$1"
+	local output_dir="$HOME/.local/share/nix-metadata"
+	local output_file="$output_dir/latest_build_metadata.json"
+	local current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+	local commit_id=$(git -C "$repo_path" rev-parse HEAD)
+	local commit_count=$(git -C "$repo_path" rev-list --count HEAD)
+	local commit_message=$(git -C "$repo_path" log -1 --pretty=%B)
+	local branch_name=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
+	local nixos_version=$(nixos-version)
+	local hostname=$(hostname)
+	# Create the directory if it doesn't exist
+	mkdir -p "$output_dir"
+	cat <<EOF >"$output_file"
+{
+    "build_date": "$current_date",
+    "hostname": "$hostname",
+    "nixos_version": "$nixos_version",
+    "git_info": {
+        "commit_id": "$commit_id",
+        "commit_count": $commit_count,
+        "commit_message": $(echo "$commit_message" | jq -R -s .),
+        "branch": "$branch_name"
+    },
+    "flake_path": "$flakePath",
+    "flake_name": "$flakeName"
+}
+EOF
+	echo "✅ Metadata dumped to $output_file"
+}
+
 # Determine flake path
 flakePath="$defaultFlakePath"
 echo "📁 Using flake path: $flakePath"
@@ -182,5 +213,7 @@ if $NETWORK_AVAILABLE; then
 else
 	echo "⚠️ Skipping Chezmoi update due to no network access"
 fi
+echo "📝 Dumping build metadata..."
+dump_metadata "$flakePath"
 
 echo "🎉 All processes completed successfully!"
