@@ -53,7 +53,11 @@ in
       enableGlobal = true;
       machineType = "desktop"; # or "homeserver" or "vps"
     };
+    monitoring = {
+      enable = true;
+    };
   };
+
 
   config.networking = {
     hostName = config.settings.hostname;
