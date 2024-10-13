@@ -42,12 +42,19 @@ in
     tailscaleIP = "100.100.100.111";
     autoSudo = true;
     hostname = "lenovo";
-    useDhcp = false;
+    # useDhcp = false;
+    useDhcp = true;
     sops = {
       #NOTE: from sops.nix file 
       enable = true;
       enableGlobal = true;
       machineType = "desktop"; # or "homeserver" or "vps"
+    };
+    monitoring = {
+      enable = true;
+    };
+        disko = {
+        mainDisk = "/dev/nvme0n1";  # Set this for your laptop with NVMe
     };
   };
 
