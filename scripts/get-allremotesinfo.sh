@@ -1,5 +1,3 @@
-# TODO: make ssh key for all hosts even non servers to be able to ssh query them
-# TODO: allow taiscale ssh acces to all hosts ?
 # ANSI color codes
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'

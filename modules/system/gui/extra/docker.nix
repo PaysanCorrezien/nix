@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 
 let
-  userName = "dylan"; #TODO: rename this to docker / nvidia ?
   cfg = config.settings.docker.enable;
 in
 {
@@ -19,7 +18,7 @@ in
       };
     };
 
-    users.users.${userName} = {
+    users.users.${config.settings.userName} = {
       extraGroups = [ "docker" ];
     };
 

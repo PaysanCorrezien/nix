@@ -4,7 +4,7 @@ let cfg = config.settings.isServer;
 in {
   config = lib.mkIf (!cfg) {
     environment.systemPackages = with pkgs; [
-      # TODO: fix 
+      # TODO: fix firewal port open ???
       termusic
       yt-dlp
       cmus
