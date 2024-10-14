@@ -33,36 +33,11 @@
 
   };
 
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
-      KbdInteractiveAuthentication = false;
-      X11Forwarding = false;
-      AuthenticationMethods = "publickey";
-      UsePAM = false;
-    };
-    extraConfig = ''
-      AllowUsers ${config.settings.username}
-      PubkeyAuthentication yes
-      AllowTcpForwarding no
-      AllowAgentForwarding no
-      MaxAuthTries 10
-    '';
-  };
-
-  users.users.${config.settings.username} = {
-    openssh.authorizedKeys.keyFiles =
-      [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
-  };
-
   imports = [
     (./. + "/specific-confs/music-sync.nix")
 ];
   # Configure static IP dynamically
   networking = {
-    hostName = "homeserv";
     defaultGateway.interface = "enp7s0";
     defaultGateway.address = "192.168.1.1";
     networkmanager.enable = true;

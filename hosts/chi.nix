@@ -30,35 +30,12 @@
     };
 
   };
-  networking.hostName = config.settings.hostname;
-
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
-      KbdInteractiveAuthentication = false;
-      X11Forwarding = false;
-      AuthenticationMethods = "publickey";
-      UsePAM = false;
-    };
-    extraConfig = ''
-      AllowUsers ${config.settings.username}
-      PubkeyAuthentication yes
-      AllowTcpForwarding no
-      AllowAgentForwarding no
-      MaxAuthTries 10
-    '';
-  };
-
   users.users.${config.settings.username} = {
     # initialPassword = "dylan"; #TODO: put pass in sops as users.users.your-user.initialHashedPassword 
     hashedPassword = "$6$.NL5Jii4wwztUzFC$pOiZJ3I2810HLcCZc0CYR5YGEHS6JWibJ75mbx4TWcm0gsxuEAsSK4rsDxu1Ny7o67..V4hdX3mwJQ4enHCJ6."; # dylan for test
 
     group = "dylan";
     home = "/home/${config.settings.username}";
-    openssh.authorizedKeys.keyFiles =
-      [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
   };
   users.groups.dylan = { };
   security.sudo.wheelNeedsPassword = false;

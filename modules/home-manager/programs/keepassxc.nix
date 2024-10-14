@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 
+# TODO: Enable firefox as allowed Browser
 let
   keepassdb_path =
     "${config.home.homeDirectory}/Documents/Password/DylanMDP.kdbx";
@@ -33,6 +34,7 @@ let
     "Browser" = {
       "EnableBrowserIntegration" = "true";
       "Enabled" = " true";
+#FIX: this doenst work ? where is this set ?
       "AllowedBrowsers" = "firefox";
     };
     "Database" = {

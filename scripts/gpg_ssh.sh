@@ -28,6 +28,7 @@ echo "Generating .env file..."
 rm -f .env # Remove existing .env file if it exists
 prompt_env_value "BW_URL" "https://vault.bitwarden.com" "Enter your Bitwarden URL"
 prompt_env_value "BW_EMAIL" "" "Enter your Bitwarden email"
+#TODO: make this prompt without showing pass maybe ?
 prompt_env_value "BW_PASSWORD" "" "Enter your Bitwarden master password"
 
 # Function to run bitwarden-cli-retriever.sh
