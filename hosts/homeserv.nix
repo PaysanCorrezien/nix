@@ -17,7 +17,7 @@
     architecture = "x86_64";
     tailscaleIP = "100.100.110.20";
     hostname = "homeserv";
-    ai.server.enable = true;
+    docker.enable = true;
     autoSudo = true;
     sops = {
       #NOTE: from sops.nix file 

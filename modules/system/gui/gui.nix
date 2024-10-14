@@ -17,7 +17,7 @@ in
     ./extra/virtualisation.nix
     ./extra/glance.nix
     ./extra/gnome.nix
-    ./extra/ollama.nix
+    ./extra/docker.nix
     ./extra/screensaver.nix
     ./extra/clovis.nix
     ./extra/keybswitch.nix

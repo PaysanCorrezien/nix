@@ -16,10 +16,7 @@ let
     tailscale.enable = lib.mkDefault false;
     windowManager = lib.mkDefault "gnome";
     displayServer = lib.mkDefault "xorg";
-    ai = {
-      server.enable = lib.mkDefault false;
-      client.enable = lib.mkDefault false;
-    };
+    docker.enable = lib.mkDefault false;
     social.enable = lib.mkDefault true;
     architecture = lib.mkDefault "x86_64";
     tailscaleIP = lib.mkDefault "100.100.100.120";
@@ -97,21 +94,12 @@ in
         description =
           "Choose display server (wayland, xorg) or null for terminal-only.";
       };
-      ai = {
-        server = {
+        docker = {
           enable = lib.mkOption {
             type = lib.types.bool;
-            default = globalDefaults.ai.server.enable;
-            description = "Enable AI tools for server.";
+            default = globalDefaults.docker.enable;
+            description = "Enable docker and its settings on host.";
           };
-        };
-        client = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = globalDefaults.ai.client.enable;
-            description = "Enable AI tools for client.";
-          };
-        };
       };
       architecture = lib.mkOption {
         type = lib.types.enum [ "x86_64" "aarch64" "riscv64" ];
@@ -147,10 +135,7 @@ in
       tailscale.enable = globalDefaults.tailscale.enable;
       windowManager = globalDefaults.windowManager;
       displayServer = globalDefaults.displayServer;
-      ai = {
-        server.enable = globalDefaults.ai.server.enable;
-        client.enable = globalDefaults.ai.client.enable;
-      };
+      docker.enable = globalDefaults.docker.enable;
       architecture = globalDefaults.architecture;
       tailscaleIP = globalDefaults.tailscaleIP;
       autoSudo = globalDefaults.autoSudo;

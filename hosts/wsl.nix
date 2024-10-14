@@ -56,7 +56,7 @@
     isServer = false;
     locale = "fr_FR.UTF-8";
     virtualisation.enable = false;
-    # ai.server.enable = true;
+    # docker.enable = true;
     environment = "work";
     isExperimental = false;
     work = false;

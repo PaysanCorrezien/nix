@@ -3,7 +3,8 @@
 let
   userName = "dylan";
 #TODO: rename this to docker / nvidia ?
- cfg = config.settings.ai.server.enable;
+ cfg = config.settings.docker.enable;
+
 in {
   config = lib.mkIf (cfg) {
     virtualisation.docker = {
@@ -29,6 +30,12 @@ in {
       lazydocker
     ];
     };
+        programs.zsh = {
+      shellAliases.dku = "docker-compose up -d";
+      shellAliases.dkd = "docker-compose down";
+        };
+
+    
     #TODO: create alias for docker-compose tasks
 }
 
