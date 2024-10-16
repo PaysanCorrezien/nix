@@ -40,7 +40,6 @@ in
     social.enable = true;
     architecture = "x86_64";
     autoSudo = true;
-    tailscaleIP = "100.69.180.110";
     hostname = "workstation";
     useDhcp = false;
     # useDhcp = true;
@@ -91,5 +90,6 @@ in
 
     nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];
   };
+
 }
 

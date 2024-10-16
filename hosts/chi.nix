@@ -11,7 +11,6 @@
     work = false;
     gaming = false;
     tailscale.enable = true;
-    tailscaleIP = "100.90.6.1";
     windowManager = null;
     displayServer = null;
     social.enable = false;

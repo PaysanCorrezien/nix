@@ -39,7 +39,6 @@ in
     displayServer = "xorg";
     social.enable = true;
     architecture = "x86_64";
-    tailscaleIP = "100.100.100.111";
     autoSudo = true;
     hostname = "lenovo";
     # useDhcp = false;

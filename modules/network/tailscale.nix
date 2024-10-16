@@ -1,25 +1,37 @@
 { config, lib, pkgs, ... }:
 let
-  cfg = config;
+  cfg = config.settings.tailscale;
   tailscaleAuthKeyFile = config.sops.secrets.tailscale_auth_key.path;
 in
 {
-  config = lib.mkIf (cfg.settings.tailscale.enable) {
+  options.settings.tailscale = {
+    enable = lib.mkEnableOption "Enable Tailscale";
+    tags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "List of tags to apply to this Tailscale node";
+    };
+  };
+
+    config = lib.mkIf cfg.enable {
     services.tailscale = {
       enable = true;
       openFirewall = true;
       interfaceName = "tailscale0";
       authKeyFile = tailscaleAuthKeyFile;
-      extraUpFlags = [
-        "--hostname=${cfg.networking.hostName}"
-        "--advertise-tags=tag:nixos${
-          #TODO: auto generate tag for hostname to not have to declaree them on ACL files
-          lib.optionalString cfg.settings.isServer ",tag:server"
-        }"
-        "--accept-dns=true"
-      ];
+      extraUpFlags =
+        let
+          baseTags = [ "tag:nixos" ] ++ lib.optional config.settings.isServer "tag:server";
+          allTags = baseTags ++ (map (tag: "tag:${tag}") cfg.tags);
+          tagsString = lib.concatStringsSep "," allTags;
+        in
+        [
+          "--hostname=${config.networking.hostName}"
+          "--advertise-tags=${tagsString}"
+          "--accept-dns=true"
+        ];
     };
-    
+
     networking.firewall = {
       enable = true;
       trustedInterfaces = [ "tailscale0" ];
@@ -32,7 +44,6 @@ in
       iproute2
       iptables
     ];
-
     systemd.services.tailscale-firewall = {
       description = "Manage SSH firewall rules based on Tailscale status";
       after = [ "network.target" "tailscaled.service" ];
@@ -124,8 +135,8 @@ in
       '';
     };
 
-    assertions = [{
-      assertion = cfg.settings.tailscale.enable -> config.sops.secrets.tailscale_auth_key.path != null;
+      assertions = [{
+      assertion = cfg.enable -> config.sops.secrets.tailscale_auth_key.path != null;
       message = "Tailscale is enabled but the auth key secret is not defined in sops. Please ensure 'tailscale_auth_key' is properly configured in your sops secrets.";
     }];
   };

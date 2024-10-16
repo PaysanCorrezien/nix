@@ -15,7 +15,6 @@
     displayServer = null;
     social.enable = false;
     architecture = "x86_64";
-    tailscaleIP = "100.100.110.20";
     hostname = "homeserv";
     docker.enable = true;
     autoSudo = true;

@@ -13,13 +13,11 @@ let
     isExperimental = lib.mkDefault false;
     work = lib.mkDefault true;
     gaming = lib.mkDefault true;
-    tailscale.enable = lib.mkDefault false;
     windowManager = lib.mkDefault "gnome";
     displayServer = lib.mkDefault "xorg";
     docker.enable = lib.mkDefault false;
     social.enable = lib.mkDefault true;
     architecture = lib.mkDefault "x86_64";
-    tailscaleIP = lib.mkDefault "100.100.100.120";
     autoSudo = lib.mkDefault false;
   };
 in
@@ -76,11 +74,6 @@ in
         default = globalDefaults.gaming;
         description = "Install gaming-related applications.";
       };
-      tailscale.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.tailscale.enable;
-        description = "Enable Tailscale.";
-      };
       windowManager = lib.mkOption {
         type = lib.types.nullOr
           (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
@@ -106,11 +99,6 @@ in
         default = globalDefaults.architecture;
         description = "Choose system architecture (x86_64, aarch64, riscv64).";
       };
-      tailscaleIP = lib.mkOption {
-        type = lib.types.str;
-        default = globalDefaults.tailscaleIP;
-        description = "Tailscale IP address for the system.";
-      };
       autoSudo = lib.mkOption {
         type = lib.types.bool;
         default = globalDefaults.autoSudo;
@@ -132,12 +120,10 @@ in
       social.enable = globalDefaults.social.enable;
       work = globalDefaults.work;
       gaming = globalDefaults.gaming;
-      tailscale.enable = globalDefaults.tailscale.enable;
       windowManager = globalDefaults.windowManager;
       displayServer = globalDefaults.displayServer;
       docker.enable = globalDefaults.docker.enable;
       architecture = globalDefaults.architecture;
-      tailscaleIP = globalDefaults.tailscaleIP;
       autoSudo = globalDefaults.autoSudo;
     };
   };
