@@ -55,6 +55,9 @@ in
     monitoring = {
       enable = true;
     };
+    rdpserver = {
+      enable = true;
+    };
   };
 
 
@@ -90,6 +93,11 @@ in
 
     nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];
   };
+  config.environment.systemPackages = with pkgs; [
+    # Add your own packages here
+    bambu-studio
+    sqlc
+    ];
 
 }
 

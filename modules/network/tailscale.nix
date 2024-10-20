@@ -1,7 +1,20 @@
 { config, lib, pkgs, ... }:
+
 let
   cfg = config.settings.tailscale;
-  tailscaleAuthKeyFile = config.sops.secrets.tailscale_auth_key.path;
+
+  # Helper function to ensure each tag is prefixed with "tag:" only once
+  ensureTagPrefix = tag: if lib.hasPrefix "tag:" tag then tag else "tag:${tag}";
+
+  # Combine all tags, ensuring proper prefixing
+  allTags = lib.unique (
+    (lib.optional config.settings.isServer "tag:server") ++
+    (map ensureTagPrefix (["nixos"] ++ cfg.tags))
+  );
+
+  # Convert tags to a comma-separated string
+  tagsString = lib.concatStringsSep "," allTags;
+
 in
 {
   options.settings.tailscale = {
@@ -13,23 +26,17 @@ in
     };
   };
 
-    config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     services.tailscale = {
       enable = true;
       openFirewall = true;
       interfaceName = "tailscale0";
-      authKeyFile = tailscaleAuthKeyFile;
-      extraUpFlags =
-        let
-          baseTags = [ "tag:nixos" ] ++ lib.optional config.settings.isServer "tag:server";
-          allTags = baseTags ++ (map (tag: "tag:${tag}") cfg.tags);
-          tagsString = lib.concatStringsSep "," allTags;
-        in
-        [
-          "--hostname=${config.networking.hostName}"
-          "--advertise-tags=${tagsString}"
-          "--accept-dns=true"
-        ];
+      authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+      extraUpFlags = [
+        "--hostname=${config.networking.hostName}"
+        "--advertise-tags=${tagsString}"
+        "--accept-dns=true"
+      ];
     };
 
     networking.firewall = {

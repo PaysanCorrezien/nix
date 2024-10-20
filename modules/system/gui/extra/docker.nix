@@ -18,7 +18,7 @@ in
       };
     };
 
-    users.users.${config.settings.userName} = {
+    users.users.${config.settings.username} = {
       extraGroups = [ "docker" ];
     };
 
