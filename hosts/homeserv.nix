@@ -39,7 +39,7 @@
   networking = {
     defaultGateway.interface = "enp7s0";
     defaultGateway.address = "192.168.1.1";
-    networkmanager.enable = true;
+    networkmanager.enable = false;
 
     # : allow SSH and Docker ports
     firewall.allowedTCPPorts = [
@@ -64,6 +64,10 @@
     };
     nameservers = [ "192.168.1.1" "8.8.8.8" ];
   };
+    boot = {
+    supportedFilesystems = [ "acl" ];
+    # Any other boot configurations you might have
+    };
 
   # Install NVIDIA drivers and configure Docker to use NVIDIA runtime
    services.xserver.videoDrivers = [ "nvidia" ];
@@ -71,6 +75,7 @@
    hardware.graphics.enable = true;
    hardware.graphics.enable32Bit = true;
    hardware.nvidia-container-toolkit.enable = true;
+
     hardware.nvidia = {
     modesetting.enable = true;
     open = false;
@@ -88,17 +93,81 @@
   };
   # TODO : Add home manager but only the terminal part ( need to be fully done for personnal computer part)
 
-
   environment.systemPackages = with pkgs; [
     davfs2 # webdav
     rclone
     hdparm #DISK management/wake
     ntfs3g
     jq
+    acl
   ];
   services.davfs2 = {
     enable = true;
   };
+    systemd.tmpfiles.rules = [
+    # NOTE: Base Docker directory
+    "d /home/${config.settings.username}/docker 0755 ${config.settings.username} users -"
+
+    # NOTE: Critical Services (0700) - Highest security, owner-only access
+    # Database and sensitive credentials storage
+    "d /home/${config.settings.username}/docker/postgresql/data 0700 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/grafana/storage/provisioning 0700 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/flowise/data/storage 0700 ${config.settings.username} users -"
+
+    # NOTE: Sensitive Services (0750) - Restricted group access
+    # Services with user data or configuration
+    "d /home/${config.settings.username}/docker/grafana 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/grafana/storage 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/grafana/storage/plugins 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/grafana/storage/dashboards 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/grafana/storage/logs 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/postgresql 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/atuin 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/loki/data 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/flowise/data 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/flowise/data/logs 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/flowise/data/uploads 0750 ${config.settings.username} users -"
+    
+    # NOTE: Standard Services (0755) - Normal access
+    # Public-facing and non-sensitive services
+    "d /home/${config.settings.username}/docker/freshrss 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/prometheus 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/alertmanager 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/loki 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/promtail 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/ollama 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/ollama/data 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/open-webui 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/open-webui/data 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/navidrome 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/navidrome/data 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/navidrome/data/cache 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/flowise/app 0755 ${config.settings.username} users -"
+];
+  # ACL Configuration Notes:
+  # setfacl parameters used below:
+  # -R: recursive (apply to all existing files/dirs)
+  # -d: default (sets inheritance for new files/dirs)
+  # -m: modify the ACL
+  # u:user:rwx = user gets read/write/execute
+  # g:group:rx = group gets read/execute
+# NOTE: ACL Configuration
+# Sets default ACLs for inheritance and current permissions
+system.activationScripts.dockerDirPermissions = {
+    text = ''
+      # Set base ACLs for docker directory
+      ${pkgs.acl}/bin/setfacl -Rdm u:${config.settings.username}:rwx,g:users:rx /home/${config.settings.username}/docker
+      ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:rx /home/${config.settings.username}/docker
+
+      # Additional ACLs for critical directories
+      ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/postgresql/data
+      ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/grafana/storage/provisioning
+      ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/flowise/data/storage
+    '';
+    deps = [];
+};
+
 }
+
 
 
