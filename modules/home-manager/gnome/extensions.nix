@@ -77,9 +77,6 @@ in
       gnomeExtensions.color-picker
       gnome-tweaks
       gucharmap
-      catppuccin-cursors.macchiatoPink
-      catppuccin-cursors.macchiatoLavender
-      catppuccin-cursors.macchiatoMauve
       xscreensaver
     ];
 

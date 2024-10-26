@@ -1,5 +1,13 @@
 # home.nix
-{ lib, hostName, config, pkgs, inputs, settings, ... }:
+{
+  lib,
+  hostName,
+  config,
+  pkgs,
+  inputs,
+  settings,
+  ...
+}:
 let
   isServer = settings.isServer;
 in
@@ -23,6 +31,8 @@ in
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
     ./kde/settings.nix
+    ./hyprland/settings.nix
+    ./stylix/default.nix
   ];
 
   home = {
@@ -50,18 +60,13 @@ in
     wezterm.enable = !settings.isServer;
     remmina.enable = settings.gui.enable;
     minimalNvim = settings.isServer;
+    stylix.enable = settings.gui.enable;
   };
 
   # Window manager specific settings
-  settings.gnome.extra.enable = lib.mkIf
-    (!isServer && settings.windowManager == "gnome")
-    true;
+  settings.gnome.extra.enable = lib.mkIf (!isServer && settings.windowManager == "gnome") true;
 
-  settings.plasma.extra.enable = lib.mkIf
-    (!isServer && settings.windowManager == "plasma")
-    true;
+  settings.plasma.extra.enable = lib.mkIf (!isServer && settings.windowManager == "plasma") true;
   # Window manager specific settings
-  settings.hyprland.extra.enable = lib.mkIf
-    (!isServer && settings.windowManager == "hyprland")
-    true;
+  settings.hyprland.extra.enable = lib.mkIf (!isServer && settings.windowManager == "hyprland") true;
 }
