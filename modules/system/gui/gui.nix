@@ -43,7 +43,6 @@ in
             enable = true;
             wayland.enable = config.settings.displayServer == "wayland";
             theme = "catppuccin-mocha";
-            # package = pkgs.kdePackages.sddm;
             package = lib.mkForce pkgs.kdePackages.sddm;
             autoNumlock = true;
             settings = {
@@ -66,6 +65,9 @@ in
       services.xserver.desktopManager.plasma6.enable =
         config.settings.windowManager == "plasma";
 
+      # Enable Hyprland if windowManager is set to "hyprland"
+      services.hyprland.enable = config.settings.windowManager == "hyprland";
+
       hardware.pulseaudio.enable = false;
 
       # Enable sound with pipewire.
@@ -81,12 +83,12 @@ in
       services.usbmuxd.enable = true;
 
       environment.systemPackages = with pkgs; [
-      #TODO: move these programs
+        # TODO: move these programs
         helix
         zed-editor
         todoist-electron
         rofi
-        obsidian #TODO: boostrap obsidian
+        obsidian # TODO: boostrap obsidian
         libnotify
         gimp-with-plugins
         todoist
@@ -107,8 +109,6 @@ in
 
       # NOTE: TODOIST 
       nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
-
-      # wake from sleep for main computer
       services.udev.extraRules = ''
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="removable", ATTR{power/wakeup}="enabled"
         ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="fixed", ATTR{power/wakeup}="enabled"
@@ -117,8 +117,7 @@ in
       powerManagement.enable = true;
       powerManagement.powertop.enable = true;
 
-      # Enable the OpenSSH daemon.
-      # services.openssh.enable = true;
     })
   ];
 }
+

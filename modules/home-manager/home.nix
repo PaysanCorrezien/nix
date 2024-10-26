@@ -60,4 +60,8 @@ in
   settings.plasma.extra.enable = lib.mkIf
     (!isServer && settings.windowManager == "plasma")
     true;
+  # Window manager specific settings
+  settings.hyprland.extra.enable = lib.mkIf
+    (!isServer && settings.windowManager == "hyprland")
+    true;
 }
