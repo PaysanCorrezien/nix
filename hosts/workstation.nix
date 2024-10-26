@@ -55,9 +55,6 @@ in
     monitoring = {
       enable = true;
     };
-    rdpserver = {
-      enable = true;
-    };
   };
 
 
