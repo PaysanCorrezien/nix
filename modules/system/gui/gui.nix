@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   username = "dylan";
@@ -17,6 +22,7 @@ in
     ./extra/virtualisation.nix
     ./extra/glance.nix
     ./extra/gnome.nix
+    ./extra/stylix.nix
     ./extra/docker.nix
     ./extra/screensaver.nix
     ./extra/clovis.nix
@@ -26,8 +32,7 @@ in
   ];
 
   options.settings.gui = {
-    enable = lib.mkEnableOption
-      "Enable the GUI interface and all the related settings";
+    enable = lib.mkEnableOption "Enable the GUI interface and all the related settings";
   };
 
   config = lib.mkMerge [
@@ -37,36 +42,29 @@ in
       services.xserver.enable = config.settings.displayServer != null;
 
       # Configure display manager based on settings
-      services.displayManager =
-        lib.mkIf (config.settings.windowManager != null) {
-          sddm = {
-            enable = true;
-            wayland.enable = config.settings.displayServer == "wayland";
-            theme = "catppuccin-mocha";
-            package = lib.mkForce pkgs.kdePackages.sddm;
-            autoNumlock = true;
-            settings = {
-              General = {
-                DisplayServer =
-                  if config.settings.displayServer == "wayland" then
-                    "wayland"
-                  else
-                    "x11";
-              };
+      services.displayManager = lib.mkIf (config.settings.windowManager != null) {
+        sddm = {
+          enable = true;
+          wayland.enable = config.settings.displayServer == "wayland";
+          theme = "catppuccin-mocha";
+          package = lib.mkForce pkgs.kdePackages.sddm;
+          autoNumlock = true;
+          settings = {
+            General = {
+              DisplayServer = if config.settings.displayServer == "wayland" then "wayland" else "x11";
             };
           };
         };
+      };
 
       # Enable GNOME desktop manager if windowManager is set to "gnome"
-      services.xserver.desktopManager.gnome.enable =
-        config.settings.windowManager == "gnome";
+      services.xserver.desktopManager.gnome.enable = config.settings.windowManager == "gnome";
 
       # Enable KDE desktop manager if windowManager is set to "kde"
-      services.xserver.desktopManager.plasma6.enable =
-        config.settings.windowManager == "plasma";
+      services.xserver.desktopManager.plasma6.enable = config.settings.windowManager == "plasma";
 
       # Enable Hyprland if windowManager is set to "hyprland"
-      services.hyprland.enable = config.settings.windowManager == "hyprland";
+      programs.hyprland.enable = config.settings.windowManager == "hyprland";
 
       hardware.pulseaudio.enable = false;
 
@@ -99,8 +97,7 @@ in
           flavor = "mocha";
           font = "Noto Sans";
           fontSize = "9";
-          background =
-            "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
+          background = "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
           loginBackground = true;
         })
         xdg-desktop-portal-gnome
@@ -120,4 +117,3 @@ in
     })
   ];
 }
-

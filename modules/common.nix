@@ -1,7 +1,16 @@
-{ inputs, plasma-manager, config, pkgs, lib, ... }:
+{
+  inputs,
+  plasma-manager,
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 #NOTE: home manager cant inherit config it fail with darwin error
-let settings = config.settings;
-in {
+let
+  settings = config.settings;
+in
+{
   imports = [
     inputs.home-manager.nixosModules.default
     # FIXME: this require to use --impure
@@ -26,10 +35,12 @@ in {
     };
   };
 
-
   # Configure console keymap
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   # NOTE: attempt to make computer wifi card work 
   # move this to specific host conf if work
   hardware.enableAllFirmware = true;
@@ -37,7 +48,11 @@ in {
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
-    extraGroups = [ "i2c" "networkmanager" "wheel" ];
+    extraGroups = [
+      "i2c"
+      "networkmanager"
+      "wheel"
+    ];
   };
   #cant be in HM fix this
   users.users.dylan.shell = pkgs.zsh;
@@ -48,14 +63,17 @@ in {
   hardware.i2c.enable = true;
   boot.kernelModules = [ "i2c-dev" ];
   home-manager = {
-    extraSpecialArgs = { inherit inputs settings;
-    hostName = config.networking.hostName;  
+    extraSpecialArgs = {
+      inherit inputs settings;
+      hostName = config.networking.hostName;
     };
-    backupFileExtension =
-      "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
-    users = { "dylan" = import ../modules/home-manager/home.nix; };
+    backupFileExtension = "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
+    users = {
+      "dylan" = import ../modules/home-manager/home.nix;
+    };
     sharedModules = [
       #   inputs.sops-nix.homeManagerModules.sops
+
       inputs.plasma-manager.homeManagerModules.plasma-manager
     ];
   };

@@ -14,7 +14,9 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    disko = { url = "github:nix-community/disko"; };
+    disko = {
+      url = "github:nix-community/disko";
+    };
     keybswitch = {
       # url = "git+file:///home/dylan/repo/keybswitch";
       url = "github:paysancorrezien/keybswitch";
@@ -34,28 +36,41 @@
       url = "github:nix-community/nixos-wsl";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
   outputs =
-    { self
-    , nixpkgs
-    , home-manager
-    , sops-nix
-    , disko
-    , clovis
-    , keybswitch
-    , nixos-wsl
-    , ...
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      sops-nix,
+      disko,
+      clovis,
+      keybswitch,
+      nixos-wsl,
+      ...
     }@inputs:
     let
-      mkSystem = hostname:
+      mkSystem =
+        hostname:
         nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs nixpkgs; };
+          specialArgs = {
+            inherit inputs nixpkgs;
+          };
           modules = [
             ./imports.nix
             (./hosts + "/${hostname}.nix")
-            ({ config, ... }: {
-              nixpkgs.hostPlatform = "${config.settings.architecture}-linux";
-            })
+            (
+              { config, ... }:
+              {
+                nixpkgs.hostPlatform = "${config.settings.architecture}-linux";
+              }
+            )
           ];
         };
     in

@@ -1,14 +1,29 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   # inherit (lib.gvariant) mkVariant mkTuple mkUint32 mkEmptyArray;
   inherit (lib.gvariant)
-    mkVariant mkTuple mkUint32 mkEmptyArray mkBoolean mkString mkArray
-    mkDictionaryEntry;
+    mkVariant
+    mkTuple
+    mkUint32
+    mkEmptyArray
+    mkBoolean
+    mkString
+    mkArray
+    mkDictionaryEntry
+    ;
   myGtkTheme = pkgs.catppuccin-gtk.override {
     accents = [ "pink" ];
     size = "compact";
-    tweaks = [ "rimless" "black" ];
+    tweaks = [
+      "rimless"
+      "black"
+    ];
     variant = "macchiato";
   };
 in
@@ -20,8 +35,7 @@ in
           type = lib.types.submodule {
             options.extra = lib.mkOption {
               type = lib.types.submodule {
-                options.enable =
-                  lib.mkEnableOption "Enable extra GNOME configuration";
+                options.enable = lib.mkEnableOption "Enable extra GNOME configuration";
               };
             };
           };
@@ -34,20 +48,18 @@ in
 
     # Setup the GTK theme
     gtk = {
-      enable = true;
+      enable = lib.mkDefault true;
       theme = {
-        name = "catppuccin-macchiato-pink-compact+rimless,black";
-        package = myGtkTheme;
+        name = lib.mkDefault "catppuccin-macchiato-pink-compact+rimless,black";
+        package = lib.mkDefault myGtkTheme;
       };
     };
 
-    # # Symlink the GTK config files declaratively
-    xdg.configFile."gtk-4.0/assets".source =
-      "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
-    xdg.configFile."gtk-4.0/gtk.css".source =
-      "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
-    xdg.configFile."gtk-4.0/gtk-dark.css".source =
-      "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
+    xdg.configFile = lib.mkDefault {
+      "gtk-4.0/assets".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
+      "gtk-4.0/gtk.css".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
+      "gtk-4.0/gtk-dark.css".source = "${myGtkTheme}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
+    };
 
     home.packages = with pkgs; [
       gnomeExtensions.auto-move-windows
@@ -103,7 +115,7 @@ in
       };
 
       "org/gnome/shell/extensions/user-theme" = {
-        name = "catppuccin-macchiato-pink-compact+rimless,black";
+        name = lib.mkDefault "catppuccin-macchiato-pink-compact+rimless,black";
       };
 
       "org/gnome/shell/extensions/search-light" = {

@@ -1,6 +1,11 @@
 # find settings
 # gsettings list-recursively | grep media-keys
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
@@ -35,11 +40,17 @@
           "obsidian.desktop:11"
         ];
       };
-      "org/gnome/desktop/input-sources" = { xkb-options = [ "caps:escape" ]; };
-      "org/gnome/desktop/applications/browser" = { exec = "firefox"; };
+      "org/gnome/desktop/input-sources" = {
+        xkb-options = [ "caps:escape" ];
+      };
+      "org/gnome/desktop/applications/browser" = {
+        exec = "firefox";
+      };
       #TODO: HOME AND END SOMEHOW ?
 
-      "org/gnome/desktop/default-applications/terminal" = { exec = "wezterm"; };
+      "org/gnome/desktop/default-applications/terminal" = {
+        exec = "wezterm";
+      };
 
       "org/gtk/settings/file-chooser" = {
         show-hidden = true;
@@ -47,27 +58,25 @@
       };
 
       # allow external monitor to not be monaged by gnome virtual desktop
-      "org.gnome.mutter" = { workspaces-only-on-primary = true; };
+      "org.gnome.mutter" = {
+        workspaces-only-on-primary = true;
+      };
 
       "org/gnome/desktop/background" = {
         #FIXME: make use of relative path here
         picture-uri =
           # "file:///home/dylan/.config/nix/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-          "file:///home/dylan/.wallpaper.png";
-        picture-uri-dark =
-          # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-          "file:///home/dylan/.wallpaper.png";
+          lib.mkDefault "file:///home/dylan/.wallpaper.png";
+        picture-uri-dark = lib.mkDefault "file:///home/dylan/.wallpaper.png";
+        # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
         picture-options = "zoom"; # Set wallpaper display option
       };
       # dont seems to work right now need to find what is missing
       "org/gnome/desktop/screensaver" = {
-        picture-uri =
-          "file:///home/dylan/.wallpaper.png";
-          # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
-        primary-color =
-          "#b7bdf8"; # catppuccin machia lavender             # Default primary color for screensaver
-        secondary-color =
-          "#f0c6c6"; # catpuccin machia  flamingo          # Default secondary color for screensaver
+        picture-uri = "file:///home/dylan/.wallpaper.png";
+        # "file:///home/dylan/.config/nixos/modules/home-manager/gnome/backgrounds/wallpaper_leaves.png";
+        primary-color = "#b7bdf8"; # catppuccin machia lavender             # Default primary color for screensaver
+        secondary-color = "#f0c6c6"; # catpuccin machia  flamingo          # Default secondary color for screensaver
       };
 
       "org/gnome/settings-daemon/plugins/power" = {

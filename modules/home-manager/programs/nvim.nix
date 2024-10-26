@@ -30,6 +30,7 @@ let
     neocmakelsp
     nil
     nixpkgs-fmt
+    nixfmt-rfc-style # new formated , the osed used by lazyvim
     nodePackages.prettier
     nodePackages.typescript-language-server
     pyright
