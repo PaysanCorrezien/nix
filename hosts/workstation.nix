@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   # NOTE:
   # this allow change this config on the fly : 
@@ -14,8 +19,9 @@ let
     else
       false;
 
-  wifiKey = lib.optionalString (builtins.pathExists "/run/secrets/wifi_homekey")
-    (builtins.readFile "/run/secrets/wifi_homekey");
+  wifiKey = lib.optionalString (builtins.pathExists "/run/secrets/wifi_homekey") (
+    builtins.readFile "/run/secrets/wifi_homekey"
+  );
 in
 {
   options.settings.useDhcp = lib.mkOption {
@@ -36,15 +42,16 @@ in
     tailscale.enable = true;
     windowManager = "gnome";
     # windowManager  = "plasma";
-    displayServer = "xorg";
+    # displayServer = "xorg";
+    displayServer = "wayland";
     social.enable = true;
     architecture = "x86_64";
     autoSudo = true;
     hostname = "workstation";
     useDhcp = false;
     # useDhcp = true;
-        disko = {
-        mainDisk = "/dev/nvme0n1";  # Set this for your laptop with NVMe
+    disko = {
+      mainDisk = "/dev/nvme0n1"; # Set this for your laptop with NVMe
     };
     sops = {
       #NOTE: from sops.nix file
@@ -57,14 +64,17 @@ in
     };
   };
 
-
   config.networking = {
     hostName = config.settings.hostname;
 
     # Wireless configuration (only used when not using NetworkManager)
     wireless = lib.mkIf (!useDhcp) {
       enable = true;
-      networks = { "Dylan-Box" = { psk = wifiKey; }; };
+      networks = {
+        "Dylan-Box" = {
+          psk = wifiKey;
+        };
+      };
       userControlled.enable = true;
     };
 
@@ -77,10 +87,12 @@ in
     # Static IP configuration (used when useDhcp is false)
     interfaces.wlp4s0 = lib.mkIf (!useDhcp) {
       useDHCP = false;
-      ipv4.addresses = [{
-        address = "192.168.1.110";
-        prefixLength = 24;
-      }];
+      ipv4.addresses = [
+        {
+          address = "192.168.1.110";
+          prefixLength = 24;
+        }
+      ];
     };
 
     defaultGateway = lib.mkIf (!useDhcp) {
@@ -88,13 +100,15 @@ in
       interface = "wlp4s0";
     };
 
-    nameservers = lib.mkIf (!useDhcp) [ "1.1.1.1" "8.8.8.8" ];
+    nameservers = lib.mkIf (!useDhcp) [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
   };
   config.environment.systemPackages = with pkgs; [
     # Add your own packages here
     bambu-studio
     sqlc
-    ];
+  ];
 
 }
-

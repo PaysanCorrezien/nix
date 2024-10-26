@@ -14,5 +14,15 @@ in
  wofi
  hyprpaper
   ];
+      # programs.hyprland.portalPackage = pkgs.xdg-desktop-portal-hyprland;
+      # programs.hyprland.systemd.setPath.enable = true;
+      # programs.hyprland.xwayland.enable = true;
+      #
+      # # Additional programs/services related to Hyprland
+      # programs.iio-hyprland.enable = config.settings.windowManager == "hyprland";
+      # services.hypridle.enable = config.settings.windowManager == "hyprland";
+      # programs.hyprlock.enable = config.settings.windowManager == "hyprland";
+      # # programs.uwsm.enable = config.settings.windowManager == "hyprland";
+
   };
 }
