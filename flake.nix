@@ -27,17 +27,21 @@
       url = "github:paysancorrezien/clovis";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
+    # plasma-manager = {
+    #   url = "github:nix-community/plasma-manager";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.home-manager.follows = "home-manager";
+    # };
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
       url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    ags = {
+      url = "github:aylur/ags/v2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

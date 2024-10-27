@@ -1,43 +1,34 @@
+# disko-config.nix
 { config, lib, ... }:
-
 let
   cfg = config.settings.disko;
 in
 {
   options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options = {
-          disko = lib.mkOption {
-            type = lib.types.submodule {
-              options = {
-                mainDisk = lib.mkOption {
-                  type = lib.types.str;
-                  description = "The main disk device (e.g., '/dev/vda')";
-                  example = "/dev/sda";
-                };
-                layout = lib.mkOption {
-                  type = lib.types.enum [ "standard" "vps" ];
-                  default = "standard";
-                  description = "Disk layout configuration";
-                };
-              };
-            };
-            description = "Disko-related settings";
-          };
-        };
+    settings.disko = {
+      mainDisk = lib.mkOption {
+        type = lib.types.str;
+        description = "The main disk device";
       };
-      description = "Global settings for the system";
+      layout = lib.mkOption {
+        type = lib.types.enum [
+          "standard"
+          "vps"
+        ];
+        default = "standard";
+        description = "Disk layout configuration";
+      };
     };
   };
 
-  config = let
-    efiMountPoint = if cfg.layout == "standard" then "/boot" else "/boot/efi";
-    efiSize = if cfg.layout == "standard" then "500M" else "124M";
-  in {
-    disko.devices = {
-      disk = {
-        main = {
+  config =
+    let
+      efiMountPoint = if cfg.layout == "standard" then "/boot" else "/boot/efi";
+      efiSize = if cfg.layout == "standard" then "500M" else "124M";
+    in
+    {
+      disko.devices = {
+        disk.main = {
           type = "disk";
           device = cfg.mainDisk;
           content = {
@@ -66,17 +57,19 @@ in
           };
         };
       };
-    };
 
-    fileSystems = {
-      "/" = lib.mkForce {
-        device = "/dev/disk/by-partlabel/disk-main-root";
-        fsType = "ext4";
-      };
-      ${efiMountPoint} = lib.mkForce {
-        device = "/dev/disk/by-partlabel/disk-main-ESP";
-        fsType = "vfat";
+      # Define filesystems without mkForce
+      fileSystems = {
+        "/" = {
+          device = "/dev/disk/by-partlabel/disk-main-root";
+          fsType = "ext4";
+          neededForBoot = true;
+        };
+        ${efiMountPoint} = {
+          device = "/dev/disk/by-partlabel/disk-main-ESP";
+          fsType = "vfat";
+          depends = [ "/" ];
+        };
       };
     };
-  };
 }

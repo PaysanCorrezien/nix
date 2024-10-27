@@ -128,33 +128,70 @@ check_git_status_and_pull() {
 
 dump_metadata() {
 	local repo_path="$1"
+	local config_name="${2:-$(hostname)}"
 	local output_dir="$HOME/.local/share/nix-metadata"
 	local output_file="$output_dir/latest_build_metadata.json"
-	local current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-	local commit_id=$(git -C "$repo_path" rev-parse HEAD)
-	local commit_count=$(git -C "$repo_path" rev-list --count HEAD)
-	local commit_message=$(git -C "$repo_path" log -1 --pretty=%B)
-	local branch_name=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
-	local nixos_version=$(nixos-version)
-	local hostname=$(hostname)
-	# Create the directory if it doesn't exist
-	mkdir -p "$output_dir"
-	cat <<EOF >"$output_file"
+
+	# Collect git information
+	local git_info
+	git_info=$(
+		cat <<EOF
 {
-    "build_date": "$current_date",
-    "hostname": "$hostname",
-    "nixos_version": "$nixos_version",
-    "git_info": {
-        "commit_id": "$commit_id",
-        "commit_count": $commit_count,
-        "commit_message": $(echo "$commit_message" | jq -R -s .),
-        "branch": "$branch_name"
-    },
-    "flake_path": "$flakePath",
-    "flake_name": "$flakeName"
+    "commit_id": "$(git -C "$repo_path" rev-parse HEAD)",
+    "commit_count": $(git -C "$repo_path" rev-list --count HEAD),
+    "commit_message": $(git -C "$repo_path" log -1 --pretty=%B | jq -R -s .),
+    "branch": "$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)"
 }
 EOF
+	)
+
+	# Get nix store path
+	local nix_store_path
+	nix_store_path=$(nix build --no-link --print-out-paths \
+		--system "$(nix eval --impure --expr 'builtins.currentSystem')" \
+		"$repo_path#nixosConfigurations.$config_name.config.system.build.toplevel" 2>/dev/null) ||
+		nix_store_path=$(readlink -f /run/current-system || echo "unknown")
+
+	# Create output directory
+	mkdir -p "$output_dir"
+
+	# Generate metadata JSON
+	cat <<EOF >"$output_file"
+{
+    "build_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+    "hostname": "$(hostname)",
+    "nixos_version": "$(nixos-version)",
+    "git_info": $git_info,
+    "flake_path": "$repo_path",
+    "flake_name": "$repo_path#$config_name",
+    "nix_store_path": "$nix_store_path"
+}
+EOF
+
+	# Print success message for metadata dump
 	echo "✅ Metadata dumped to $output_file"
+
+	# Get and display settings
+	local settings_data
+	settings_data=$(nix eval --json --accept-flake-config \
+		"$repo_path#nixosConfigurations.$config_name.config.settings" 2>/dev/null)
+
+	if [ $? -eq 0 ]; then
+		echo -e "\n📋 Current System Settings:"
+		echo "──────────────────────────"
+		# Option 1: Using rich-cli
+		echo "$settings_data" | rich - --json --theme monokai
+
+		# Option 2: Using gum (uncomment if you prefer gum)
+		# echo "$settings_data" | jq '.' | sed 's/: true/: ✓/g' | sed 's/: false/: ✗/g' | gum style --foreground 212
+
+		# Option 3: Using bat (uncomment if you prefer bat)
+		# echo "$settings_data" | bat -l json --plain
+
+		echo "──────────────────────────"
+	else
+		echo "❌ Failed to retrieve system settings"
+	fi
 }
 
 # Determine flake path

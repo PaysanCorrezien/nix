@@ -1,5 +1,11 @@
-{settings,lib, config, pkgs, ... }:
-let 
+{
+  settings,
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+let
   cfg = settings.terminal.extras;
   rustscanFullScript = pkgs.writeShellScriptBin "rustscanfull" ''
     #!/usr/bin/env bash
@@ -39,6 +45,11 @@ in
       imagemagick
       rustscan
       rustscanFullScript
+      bluetuith # bluetouth TUI
+      asn # OSINT command line tool for investigating network data
+      gping # Ping, but with a graph
+      systemctl-tui # systemctl manager tui
+      monolith # download webpage as HTML
     ];
     programs.bash.shellAliases = {
       rustscanfull = "rustscanfull";

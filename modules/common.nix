@@ -74,7 +74,7 @@ in
     sharedModules = [
       #   inputs.sops-nix.homeManagerModules.sops
 
-      inputs.plasma-manager.homeManagerModules.plasma-manager
+      # inputs.plasma-manager.homeManagerModules.plasma-manager
     ];
   };
 

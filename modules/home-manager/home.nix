@@ -30,8 +30,12 @@ in
     ./programs/thunderbird.nix
     ./programs/wezterm.nix
     ./programs/virtualisation.nix
-    ./kde/settings.nix
+
     ./hyprland/settings.nix
+    ./hyprland/waybar.nix
+    # ./hyprland/wlogout.nix
+
+    ./programs/astal.nix
     ./stylix/default.nix
   ];
 
@@ -66,7 +70,7 @@ in
   # Window manager specific settings
   settings.gnome.extra.enable = lib.mkIf (!isServer && settings.windowManager == "gnome") true;
 
-  settings.plasma.extra.enable = lib.mkIf (!isServer && settings.windowManager == "plasma") true;
+  # settings.plasma.extra.enable = lib.mkIf (!isServer && settings.windowManager == "plasma") true;
   # Window manager specific settings
   settings.hyprland.extra.enable = lib.mkIf (!isServer && settings.windowManager == "hyprland") true;
 }

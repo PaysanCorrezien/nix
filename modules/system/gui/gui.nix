@@ -22,12 +22,12 @@ in
     ./extra/virtualisation.nix
     ./extra/glance.nix
     ./extra/gnome.nix
+    ./extra/hyprland.nix
     ./extra/stylix.nix
     ./extra/docker.nix
     ./extra/screensaver.nix
     ./extra/clovis.nix
     ./extra/keybswitch.nix
-    ./extra/kde.nix
     ./extra/tablet.nix
   ];
 
@@ -61,7 +61,7 @@ in
       services.xserver.desktopManager.gnome.enable = config.settings.windowManager == "gnome";
 
       # Enable KDE desktop manager if windowManager is set to "kde"
-      services.xserver.desktopManager.plasma6.enable = config.settings.windowManager == "plasma";
+      services.desktopManager.plasma6.enable = config.settings.windowManager == "plasma";
 
       # Enable Hyprland if windowManager is set to "hyprland"
       programs.hyprland.enable = config.settings.windowManager == "hyprland";

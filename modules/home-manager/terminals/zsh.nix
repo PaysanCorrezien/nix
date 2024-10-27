@@ -1,4 +1,10 @@
-{ lib, hostName, pkgs, config, ... }:
+{
+  lib,
+  hostName,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   customZshInit = pkgs.writeText "custom-zsh-init" ''
@@ -85,8 +91,7 @@ in
   options.myZshConfig.envType = lib.mkOption {
     type = lib.types.str;
     default = "HOME";
-    description =
-      "The type of environment, defaults to 'HOME'. Can be overridden.";
+    description = "The type of environment, defaults to 'HOME'. Can be overridden.";
   };
 
   config = {
@@ -96,33 +101,35 @@ in
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       historySubstringSearch.enable = true;
-#TODO: reload wezterm so it also update its wallpaper ?
-      initExtra = lib.readFile customZshInit + ''
-        function set-wp() {
-          local wallpaper_path="$HOME/.wallpaper.png"
-        
-          if [ -f "$1" ]; then
-            local ext="''${1##*.}"
-          
-            if [ "$ext" = "png" ]; then
-              cp "$1" "$wallpaper_path"
+      #TODO: reload wezterm so it also update its wallpaper ?
+      initExtra =
+        lib.readFile customZshInit
+        + ''
+          function set-wp() {
+            local wallpaper_path="$HOME/.config/.nix/.wallpaper.png"
+
+            if [ -f "$1" ]; then
+              local ext="''${1##*.}"
+            
+              if [ "$ext" = "png" ]; then
+                cp "$1" "$wallpaper_path"
+              else
+                convert "$1" "$wallpaper_path"
+              fi
+            
+              if [ $? -eq 0 ]; then
+                echo "Wallpaper set: $1 converted and moved to $wallpaper_path"
+                gsettings set org.gnome.desktop.background picture-uri "file://$wallpaper_path"
+              else
+                echo "Error: Failed to convert or copy the image."
+                return 1
+              fi
             else
-              convert "$1" "$wallpaper_path"
-            fi
-          
-            if [ $? -eq 0 ]; then
-              echo "Wallpaper set: $1 converted and moved to $wallpaper_path"
-              gsettings set org.gnome.desktop.background picture-uri "file://$wallpaper_path"
-            else
-              echo "Error: Failed to convert or copy the image."
+              echo "File not found: $1"
               return 1
             fi
-          else
-            echo "File not found: $1"
-            return 1
-          fi
-        }
-      '';
+          }
+        '';
       shellAliases = {
         ll = "ls -l";
         update = "sudo nixos-rebuild switch";
@@ -134,13 +141,13 @@ in
               echo "Usage: findnixpkg <binary_name>"
               return 1
             fi
-          
+
             binary_path=$(which "$1")
             if [ -z "$binary_path" ]; then 
               echo "Binary $1 not found"
               return 1
             fi
-          
+
             nix_store_path=$(readlink -f "$binary_path")
             yazi $(dirname "$nix_store_path")
           }; _findpkg'';

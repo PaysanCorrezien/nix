@@ -1,5 +1,45 @@
 {
   "nodes": {
+    "ags": {
+      "inputs": {
+        "astal": "astal",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1729613005,
+        "narHash": "sha256-OktngqE4JF3GHLOureXJaVHBGKe2R+OvaqB43RBTCgM=",
+        "owner": "aylur",
+        "repo": "ags",
+        "rev": "9fe75a1efaf43a1948460b123d870b71ab7c896e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aylur",
+        "ref": "v2",
+        "repo": "ags",
+        "type": "github"
+      }
+    },
+    "astal": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1729612926,
+        "narHash": "sha256-nqxvYZk4xHWAYnSrniyyx1dp8J2Vpg7XMPcZj4cvyaY=",
+        "owner": "aylur",
+        "repo": "astal",
+        "rev": "004b12381b3891836ecbf3bb22aa3054145e3f38",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aylur",
+        "repo": "astal",
+        "type": "github"
+      }
+    },
     "base16": {
       "inputs": {
         "fromYaml": "fromYaml"
@@ -89,7 +129,7 @@
     },
     "disko": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1725377834,
@@ -387,16 +427,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1725194671,
-        "narHash": "sha256-tLGCFEFTB5TaOKkpfw3iYT9dnk4awTP/q4w+ROpMfuw=",
-        "owner": "NixOS",
+        "lastModified": 1716293225,
+        "narHash": "sha256-pU9ViBVE3XYb70xZx+jK6SEVphvt7xMTbm6yDIF4xPs=",
+        "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b833ff01a0d694b910daca6e2ff4a3f26dee478c",
+        "rev": "3eaeaeb6b1e08a016380c279f8846e0bd8808916",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
+        "owner": "nixos",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -419,6 +459,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1725194671,
+        "narHash": "sha256-tLGCFEFTB5TaOKkpfw3iYT9dnk4awTP/q4w+ROpMfuw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b833ff01a0d694b910daca6e2ff4a3f26dee478c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1725983898,
         "narHash": "sha256-4b3A9zPpxAxLnkF9MawJNHDtOOl6ruL0r6Og1TEDGCE=",
         "owner": "nixos",
@@ -433,39 +489,16 @@
         "type": "github"
       }
     },
-    "plasma-manager": {
-      "inputs": {
-        "home-manager": [
-          "home-manager"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1725914634,
-        "narHash": "sha256-U74hu15xSb6JNySMOwyJrsh4uk1DVa182bdHLeHdYMc=",
-        "owner": "nix-community",
-        "repo": "plasma-manager",
-        "rev": "60becd0e994e25b372c8d0500fc944396f6c1085",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "plasma-manager",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
+        "ags": "ags",
         "clovis": "clovis",
         "disko": "disko",
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
         "keybswitch": "keybswitch",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_2",
-        "plasma-manager": "plasma-manager",
+        "nixpkgs": "nixpkgs_3",
         "sops-nix": "sops-nix",
         "stylix": "stylix"
       }

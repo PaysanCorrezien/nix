@@ -1,11 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   # Trace the entire config.settings set for debugging
   # TODO: move this to somewhere more global , and format its output better so it more readable
-  debugSettings = builtins.trace
-    "keyboard.nix: config.settings = ${builtins.toJSON config.settings}"
-    config.settings;
+  # debugSettings = builtins.trace
+  #   "keyboard.nix: config.settings = ${builtins.toJSON config.settings}"
+  #   config.settings;
+  debugSettings = config.settings;
 in
 {
   # Configure keymap in X11
@@ -18,8 +24,19 @@ in
   console.keyMap = "us";
 
   # Conditionally include packages based on the `isServer` variable
-  environment.systemPackages = with pkgs;
-    (if debugSettings.isServer then [ ] else [ vial qmk qmk_hid keymapviz ]);
+  environment.systemPackages =
+    with pkgs;
+    (
+      if debugSettings.isServer then
+        [ ]
+      else
+        [
+          vial
+          qmk
+          qmk_hid
+          keymapviz
+        ]
+    );
 
   # Add udev rule for Vial device
   # NOTE: https://github.com/qmk/qmk_firmware/blob/master/util/udev/50-qmk.rules

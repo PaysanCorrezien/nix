@@ -21,7 +21,7 @@
     (lib.mkIf config.settings.stylix.enable {
       stylix = {
         enable = true;
-        image = ../../../../modules/home-manager/gnome/backgrounds/wallpaper_leaves.png;
+        image = ../../../../.wallpaper.png;
         polarity = "dark";
         # Use the pre-packaged Rose Pine theme
         base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";

@@ -41,6 +41,7 @@ in
     gaming = true;
     tailscale.enable = true;
     windowManager = "gnome";
+    # windowManager = "hyprland";
     # windowManager  = "plasma";
     # displayServer = "xorg";
     displayServer = "wayland";
@@ -52,6 +53,7 @@ in
     # useDhcp = true;
     disko = {
       mainDisk = "/dev/nvme0n1"; # Set this for your laptop with NVMe
+      layout = "standard"; # Add this line
     };
     sops = {
       #NOTE: from sops.nix file
