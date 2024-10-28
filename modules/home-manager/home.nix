@@ -35,8 +35,8 @@ in
     ./hyprland/waybar.nix
     # ./hyprland/wlogout.nix
 
-    ./programs/astal.nix
     ./stylix/default.nix
+    ./programs/astal.nix
   ];
 
   home = {
@@ -65,6 +65,7 @@ in
     remmina.enable = settings.gui.enable;
     minimalNvim = settings.isServer;
     stylix.enable = settings.gui.enable;
+    astal.enable = settings.gui.enable;
   };
 
   # Window manager specific settings
