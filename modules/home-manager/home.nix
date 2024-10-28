@@ -42,7 +42,7 @@ in
   home = {
     username = "dylan";
     homeDirectory = "/home/dylan";
-    stateVersion = "23.11"; # Please read the comment before changing.
+    stateVersion = "23.11";
     sessionVariables = {
       EDITOR = "nvim";
       IS_SERVER = toString isServer;

@@ -57,6 +57,10 @@
       "org/gnome/desktop/default-applications/terminal" = {
         exec = "wezterm";
       };
+      "org/gnome/desktop/interface" = {
+        #BUG: stylix ccursor-theme dont set it properly??
+        cursor-theme = lib.mkForce "BreezeX-RosePine-Linux";
+      };
 
       "org/gtk/settings/file-chooser" = {
         show-hidden = true;
