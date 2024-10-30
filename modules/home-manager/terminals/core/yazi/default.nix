@@ -1,9 +1,16 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 #FIX: make the multi file yank work , neither dragon / xckip or clipboard-jh work
 #TODO: mvove all this whe na plugin management for nix is realy availabe
 #TODO: create a vrapper that :
 # take an array of plugins name and github repo, and install them if the pack dont exit, then run ya pack -u 
 # make each pack have an init.lu option and keymap option ?
+# TODO: make shell nav work again? 
+# TODO: make the create tab allow jsut createing generic new tab 
 # HACK: some plugins are not installed by this like the copy one
 let
   mkYaziPlugin = name: text: {
@@ -27,7 +34,7 @@ let
 
 in
 lib.mkMerge [
-# search-jump
+  # search-jump
   {
     home.packages = with pkgs; [
       miller
@@ -98,7 +105,6 @@ lib.mkMerge [
         })
       '';
 
-
       settings = {
         manager = {
           show_hidden = true;
@@ -117,15 +123,33 @@ lib.mkMerge [
           enabled = true;
         };
 
-#HACK: this plugin is not installed by nix :
+        #HACK: this plugin is not installed by nix :
         previewers = {
           prepend = [
-            { mime = "application/*zip"; run = "ouch"; }
-            { mime = "application/x-tar"; run = "ouch"; }
-            { mime = "application/x-bzip2"; run = "ouch"; }
-            { mime = "application/x-7z-compressed"; run = "ouch"; }
-            { mime = "application/x-rar"; run = "ouch"; }
-            { mime = "application/x-xz"; run = "ouch"; }
+            {
+              mime = "application/*zip";
+              run = "ouch";
+            }
+            {
+              mime = "application/x-tar";
+              run = "ouch";
+            }
+            {
+              mime = "application/x-bzip2";
+              run = "ouch";
+            }
+            {
+              mime = "application/x-7z-compressed";
+              run = "ouch";
+            }
+            {
+              mime = "application/x-rar";
+              run = "ouch";
+            }
+            {
+              mime = "application/x-xz";
+              run = "ouch";
+            }
           ];
         };
       };
@@ -137,7 +161,6 @@ lib.mkMerge [
           };
         };
       };
-
 
       #NOTE: keymap example credit : https://github.com/iynaix/dotfiles/blob/main/home-manager/shell/yazi.nix
       keymap = {
@@ -161,14 +184,20 @@ lib.mkMerge [
             }
             #HACK: this plugin is not installed by nix : https://github.com/AnirudhG07/plugins-yazi/tree/main/copy-file-contents.yazi
             {
-              on = [ "c" "C" ];
+              on = [
+                "c"
+                "C"
+              ];
               run = [ "plugin copy-file-contents" ];
               desc = "Copy contents of file";
             }
             #HACK: this plugin is not installed by nix : https://github.com/ndtoan96/ouch.yazi
             # ya pack -a ndtoan96/ouch                                                                                                                                                                              
             {
-              on = [ "c" "Z" ];
+              on = [
+                "c"
+                "Z"
+              ];
               run = [ "plugin ouch --args=zip" ];
               desc = "Zip the selected files";
             }
@@ -194,42 +223,40 @@ lib.mkMerge [
             }
           ]
           ++ lib.flatten (
-            lib.mapAttrsToList
-              (keys: loc: [
-                # cd
-                {
-                  on = [ "g" ] ++ lib.stringToCharacters keys;
-                  run = "cd ${loc}";
-                  desc = "cd to ${loc}";
-                }
-                # new tab
-                {
-                  on = [ "t" ] ++ lib.stringToCharacters keys;
-                  run = "tab_create ${loc}";
-                  desc = "open new tab to ${loc}";
-                }
-                # mv
-                {
-                  on = [ "m" ] ++ lib.stringToCharacters keys;
-                  run = [
-                    "yank --cut"
-                    "escape --visual --select"
-                    loc
-                  ];
-                  desc = "move selection to ${loc}";
-                }
-                # cp
-                {
-                  on = [ "Y" ] ++ lib.stringToCharacters keys;
-                  run = [
-                    "yank"
-                    "escape --visual --select"
-                    loc
-                  ];
-                  desc = "copy selection to ${loc}";
-                }
-              ])
-              shortcuts
+            lib.mapAttrsToList (keys: loc: [
+              # cd
+              {
+                on = [ "g" ] ++ lib.stringToCharacters keys;
+                run = "cd ${loc}";
+                desc = "cd to ${loc}";
+              }
+              # new tab
+              {
+                on = [ "t" ] ++ lib.stringToCharacters keys;
+                run = "tab_create ${loc}";
+                desc = "open new tab to ${loc}";
+              }
+              # mv
+              {
+                on = [ "m" ] ++ lib.stringToCharacters keys;
+                run = [
+                  "yank --cut"
+                  "escape --visual --select"
+                  loc
+                ];
+                desc = "move selection to ${loc}";
+              }
+              # cp
+              {
+                on = [ "Y" ] ++ lib.stringToCharacters keys;
+                run = [
+                  "yank"
+                  "escape --visual --select"
+                  loc
+                ];
+                desc = "copy selection to ${loc}";
+              }
+            ]) shortcuts
           )
           ++ [
             # # Additional shortcut for wallpapers with 'gW'
@@ -272,9 +299,6 @@ lib.mkMerge [
       };
     };
 
-    home.shellAliases = {
-      y = "yazi";
-    };
   }
 
   # smart-enter: enter for directory, open for file
@@ -503,7 +527,10 @@ lib.mkMerge [
       '';
       keymap.manager.prepend_keymap = [
         {
-          on = [ "c" "m" ];
+          on = [
+            "c"
+            "m"
+          ];
           run = "plugin chmod";
           desc = "Chmod on selected files";
         }
@@ -577,4 +604,3 @@ lib.mkMerge [
     };
   }
 ]
-
