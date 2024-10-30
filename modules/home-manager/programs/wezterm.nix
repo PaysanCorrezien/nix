@@ -1,10 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   weztermExtraConfig = ''
-    require "events.update-status"
-    require "events.format-tab-title"
-    return require("utils.config"):new():add("config"):add "mappings"
+    -- Add your config directory to Lua's package path
+    package.path = package.path .. ";${config.home.homeDirectory}/repo/config.wezterm/?.lua"
+
+    -- Import your config
+    return require("init")  -- or whatever you named your entry file
   '';
 
   nixpkgs-24-05 = fetchTarball {
@@ -12,7 +19,7 @@ let
     sha256 = "sha256:0jkxg1absqsdd1qq4jy70ccx4hia3ix891a59as95wacnsirffsk";
   };
 
-  wezterm-24-05 = (import nixpkgs-24-05 {}).wezterm;
+  wezterm-24-05 = (import nixpkgs-24-05 { }).wezterm;
 in
 {
   options.settings = lib.mkOption {
