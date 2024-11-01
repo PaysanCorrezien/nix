@@ -500,7 +500,8 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_3",
         "sops-nix": "sops-nix",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "tailscale-ssh": "tailscale-ssh"
       }
     },
     "rust-overlay": {
@@ -634,6 +635,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "tailscale-ssh": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1730419320,
+        "narHash": "sha256-pWU29KJ2PD8dvO4L3ph1DW3hPdvmc4ZoYU4HSLD1pD8=",
+        "owner": "paysancorrezien",
+        "repo": "tailscale-ssh.nix",
+        "rev": "3c970b8d18fe7dfdd0abd64dd30130a67bd215f0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "paysancorrezien",
+        "repo": "tailscale-ssh.nix",
         "type": "github"
       }
     },

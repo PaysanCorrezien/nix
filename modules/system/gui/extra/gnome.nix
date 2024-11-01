@@ -1,14 +1,19 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 let
   windowManager = config.settings.windowManager;
   cfg = config.settings;
 in
 {
   # gsconnect need these
-     # networking.firewall = {
-     #   allowedTCPPorts = [ 1714 1764 5357 ];  # 5357 is for WSDD
-     #   allowedUDPPorts = [ 1714 1764 3702 ];  # 3702 is for WSDD
-    # };
+  # networking.firewall = {
+  #   allowedTCPPorts = [ 1714 1764 5357 ];  # 5357 is for WSDD
+  #   allowedUDPPorts = [ 1714 1764 3702 ];  # 3702 is for WSDD
+  # };
   # environment.systemPackages = with pkgs; [ gnomeExtensions.gsconnect ];
   # environment.systemPackages = with pkgs; [ gnome.gvfs ];
   # environment.systemPackages = with pkgs; [ calls ]; unfortunately, cant call as of now in kdeconnect
@@ -21,12 +26,15 @@ in
       enable = true;
       package = pkgs.gnomeExtensions.gsconnect;
     };
+    environment.systemPackages = with pkgs; [
+      gjs
+    ];
   };
-#   # programs.kdeconnect = {
-#   #
-#   # enable = true;
-#   # package = pkgs.gnomeExtensions.gsconnect;
-# };
+  #   # programs.kdeconnect = {
+  #   #
+  #   # enable = true;
+  #   # package = pkgs.gnomeExtensions.gsconnect;
+  # };
 
   # environment.gnome.excludePackages =
   #   if cfg.windowManager == "gnome" && cfg.isServer == false then
@@ -57,4 +65,3 @@ in
   #   else
   #     [ ];
 }
-

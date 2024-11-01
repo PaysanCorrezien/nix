@@ -44,6 +44,11 @@
       url = "github:aylur/ags/v2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    tailscale-ssh = {
+      # url = "git+file:///home/dylan/repo/tailscale-ssh.nix";
+      url = "github:paysancorrezien/tailscale-ssh.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
   };
   outputs =

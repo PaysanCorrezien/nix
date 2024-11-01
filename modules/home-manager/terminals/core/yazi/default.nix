@@ -9,8 +9,6 @@
 #TODO: create a vrapper that :
 # take an array of plugins name and github repo, and install them if the pack dont exit, then run ya pack -u 
 # make each pack have an init.lu option and keymap option ?
-# TODO: make shell nav work again? 
-# TODO: make the create tab allow jsut createing generic new tab 
 # HACK: some plugins are not installed by this like the copy one
 let
   mkYaziPlugin = name: text: {
@@ -269,7 +267,15 @@ lib.mkMerge [
               run = "cd ${shortcuts.pw}";
               desc = "Go to Wallpapers directory";
             }
-            #
+            {
+              on = [
+                "t"
+                "t"
+              ];
+              run = "tab_create";
+              desc = "open new tab in current directory";
+            }
+            #NOTE: maybe later ?
             # # Additional ZFS-related bindings
             # {
             #   on = [

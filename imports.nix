@@ -14,6 +14,7 @@
       inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager
       inputs.stylix.nixosModules.stylix
+      inputs.tailscale-ssh.nixosModules.default
       ./modules/sops.nix
       ./modules/network/ssh.nix
       ./modules/common.nix
