@@ -26,6 +26,9 @@ in
       enable = true;
       package = pkgs.gnomeExtensions.gsconnect;
     };
+    environment.shellAliases = {
+      gsconnect-cli = "/run/current-system/sw/share/gnome-shell/extensions/gsconnect@andyholmes.github.io/service/daemon.js";
+    };
     environment.systemPackages = with pkgs; [
       gjs
     ];
