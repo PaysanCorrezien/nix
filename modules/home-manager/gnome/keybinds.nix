@@ -1,8 +1,12 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  flameshot-gui = pkgs.writeShellScriptBin "flameshot-gui"
-    "${pkgs.flameshot}/bin/flameshot gui";
+  flameshot-gui = pkgs.writeShellScriptBin "flameshot-gui" "${pkgs.flameshot}/bin/flameshot gui";
 
 in
 {
@@ -67,86 +71,71 @@ in
         open-new-window-application-8 = [ "" ];
         open-new-window-application-9 = [ "" ];
       };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom12" =
-        {
-          name = "Windows11 VM";
-          command = "/home/dylan//.config/scripts/w11.sh";
-          binding = "<Alt><Shift>w";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11" =
-        {
-          name = "GNOME Display Settings";
-          command = "gnome-control-center display";
-          binding = "<Alt>s";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom10" =
-        {
-          name = "Suspend System";
-          command = "${pkgs.systemd}/bin/systemctl suspend";
-          binding = "<Super>l";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9" =
-        {
-          name = "Gnome audio control";
-          command = "gnome-control-center sound";
-          binding = "<Alt>a";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8" =
-        {
-          name = "Gnome printers";
-          command = "gnome-control-center printers";
-          binding = "<Alt>P";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7" =
-        {
-          name = "Gnome bluetooth";
-          command = "gnome-control-center bluetooth";
-          binding = "<Alt>b";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6" =
-        {
-          name = "Gnome Wifi ";
-          command = "gnome-control-center wifi ";
-          binding = "<Alt>w";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5" =
-        {
-          name = "OCR";
-          command =
-            "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/ai-ocr.py'";
-          binding = "<Alt>o";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" =
-        {
-          name = "Grammar correct current clipboard";
-          command =
-            "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/correct.py'";
-          binding = "<Alt>g";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" =
-        {
-          name = "Todoist ";
-          command = "todoist-electron";
-          binding = "<Alt><Shift>t";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" =
-        {
-          name = "Flameshot GUI";
-          command = "${flameshot-gui}/bin/flameshot-gui";
-          binding = "<Alt>c";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" =
-        {
-          name = "Register Task";
-          command = "/home/dylan/.config/scripts/todogui.sh";
-          binding = "<Alt>t";
-        };
-      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" =
-        {
-          binding = "<Alt>Return";
-          command = "/run/current-system/sw/bin/wezterm";
-          name = "Launch WezTerm";
-        };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom12" = {
+        name = "Windows11 VM";
+        command = "/home/dylan//.config/scripts/w11.sh";
+        binding = "<Alt><Shift>w";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11" = {
+        name = "GNOME Display Settings";
+        command = "gnome-control-center display";
+        binding = "<Alt>s";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom10" = {
+        name = "Suspend System";
+        command = "${pkgs.systemd}/bin/systemctl suspend";
+        binding = "<Super>l";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9" = {
+        name = "Gnome audio control";
+        command = "gnome-control-center sound";
+        binding = "<Alt>a";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8" = {
+        name = "Gnome printers";
+        command = "gnome-control-center printers";
+        binding = "<Alt>P";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7" = {
+        name = "Gnome bluetooth";
+        command = "gnome-control-center bluetooth";
+        binding = "<Alt>b";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6" = {
+        name = "Gnome Wifi ";
+        command = "gnome-control-center wifi ";
+        binding = "<Alt>w";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5" = {
+        name = "OCR";
+        command = "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/ai-ocr.py'";
+        binding = "<Alt>o";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" = {
+        name = "Grammar correct current clipboard";
+        command = "zsh -c 'source ~/.zshrc && python3 /home/dylan/.config/espanso/scripts/correct.py'";
+        binding = "<Alt>g";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+        name = "Todoist ";
+        command = "todoist-electron";
+        binding = "<Alt><Shift>t";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+        name = "Flameshot GUI";
+        command = "${flameshot-gui}/bin/flameshot-gui";
+        binding = "<Alt>c";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+        name = "Register Task";
+        command = "/home/dylan/.config/scripts/todogui.sh";
+        binding = "<Alt>t";
+      };
+      "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+        binding = "<Alt>Return";
+        command = "/run/current-system/sw/bin/wezterm";
+        name = "Launch WezTerm";
+      };
       "org/gnome/shell/extensions/forge/keybindings" = {
         con-split-horizontal = [ "<Alt>z" ];
         con-split-layout-toggle = [ "<Alt>g" ];
@@ -183,8 +172,8 @@ in
         window-swap-left = [ "<Control><Alt>h" ];
         window-swap-right = [ "<Control><Alt>l" ];
         window-swap-up = [ "<Control><Alt>k" ];
-        window-toggle-always-float = [ "<Super><Shift>f" ];
         window-toggle-float = [ "<Super>f" ]; # make windowws float
+        window-toggle-always-float = [ "<Super><Shift>f" ];
         workspace-active-tile-toggle = [ "<Super>t" ]; # toggle active  mode again
       };
     };

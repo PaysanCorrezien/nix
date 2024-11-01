@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   cfg = config.settings;
@@ -82,9 +87,9 @@ in
       ];
     };
 
-programs.zsh.initExtra = ''
-  export SQL_CLIB_PATH="${pkgs.sqlite.out}/lib/libsqlite3.so"
-'';
+    programs.zsh.initExtra = ''
+      export SQL_CLIB_PATH="${pkgs.sqlite.out}/lib/libsqlite3.so"
+    '';
 
     home.packages = if cfg.minimalNvim then minimalPackages else fullPackages;
 
