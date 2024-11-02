@@ -7,6 +7,7 @@
 }:
 
 let
+
   cfg = settings.thunderbird;
   thunderbirdSecretsPath = "/run/secrets";
 
@@ -18,83 +19,59 @@ let
     in
     if builtins.pathExists path then builtins.readFile path else "";
 
-  # Function to read a secret file and convert it to an integer
-  readSecretFileAsInt =
-    name:
-    let
-      content = readSecretFile name;
-    in
-    if content == "" then null else lib.toInt content;
-
   # Function to check if all required secrets for an account exist
   accountSecretsExist =
     prefix: (readSecretFile "${prefix}/name") != "" && (readSecretFile "${prefix}/email") != "";
 
-  # Only define accounts if secrets exist
-  account1 =
-    if accountSecretsExist "thunderbird/account1" then
-      {
-        name = readSecretFile "thunderbird/account1/name";
-        email = readSecretFile "thunderbird/account1/email";
-      }
-    else
-      null;
+  settingsPath = "${config.home.homeDirectory}/.thunderbird/default/extension-settings.json";
 
-  account2 =
-    if accountSecretsExist "thunderbird/account2" then
-      {
-        name = readSecretFile "thunderbird/account2/name";
-        email = readSecretFile "thunderbird/account2/email";
-      }
+  # Read existing settings if file exists
+  existingSettings =
+    if builtins.pathExists settingsPath then
+      builtins.fromJSON (builtins.readFile settingsPath)
     else
-      null;
+      {
+        version = 3;
+        commands = { };
+        prefs = { };
+        default_search = { };
+      };
 
-  # Function to create an email account configuration
-  mkEmailAccount = account: name: {
-    ${name} = {
-      primary = name == "gmail";
-      address = account.email;
-      realName = account.name;
-      userName = account.email;
-      imap = {
-        host = if name == "gmail" then "imap.gmail.com" else "outlook.office365.com";
-        port = if name == "gmail" then 993 else 993;
-        tls.enable = true;
-      };
-      smtp = {
-        host = if name == "gmail" then "smtp.gmail.com" else "smtp.office365.com";
-        port = 587;
-        tls.enable = true;
-      };
-      thunderbird = {
-        enable = true;
-        profiles = [ "default" ];
-        settings = id: {
-          "mail.server.server_${id}.authMethod" = 10;
-          "mail.server.server_${id}.oauth2.issuer" =
-            if name == "gmail" then "accounts.google.com" else "https://login.microsoftonline.com";
-          "mail.server.server_${id}.oauth2.scope" =
-            if name == "gmail" then
-              "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar"
-            else
-              "https://outlook.office365.com/.default";
-          "mail.smtpserver.smtp_${id}.authMethod" = 10;
-          "mail.smtpserver.smtp_${id}.oauth2.issuer" =
-            if name == "gmail" then "accounts.google.com" else "https://login.microsoftonline.com";
-          "mail.smtpserver.smtp_${id}.oauth2.scope" =
-            if name == "gmail" then
-              "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar"
-            else
-              "https://outlook.office365.com/.default";
-        };
-      };
+  # Our new settings to merge
+  newSettings = {
+    commands = {
+      goto.precedenceList = [
+        {
+          id = "quickmove@mozilla.kewis.ch";
+          installDate = 1730496882367;
+          value.shortcut = "Ctrl+Shift+G";
+          enabled = true;
+        }
+      ];
+      copy.precedenceList = [
+        {
+          id = "quickmove@mozilla.kewis.ch";
+          installDate = 1730496882367;
+          value.shortcut = "Ctrl+Shift+C";
+          enabled = true;
+        }
+      ];
+      move.precedenceList = [
+        {
+          id = "quickmove@mozilla.kewis.ch";
+          installDate = 1730496882367;
+          value.shortcut = "Ctrl+Shift+N";
+          enabled = true;
+        }
+      ];
     };
   };
 
-  # Create email accounts only if secrets exist
-  emailAccounts =
-    (if account1 != null then mkEmailAccount account1 "gmail" else { })
-    // (if account2 != null then mkEmailAccount account2 "outlook" else { });
+  # Debug existing settings
+  _ = builtins.trace "Existing settings: ${builtins.toJSON existingSettings}" null;
+
+  # Merge settings
+  mergedSettings = lib.recursiveUpdate existingSettings newSettings;
 
 in
 {
@@ -111,6 +88,9 @@ in
   };
 
   config = lib.mkIf config.settings.thunderbird.enable {
+
+    home.file.".thunderbird/default/extension-settings.json".text = builtins.toJSON mergedSettings;
+
     programs.thunderbird = {
       enable = true;
       package = pkgs.thunderbird.override {
@@ -125,10 +105,21 @@ in
               install_url = "https://addons.thunderbird.net/thunderbird/downloads/latest/provider-for-google-calendar/latest.xpi";
               installation_mode = "force_installed";
             };
+            # Added Quick Folder Move
+            "quickmove@mozilla.kewis.ch" = {
+              install_url = "https://addons.thunderbird.net/thunderbird/downloads/latest/quick-folder-move/addon-12018-latest.xpi";
+              installation_mode = "force_installed";
+            };
+            # Added ThirdStats
+            "thirdstats@devmount.de" = {
+              install_url = "https://addons.thunderbird.net/thunderbird/downloads/latest/thirdstats/addon-987909-latest.xpi";
+              installation_mode = "force_installed";
+            };
             "tbkeys@addons.thunderbird.net" = {
               install_url = "https://github.com/wshanks/tbkeys/releases/latest/download/tbkeys.xpi";
               installation_mode = "force_installed";
             };
+            #
             "{f6d05f0c-39a8-5c4d-96dd-4852202a8244}" = {
               install_url = "https://raw.githubusercontent.com/catppuccin/thunderbird/main/themes/mocha/mocha-blue.xpi";
               installation_mode = "force_installed";
@@ -163,19 +154,200 @@ in
             "app.update.url.manual" = "";
             "app.update.enabled" = false;
             "app.update.auto" = false;
+
+            # Disable welcome message/screen
+            "app.shieldCheckDefaultClient" = false;
+            "mailnews.start_page.enabled" = false;
+            "mailnews.start_page_override.mstone" = "ignore";
+            "messenger.startup.action" = 0;
+
+            # Keep Quick Filter bar visible
+            "quickFilterBar.show" = true;
+
+            #NOTE: https://github.com/kewisch/quickmove-extension/issues/158
+            "widget.wayland.use-move-to-rect" = false;
+
+            # Use classic table view
+            "mail.folder_display_format" = 0;
+
+            # Completely disable preview pane and force tab-based viewing
+            "layout.reflow.holdoff" = 0;
+            "layout.reflow.holdoff.interval" = 0;
+            "layout.reflow.scrolling" = false;
+            "mail.pane_config.dynamic" = 0;
+
+            "mailnews.reflow.quote_length" = 0;
+            "mail.show_headers" = 1;
+            "mailnews.show_preview" = false;
+            "mail.tabs.drawInTitlebar" = true;
+            "mail.tabs.autoHide" = false;
+
+            # gmail calendar settings
+            "calendar.integration.notify" = true;
+            "calendar.integration.notify.show" = true;
+            "calendar.timezone.useSystemTime" = true;
+            "calendar.google.enableAttendees" = true;
+            "calendar.google.migrate" = true;
+            "calendar.google.useHTTPS" = true;
+            "calendar.google.useDefault" = true;
+
+            "accessibility.typeaheadfind.flashBar" = 0;
+            "app.donation.eoy.version.viewed" = 6;
+            "browser.theme.content-theme" = 0;
+            "browser.theme.toolbar-theme" = 0;
+
+            # "general.config.filename" = "dylan.cfg";
+            "devtools.debugger.prompt-connection" = false; # Disable the prompt when CTRL + SHIFT + I
+            "toolkit.legacyUserProfileCustomizations.stylesheets" = true; # Enable userChrome.css
           };
+
+          userChrome = ''
+             /* Hide the tab bar search bar ctrl + K */
+             #tabs-toolbar {
+                            visibility: collapse !important;
+                          }
+             #quick-filter-bar {
+                display: -moz-box !important;
+                visibility: visible !important;
+            }
+
+
+             /* Force the CTRL +SHIFT + K shortcut to open the Quick Filter Bar ON */
+                #qfb-sticky {
+                    /* Force the sticky button to appear pressed */
+                    background-color: var(--button-active-bgcolor) !important;
+                    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2) !important;
+                }
+
+
+            #folderTree:focus-within li.selected.unread > .container > .name,
+            #folderTree:focus-within li.selected.new-messages > .container > .name {
+                color: #a6e3a1 !important;
+            }
+
+            [is="tree-view-table-body"]:focus tr[is="thread-row"].selected,
+            [is="tree-view-table-body"]:focus-within tr[is="thread-row"].selected,
+            [is="tree-view-table-body"] tr[is="thread-row"].selected:focus-within {
+                background-color: #a6e3a1 !important;
+            }
+
+            .unread > .container > .name,
+            .new-messages > .container > .name {
+                color: #a6e3a1 !important;
+                font-weight: bold !important;
+            }
+
+            /* Updated unread count badge styles for better contrast */
+            #folderTree:focus-within li.selected > .container > .unread-count,
+            .folder-count-badge.unread-count {
+                background-color: #a6e3a1 !important;
+                color: #1e1e2e !important;  
+            }
+
+            *|*:root {
+                --folderpane-unread-count-background: #a6e3a1 !important;
+                --folderpane-unread-new-count-background: #a6e3a1 !important;
+            }
+
+            #folderPaneSplitter:hover,
+            #messagePaneSplitter:hover {
+                background-color: #a6e3a1 !important;
+            }
+
+            splitter[orient="vertical"]:hover,
+            splitter[orient="vertical"]:focus {
+                border-top: 4px solid #a6e3a1 !important;
+            }
+
+            /* Read messages - using Overlay0 (#6c7086) for read messages */
+            tr[is="thread-row"]:not(.unread) .subject-line span,
+            tr[is="thread-row"]:not(.unread) .correspondentcol-column,
+            tr[is="thread-row"]:not(.unread) .datecol-column {
+                color: #6c7086 !important;
+            }
+
+            /* Unread messages - let's try Text (#cdd6f4) for unread which is clearer but not harsh */
+            [is="tree-view-table-body"] tr[is="thread-row"][data-properties~="unread"] .subject-line span,
+            [is="tree-view-table-body"] tr[is="thread-row"][data-properties~="unread"] td.correspondentcol-column,
+            [is="tree-view-table-body"] tr[is="thread-row"][data-properties~="unread"] td.datecol-column {
+                color: #f4dbd6 !important;
+                font-weight: bold !important;
+            }
+
+          '';
         };
       };
 
       settings = {
-        "mailnews.default_sort_order" = 2;
-        "mailnews.default_news_sort_order" = 2;
-        "mailnews.default_sort_type" = 18;
-        "mailnews.default_news_sort_type" = 18;
+        "mailnewsort_order" = 2;
+        "mailnewsews_sort_order" = 2;
+        "mailnewsort_type" = 18;
+        "mailnewsews_sort_type" = 18;
       };
     };
 
-    accounts.email.accounts = emailAccounts;
+    accounts.email.accounts = lib.mkMerge [
+      (lib.mkIf (accountSecretsExist "thunderbird/account1") {
+        gmail = {
+          primary = true;
+          realName = readSecretFile "thunderbird/account1/name";
+          address = readSecretFile "thunderbird/account1/email";
+          userName = readSecretFile "thunderbird/account1/email";
+          imap = {
+            host = "imap.gmail.com";
+            port = 993;
+            tls.enable = true;
+          };
+          smtp = {
+            host = "smtp.gmail.com";
+            port = 587;
+            tls.enable = true;
+          };
+          thunderbird = {
+            enable = true;
+            profiles = [ "default" ];
+            settings = id: {
+              "mail.server.server_${id}.authMethod" = 10;
+              "mail.server.server_${id}.oauth2.issuer" = "accounts.google.com";
+              "mail.server.server_${id}.oauth2.scope" = "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar";
+              "mail.smtpserver.smtp_${id}.authMethod" = 10;
+              "mail.smtpserver.smtp_${id}.oauth2.issuer" = "accounts.google.com";
+              "mail.smtpserver.smtp_${id}.oauth2.scope" = "https://mail.google.com/ https://www.googleapis.com/auth/carddav https://www.googleapis.com/auth/calendar";
+            };
+          };
+        };
+      })
+      (lib.mkIf (accountSecretsExist "thunderbird/account2") {
+        outlook = {
+          primary = false;
+          realName = readSecretFile "thunderbird/account2/name";
+          address = readSecretFile "thunderbird/account2/email";
+          userName = readSecretFile "thunderbird/account2/email";
+          imap = {
+            host = "outlook.office365.com";
+            port = 993;
+            tls.enable = true;
+          };
+          smtp = {
+            host = "smtp.office365.com";
+            port = 587;
+            tls.enable = true;
+          };
+          thunderbird = {
+            enable = true;
+            profiles = [ "default" ];
+            settings = id: {
+              "mail.server.server_${id}.authMethod" = 10;
+              "mail.server.server_${id}.oauth2.issuer" = "https://login.microsoftonline.com";
+              "mail.server.server_${id}.oauth2.scope" = "https://outlook.office365.com/.default";
+              "mail.smtpserver.smtp_${id}.authMethod" = 10;
+              "mail.smtpserver.smtp_${id}.oauth2.issuer" = "https://login.microsoftonline.com";
+              "mail.smtpserver.smtp_${id}.oauth2.scope" = "https://outlook.office365.com/.default";
+            };
+          };
+        };
+      })
+    ];
 
     xdg.mimeApps.defaultApplications = {
       "x-scheme-handler/mailto" = [ "thunderbird.desktop" ];
