@@ -136,6 +136,8 @@ in
         command = "/run/current-system/sw/bin/wezterm";
         name = "Launch WezTerm";
       };
+      #NOTE: dconf reset -f /org/gnome/shell/extensions/forge/ 
+      #reset and rebuild when windows start to get broken 
       "org/gnome/shell/extensions/forge/keybindings" = {
         con-split-horizontal = [ "<Alt>z" ];
         con-split-layout-toggle = [ "<Alt>g" ];
