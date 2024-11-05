@@ -46,16 +46,23 @@ in
       rustscan
       rustscanFullScript
       bluetuith # bluetouth TUI
+      monolith # download webpage as HTML
       asn # OSINT command line tool for investigating network data
       gping # Ping, but with a graph
       systemctl-tui # systemctl manager tui
-      monolith # download webpage as HTML
+      hyperfine # benchmarking cmd
+      du-dust # directory infos
+      duf # File system infos
+      dnsx # DNS client
+      hexyl
     ];
-    programs.bash.shellAliases = {
+    home.shellAliases = {
       rustscanfull = "rustscanfull";
-    };
-    programs.zsh.shellAliases = {
-      rustscanfull = "rustscanfull";
+      pg = "gping";
+      du = "dust";
+      df = "duf";
+      sys = "systemctl-tui";
+
     };
   };
 }
