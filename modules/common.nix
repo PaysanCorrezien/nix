@@ -16,7 +16,7 @@ in
     # FIXME: this require to use --impure
     # /etc/nixos/hardware-configuration.nix
     ./keyboard.nix
-    ./sudoers.nix # Add this line to import the new sudoers.nix file
+    ./sudoers.nix
   ];
   system.stateVersion = "24.05";
   time.timeZone = "Europe/Paris";

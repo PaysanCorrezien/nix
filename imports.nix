@@ -21,6 +21,7 @@
       ./modules/system/gui/gui.nix
       ./modules/system/terminal/terminal.nix
       ./modules/monitoring/default.nix
+      ./cachix.nix
       ./dynamic-grub.nix
       ./modules/network/default.nix
     ]
