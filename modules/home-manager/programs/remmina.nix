@@ -1,7 +1,12 @@
 # option list
 # https://gitlab.com/Remmina/Remmina/-/wikis/Remmina-Config-File-Options
 #
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   remminaPrefContent = ''
@@ -90,6 +95,12 @@ let
     rdp_disable_smooth_scrolling=0
     grab_color=#00ff00
     grab_color_switch=false
+    # audio forwarding
+    rdp_audio=0  # 0 is "local", 1 is "remote", 2 is "disabled"
+    rdp_audio_output=true  # Enable audio output redirection
+    rdp_microphone=true    # Enable microphone redirection
+    rdp_audio_output_path=sys:pulse
+    rdp_microphone_path=format:1
 
     [remmina_info]
     periodic_news_permitted=false
@@ -108,8 +119,7 @@ in
       type = lib.types.submodule {
         options.remmina = lib.mkOption {
           type = lib.types.submodule {
-            options.enable =
-              lib.mkEnableOption "Enable custom Remmina configuration";
+            options.enable = lib.mkEnableOption "Enable custom Remmina configuration";
           };
         };
       };
