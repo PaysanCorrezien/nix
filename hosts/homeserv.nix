@@ -38,6 +38,7 @@
 
   imports = [
     (./. + "/specific-confs/music-sync.nix")
+    (./. + "/specific-confs/restic.nix")
   ];
   # Configure static IP dynamically
   networking = {
@@ -109,10 +110,14 @@
     ntfs3g
     jq
     acl
+    restic
   ];
+
   services.davfs2 = {
     enable = true;
   };
+  users.users.${config.settings.username}.extraGroups = [ "postgres" ];
+
   systemd.tmpfiles.rules = [
     # NOTE: Base Docker directory
     "d /home/${config.settings.username}/docker 0755 ${config.settings.username} users -"
@@ -122,6 +127,7 @@
     "d /home/${config.settings.username}/docker/postgresql/data 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/grafana/storage/provisioning 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/storage 0700 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/immich/database 0750 999 postgres -"
 
     # NOTE: Sensitive Services (0750) - Restricted group access
     # Services with user data or configuration
@@ -136,6 +142,9 @@
     "d /home/${config.settings.username}/docker/flowise/data 0750 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/logs 0750 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/uploads 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/immich 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/immich/upload 0750 ${config.settings.username} users -" # Photo/video uploads
+    "d /home/${config.settings.username}/docker/immich/redis 0750 ${config.settings.username} users -" # Redis data
 
     # NOTE: Standard Services (0755) - Normal access
     # Public-facing and non-sensitive services
@@ -153,6 +162,7 @@
     "d /home/${config.settings.username}/docker/navidrome/data/cache 0755 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/app 0755 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/n8n 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/immich/cache 0755 ${config.settings.username} users -" # ML model cache
 
   ];
   # ACL Configuration Notes:
@@ -174,6 +184,13 @@
       ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/postgresql/data
       ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/grafana/storage/provisioning
       ${pkgs.acl}/bin/setfacl -Rm u:${config.settings.username}:rwx,g:users:- /home/${config.settings.username}/docker/flowise/data/storage
+
+      # Immich database ACLs - ensure both postgres and your user have access
+      ${pkgs.acl}/bin/setfacl -Rdm u:999:rwx,u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich/database
+      ${pkgs.acl}/bin/setfacl -Rm u:999:rwx,u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich/database
+
+      # Ensure the parent directory is accessible
+      ${pkgs.acl}/bin/setfacl -m u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich
     '';
     deps = [ ];
   };
