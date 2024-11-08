@@ -48,22 +48,22 @@ let
           enabled = true;
         }
       ];
-      copy.precedenceList = [
-        {
-          id = "quickmove@mozilla.kewis.ch";
-          installDate = 1730496882367;
-          value.shortcut = "Ctrl+Shift+C";
-          enabled = true;
-        }
-      ];
-      move.precedenceList = [
-        {
-          id = "quickmove@mozilla.kewis.ch";
-          installDate = 1730496882367;
-          value.shortcut = "Ctrl+Shift+N";
-          enabled = true;
-        }
-      ];
+      # copy.precedenceList = [
+      #   {
+      #     id = "quickmove@mozilla.kewis.ch";
+      #     installDate = 1730496882367;
+      #     value.shortcut = "Ctrl+Shift+C";
+      #     enabled = true;
+      #   }
+      # ];
+      # move.precedenceList = [
+      #   {
+      #     id = "quickmove@mozilla.kewis.ch";
+      #     installDate = 1730496882367;
+      #     value.shortcut = "Ctrl+Shift+N";
+      #     enabled = true;
+      #   }
+      # ];
     };
   };
 
@@ -96,7 +96,7 @@ in
       package = pkgs.thunderbird.override {
         extraPolicies = {
           ExtensionSettings = {
-            "*".installation_mode = "blocked";
+            # "*".installation_mode = "blocked"; # allow debug
             "owl@beonex.com" = {
               install_url = "https://addons.thunderbird.net/thunderbird/downloads/latest/owl-for-exchange/latest.xpi";
               installation_mode = "force_installed";
@@ -197,6 +197,13 @@ in
             "browser.theme.toolbar-theme" = 0;
 
             # "general.config.filename" = "dylan.cfg";
+            "exstensions.logging.enabled" = true;
+            "devtools.aboutdebugging.collapsibilities.temporaryExtension " = true;
+            "devtools.chrome.enabled " = true;
+            "devtools.debugger.remote-enabled " = true;
+            "devtools.aboutdebugging.showHiddenAddons " = true;
+            "xpinstall.whitelist.required " = false;
+
             "devtools.debugger.prompt-connection" = false; # Disable the prompt when CTRL + SHIFT + I
             "toolkit.legacyUserProfileCustomizations.stylesheets" = true; # Enable userChrome.css
           };
