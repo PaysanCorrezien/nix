@@ -15,9 +15,9 @@ in
         customCommands = [
           {
             key = "<c-a>";
-            #NOTE: credit for https://github.com/jesseduffield/lazygit/issues/3212
             description = "Pick AI commit";
             command = ''
+              echo "Running commit suggestion..." > /tmp/lazygit-debug.log
               aichat "Please suggest 10 commit messages, given the following diff:
                 \`\`\`diff
                 $(git diff --cached)
@@ -57,12 +57,12 @@ in
                 and understanding of the project over time.
                 - If multiple changes are present, make sure you capture them all in each commit
                 message.
-                Keep in mind you will suggest 10 commit messages. Only 1 will be used." \
-                  | fzf --height 40% --border --ansi --preview "echo {}" --preview-window=up:wrap \
+                Keep in mind you will suggest 10 commit messages. Only 1 will be used." 2>> /tmp/lazygit-debug.log | tee -a /tmp/lazygit-debug.log | \
+                  fzf --height 40% --border --ansi --preview "echo {}" --preview-window=up:wrap \
                   | xargs -I {} bash -c '
                       COMMIT_MSG_FILE=$(mktemp)
                       echo "{}" > "$COMMIT_MSG_FILE"
-                      ''${EDITOR:-vim} "$COMMIT_MSG_FILE"
+                      $EDITOR "$COMMIT_MSG_FILE"
                       if [ -s "$COMMIT_MSG_FILE" ]; then
                           git commit -F "$COMMIT_MSG_FILE"
                       else
