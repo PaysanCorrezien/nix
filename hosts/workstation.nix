@@ -39,7 +39,6 @@ in
     isExperimental = false;
     work = true;
     gaming = true;
-    tailscale.enable = true;
     windowManager = "gnome";
     # windowManager = "hyprland";
     # windowManager  = "plasma";
@@ -64,6 +63,10 @@ in
     monitoring = {
       enable = true;
     };
+    tailscale.enable = true;
+    # rdpserver = {
+    #   enable = true;
+    # };
   };
 
   config.networking = {
@@ -109,7 +112,7 @@ in
   };
   config.environment.systemPackages = with pkgs; [
     # Add your own packages here
-    bambu-studio
+    # bambu-studio
     sqlc
   ];
 
