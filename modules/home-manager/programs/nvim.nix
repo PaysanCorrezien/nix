@@ -21,6 +21,7 @@ let
     bash-language-server
     black
     cmake-language-server
+    clang-tools
     vscode-extensions.vadimcn.vscode-lldb
     docker-compose-language-service
     dockerfile-language-server-nodejs

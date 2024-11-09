@@ -106,7 +106,7 @@ in
         lib.readFile customZshInit
         + ''
           function set-wp() {
-            local wallpaper_path="$HOME/.config/.nix/.wallpaper.png"
+            local wallpaper_path="$HOME/.config/nix/.wallpaper.png"
 
             if [ -f "$1" ]; then
               local ext="''${1##*.}"

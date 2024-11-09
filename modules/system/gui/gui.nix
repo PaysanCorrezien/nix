@@ -84,7 +84,7 @@ in
         # TODO: move these programs
         helix
         zed-editor
-        todoist-electron
+        # todoist-electron
         rofi
         obsidian # TODO: boostrap obsidian
         libnotify
