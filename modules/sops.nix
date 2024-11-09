@@ -99,10 +99,46 @@ in
           };
         };
       })
-
+      #TODO: maybe only root shoudl have access to these secrets or some of them
       (lib.mkIf (cfg.machineType == "homeserver") {
         sops.secrets = {
           "nextcloudUsername" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "sync_password" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "discordWebhookUrl" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "sync_localDir" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "sync_remoteDir" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "discordWebhookUrlBackup" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "local" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "external" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "remote" = {
+            sopsFile = ./sops/ie.yaml;
+            owner = "dylan";
+          };
+          "disk_uuid" = {
             sopsFile = ./sops/ie.yaml;
             owner = "dylan";
           };
