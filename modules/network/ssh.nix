@@ -1,4 +1,10 @@
-{ inputs, config, pkgs, lib, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.settings.ssh;
 in
@@ -11,7 +17,9 @@ in
             enable = lib.mkEnableOption "Enable SSHD custom hardened configuration";
           };
         };
-        default = { enable = true; };
+        default = {
+          enable = true;
+        };
         description = "SSHD settings";
       };
     };
@@ -26,6 +34,7 @@ in
         KbdInteractiveAuthentication = false;
         X11Forwarding = false;
         AuthenticationMethods = "publickey";
+        AuthorizedPrincipalsFile = "none";
         UsePAM = false;
         PermitEmptyPasswords = false;
         Ciphers = [
@@ -60,8 +69,7 @@ in
     };
 
     users.users.${config.settings.username} = {
-      openssh.authorizedKeys.keyFiles =
-        [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
+      openssh.authorizedKeys.keyFiles = [ "${inputs.self}/hosts/keys/${config.settings.hostname}.pub" ];
     };
   };
 }
