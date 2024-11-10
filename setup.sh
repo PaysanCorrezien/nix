@@ -79,16 +79,16 @@ fi
 # Run the disk selector and capture its output
 #FIX:  this make detect a prompt and either use the provide disk of current system or auto install
 #FIX : currently deebut disk from diskselect is not working anymore
-DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
-
-# Extract the selected drive from the disk info
-SELECTED_DRIVE=$(echo "$DISK_INFO" | grep "Selected drive:" | awk '{print $NF}')
-
-echo "Disk Information:"
-echo "$DISK_INFO"
-echo
-echo "Selected drive for installation: $SELECTED_DRIVE"
-echo
+# DISK_INFO=$(nix-instantiate --eval -E "let diskSelect = import $TEMP_REPO_DIR/diskselect.nix { inherit (import <nixpkgs> {}) lib; }; in diskSelect.debugInfo" --json | sed 's/^"//;s/"$//')
+#
+# # Extract the selected drive from the disk info
+# SELECTED_DRIVE=$(echo "$DISK_INFO" | grep "Selected drive:" | awk '{print $NF}')
+#
+# echo "Disk Information:"
+# echo "$DISK_INFO"
+# echo
+# echo "Selected drive for installation: $SELECTED_DRIVE"
+# echo
 
 # Confirmation prompt using fzf
 CONFIRMATION=$(echo -e "Yes\nNo" | fzf --prompt="Do you want to proceed with the installation on $SELECTED_DRIVE? " --height=20%)
@@ -99,7 +99,7 @@ if [[ $CONFIRMATION != "Yes" ]]; then
 fi
 
 echo "Setting up the disk"
-sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
+sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode destroy,format,mount --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
 
 echo "Installing NixOS with configuration: $CONFIG"
 #TEST: capture output for debug, and --impure seems mandatory for laptop?
