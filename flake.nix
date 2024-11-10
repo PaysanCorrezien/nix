@@ -58,8 +58,8 @@
       home-manager,
       sops-nix,
       disko,
-      clovis,
-      keybswitch,
+      # clovis,
+      # keybswitch,
       nixos-wsl,
       ...
     }@inputs:
