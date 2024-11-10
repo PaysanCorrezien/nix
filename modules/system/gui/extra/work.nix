@@ -8,11 +8,90 @@
   lib,
   ...
 }:
-
 let
   cfg = config.settings;
+  # Helper function to create web app derivations
+  mkWebAppBase =
+    browser: args:
+    (pkgs.stdenvNoCC.mkDerivation (
+      args
+      // {
+        pname = "${browser.pname}-app-${args.appName}";
+        version = "1.0.0";
+        buildInputs = [ browser ];
+        nativeBuildInputs = [
+          pkgs.makeBinaryWrapper
+          pkgs.copyDesktopItems
+        ];
+        dontUnpack = true;
+        dontConfigure = true;
+        dontBuild = true;
 
-  # Helper function to create web app desktop entries
+        installPhase =
+          let
+            # Browser-specific flags defined within the let block
+            browserFlags =
+              if browser.pname == "microsoft-edge" then
+                {
+                  appFlag = "--app";
+                  classFlag = "--class";
+                  extraFlags = [ ];
+                }
+              else if browser.pname == "chromium" then
+                {
+                  appFlag = "--app";
+                  classFlag = "--class";
+                  extraFlags = [
+                    "--enable-features=UseOzonePlatform,WebRTCPipeWireCapturer,WebUIDarkMode"
+                    "--ozone-platform-hint=auto"
+                    "--disable-sync-preferences"
+                  ];
+                }
+              else
+                {
+                  appFlag = "--app";
+                  classFlag = "--class";
+                  extraFlags = [ ];
+                };
+
+            # Profile directory flag if enabled
+            profileFlag =
+              if args.separateProfile then
+                ''--add-flags "--user-data-dir=\$XDG_CONFIG_HOME/${browser.pname}-${args.appName}"''
+              else
+                "";
+          in
+          ''
+            runHook preInstall
+
+            makeWrapper ${lib.getExe browser} $out/bin/${args.appName} \
+              ${lib.concatStringsSep " " (map (flag: "--add-flags \"${flag}\"") browserFlags.extraFlags)} \
+              --add-flags "${browserFlags.appFlag}=${args.url}" \
+              --add-flags "${browserFlags.classFlag}=${args.windowClass or args.appName}" \
+              ${profileFlag}
+
+            runHook postInstall
+          '';
+
+        desktopItems = [
+          (pkgs.makeDesktopItem {
+            name = args.appName;
+            exec = args.appName;
+            icon = args.icon;
+            desktopName = args.name;
+            genericName = args.description or args.name;
+            categories =
+              [ "Network" ]
+              ++ (map (cat: if (lib.hasPrefix "X-" cat) then cat else "X-${cat}") (args.extraCategories or [ ]));
+            startupWMClass = args.windowClass or args.appName;
+            terminal = false;
+            type = "Application";
+          })
+        ];
+      }
+    ));
+
+  # Higher-level wrapper maintaining your preferred API
   mkWebApp =
     {
       name,
@@ -21,24 +100,27 @@ let
       icon,
       description ? "",
       extraCategories ? [ ],
+      browser ? pkgs.microsoft-edge, # Default browser, can be overridden
+      sandboxProfile ? true, # New option, defaults to true for backward compatibility
     }:
     let
       windowClass = lib.strings.toLower (builtins.replaceStrings [ " " ] [ "-" ] name);
     in
-    pkgs.makeDesktopItem {
-      name = desktopId;
-      desktopName = name;
-      genericName = description;
-      icon = icon;
-      exec = "${pkgs.microsoft-edge}/bin/microsoft-edge-stable --app=\"${url}\" --class=\"${windowClass}\"";
-      categories = [
-        "Network"
-      ] ++ (map (cat: if (lib.hasPrefix "X-" cat) then cat else "X-${cat}") extraCategories);
-      terminal = false;
-      type = "Application";
+    mkWebAppBase browser {
+      appName = desktopId;
+      inherit
+        name
+        url
+        icon
+        description
+        extraCategories
+        windowClass
+
+        ;
+      separateProfile = sandboxProfile;
     };
 
-  # Web apps definitions
+  # Web apps definitions remain the same
   youtubeWebApp = mkWebApp {
     name = "YouTube";
     desktopId = "youtube-webapp";
@@ -49,6 +131,7 @@ let
       "X-AudioVideo"
       "X-Entertainment"
     ];
+    sandboxProfile = false;
   };
 
   claudeWebApp = mkWebApp {
@@ -61,6 +144,7 @@ let
       "X-Development"
       "X-AI"
     ];
+    sandboxProfile = false;
   };
 
   githubWebApp = mkWebApp {
@@ -73,6 +157,7 @@ let
       "X-Development"
       "X-Collaboration"
     ];
+    sandboxProfile = false;
   };
 
   teamsWebApp = mkWebApp {
@@ -85,6 +170,7 @@ let
       "X-InstantMessaging"
       "X-Office"
     ];
+    sandboxProfile = false;
   };
 
   nixosDiscourseWebApp = mkWebApp {
@@ -97,6 +183,7 @@ let
       "X-Development"
       "X-Community"
     ];
+    sandboxProfile = false;
   };
 
   chatGPTWebApp = mkWebApp {
@@ -109,6 +196,7 @@ let
       "X-Development"
       "X-AI"
     ];
+    sandboxProfile = false;
   };
 
 in
@@ -118,8 +206,7 @@ in
       microsoft-edge
       linphone
       openfortivpn
-      wireshark
-      teamviewer
+      # teamviewer
       vscode-extensions.ms-vscode.powershell
 
       # Web apps
