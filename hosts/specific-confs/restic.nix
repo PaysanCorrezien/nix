@@ -1,4 +1,9 @@
-# Keeping most of the config the same, just updating the backupStatusCommand
+#TODO: sops all these infos : pass / url / ids / refactor sops to make a clearer separation of creds
+#TODO: make a more direct somewhere else bin mount/ unmount on UID that can be callled by the aliases
+#FIX: aliases
+#FIX: SECURITY : mount perm ? 
+#TODO: otpimise logic 
+#TODO: improve notification : snapshots number, and success sometimes when it actaully fail
 {
   config,
   lib,
@@ -7,67 +12,153 @@
 }:
 let
   username = config.settings.username;
-  resticEnvPath = "/home/${username}/.restic.env";
-  passwordFileExists = builtins.pathExists resticEnvPath;
-  remoteBackupHost = "chi"; # Declaring the remote host variable
+  remoteBackupHost = "chi";
   sshKeyPath = "/home/${username}/.ssh/${remoteBackupHost}";
-  remoteBackupPath = "/home/${username}/backups/docker"; # Generic backup location on remote
+  remoteBackupPath = "/home/${username}/backups/docker";
 
-  discordNotifyScript = pkgs.writeScriptBin "notify-discord" ''
+  # Create a robust mount script
+  mountScript = pkgs.writeScriptBin "mount-backup-drive" ''
     #!${pkgs.bash}/bin/bash
-    BACKUP_NAME="$1"
-    STATUS="$2"
-    DETAILS="$3"
 
-    # Source the env file to get the webhook URL
-    source ${resticEnvPath}
+    DEVICE="/dev/sdc"
+    UUID="$(cat /var/run/secrets/disk_uuid)"
+    LABEL="SAMSUNG"
+    MOUNT_POINT="/mnt/external_drive"
+    LOG_FILE="/var/log/usb_drive_operations.log"
 
-    if [ -n "$DISCORD_WEBHOOK_URL" ]; then
-      TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-      
-      # Create JSON payload with proper escaping
-      JSON_CONTENT=$(cat <<EOF
-    {
-      "embeds": [{
-        "title": "$BACKUP_NAME Status",
-        "color": $([ "$STATUS" = "success" ] && echo "65280" || echo "16711680"),
-        "description": "$(echo "$DETAILS" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')",
-        "footer": {
-          "text": "Backup attempted at $TIMESTAMP"
-        }
-      }]
+    # Ensure log directory exists
+    mkdir -p "$(dirname "$LOG_FILE")"
+
+    log_message() {
+      echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
     }
-    EOF
-    )
+
+    is_mounted() {
+      ${pkgs.util-linux}/bin/mountpoint -q "$MOUNT_POINT"
+    }
+
+    mount_drive() {
+      log_message "Attempting to mount backup drive..."
       
-      ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
-        -d "$JSON_CONTENT" \
-        "$DISCORD_WEBHOOK_URL"
+      # Power up the drive if in standby
+      if ${pkgs.hdparm}/bin/hdparm -C "$DEVICE" 2>/dev/null | grep -q "standby"; then
+        log_message "Powering up drive..."
+        ${pkgs.hdparm}/bin/hdparm -S 0 "$DEVICE"
+        # Give the drive time to spin up
+        sleep 5
+      fi
+      
+      # Create mount point if needed
+      ${pkgs.coreutils}/bin/mkdir -p "$MOUNT_POINT"
+      
+      # Try mounting by UUID first with specific ntfs-3g options
+      if ${pkgs.util-linux}/bin/mount -U "$UUID" -t ntfs3 -o uid=0,gid=0,fmask=0133,dmask=0022 "$MOUNT_POINT"; then
+        # Wait for mount to complete and verify
+        for i in {1..30}; do
+          if ${pkgs.util-linux}/bin/mountpoint -q "$MOUNT_POINT" && \
+             [ -d "$MOUNT_POINT" ] && \
+             ${pkgs.coreutils}/bin/ls "$MOUNT_POINT" >/dev/null 2>&1; then
+            log_message "Drive mounted successfully by UUID at $MOUNT_POINT"
+            ${pkgs.coreutils}/bin/mkdir -p "$MOUNT_POINT/backups/docker"
+            # Extra validation
+            if [ -d "$MOUNT_POINT/backups/docker" ]; then
+              sleep 2  # Final wait to ensure filesystem is ready
+              return 0
+            fi
+          fi
+          sleep 1
+        done
+        log_message "Mount succeeded but directory access failed"
+        return 1
+      fi
+      
+      # Try mounting by LABEL if UUID fails
+      log_message "UUID mount failed, attempting mount by LABEL..."
+      if ${pkgs.util-linux}/bin/mount -L "$LABEL" -t ntfs3 -o uid=0,gid=0,fmask=0133,dmask=0022 "$MOUNT_POINT"; then
+        # Wait for mount to complete and verify
+        for i in {1..30}; do
+          if ${pkgs.util-linux}/bin/mountpoint -q "$MOUNT_POINT" && \
+             [ -d "$MOUNT_POINT" ] && \
+             ${pkgs.coreutils}/bin/ls "$MOUNT_POINT" >/dev/null 2>&1; then
+            log_message "Drive mounted successfully by LABEL at $MOUNT_POINT"
+            ${pkgs.coreutils}/bin/mkdir -p "$MOUNT_POINT/backups/docker"
+            # Extra validation
+            if [ -d "$MOUNT_POINT/backups/docker" ]; then
+              sleep 2  # Final wait to ensure filesystem is ready
+              return 0
+            fi
+          fi
+          sleep 1
+        done
+        log_message "Mount succeeded but directory access failed"
+        return 1
+      fi
+      
+      # If both mount attempts fail
+      log_message "Failed to mount backup drive"
+      touch /tmp/mount-failed-docker-backup-external
+      return 1
+    }
+
+    unmount_drive() {
+      log_message "Attempting to unmount backup drive..."
+      
+      if ${pkgs.util-linux}/bin/umount "$MOUNT_POINT"; then
+        log_message "Drive unmounted successfully"
+        # Power down the drive
+        ${pkgs.hdparm}/bin/hdparm -y "$DEVICE" || log_message "Failed to power down drive"
+        return 0
+      else
+        log_message "Failed to unmount drive"
+        return 1
+      fi
+    }
+
+    # Main logic
+    if ! is_mounted; then
+      mount_drive
     fi
   '';
 
-  # Helper script to extract password from env file
-  mkPasswordScript =
-    passwordVar:
-    toString (
-      pkgs.writeScript "get-password-${passwordVar}" ''
+  discordNotifyScript = pkgs.writeScriptBin "notify-discord" ''
         #!${pkgs.bash}/bin/bash
-        source ${resticEnvPath}
-        echo "''${${passwordVar}}"
-      ''
-    );
-
-  # Create password files for each backup
-  localPasswordFile = mkPasswordScript "RESTIC_LOCAL_PASSWORD";
-  externalPasswordFile = mkPasswordScript "RESTIC_EXTERNAL_PASSWORD";
-  remotePasswordFile = mkPasswordScript "RESTIC_REMOTE_PASSWORD";
+        BACKUP_NAME="$1"
+        STATUS="$2"
+        DETAILS="$3"
+        
+        WEBHOOK_URL=$(cat /home/dylan/.restic-webhook.txt)
+        
+        if [ -n "$WEBHOOK_URL" ]; then
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+          
+          JSON_CONTENT=$(cat <<EOF
+        {
+          "embeds": [{
+            "title": "$BACKUP_NAME Status",
+            "color": $([ "$STATUS" = "success" ] && echo "65280" || echo "16711680"),
+            "description": "$(echo "$DETAILS" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')",
+            "footer": {
+              "text": "Backup attempted at $TIMESTAMP"
+            }
+          }]
+        }
+    EOF
+        )
+          
+          ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
+            -d "$JSON_CONTENT" \
+            "$WEBHOOK_URL"
+        fi
+  '';
 
   # Base configuration for all backups
   baseBackupConfig = {
     user = username;
     initialize = true;
-    paths = [ "/home/${config.settings.username}/docker" ];
-    environmentFile = resticEnvPath;
+    paths = [
+      "/home/${config.settings.username}/docker"
+      "/home/${config.settings.username}/music"
+    ];
     pruneOpts = [
       "--keep-daily 7"
       "--keep-weekly 4"
@@ -112,9 +203,6 @@ let
       exit 1
     fi
 
-    # Get backup information with proper environment
-    source ${resticEnvPath}
-    LATEST_SNAPSHOT_ID=$(${pkgs.restic}/bin/restic snapshots --latest 1 --json | ${pkgs.jq}/bin/jq -r '.[0].id')
     SNAPSHOT_INFO=$(${pkgs.restic}/bin/restic snapshots --latest 5)
 
     MESSAGE="✅ Backup Successful"
@@ -126,18 +214,28 @@ let
 
 in
 {
+  # Ensure required directories exist
   systemd.tmpfiles.rules = [
+    "d /var/lib/restic 0700 ${username} users -"
     "d /mnt/external_drive 0755 root root -"
     "d /var/backup 0755 ${username} users"
     "d /var/backup/docker 0755 ${username} users"
     "d /run/restic-backups-docker-backup-external 0755 root root -"
+    "f /var/log/usb_drive_operations.log 0644 root root -"
   ];
 
-  services.restic.backups = lib.mkIf passwordFileExists {
+  # Add hdparm to system packages
+  environment.shellAliases = {
+    # Local backup commands
+    localbackup = "restic -r /var/backup/docker --password-file /var/lib/restic/local.txt";
+    extbackup = "restic -r /mnt/external_drive/backups/docker --password-file /var/lib/restic/external.txt";
+  };
+
+  services.restic.backups = {
     # Local backup configuration
     docker-backup-local = baseBackupConfig // {
       repository = "/var/backup/docker";
-      passwordFile = localPasswordFile;
+      passwordFile = "/var/lib/restic/local.txt";
       timerConfig = {
         OnCalendar = "2:00";
         RandomizedDelaySec = "30m";
@@ -149,7 +247,7 @@ in
     # External drive backup configuration
     docker-backup-external = baseBackupConfig // {
       repository = "/mnt/external_drive/backups/docker";
-      passwordFile = externalPasswordFile;
+      passwordFile = "/var/lib/restic/external.txt";
       runCheck = false;
       timerConfig = {
         OnCalendar = "3:00";
@@ -158,61 +256,44 @@ in
       };
       user = "root";
       backupPrepareCommand = ''
-        if ! ${pkgs.util-linux}/bin/mountpoint -q "/mnt/external_drive"; then
-          ${pkgs.coreutils}/bin/mkdir -p /mnt/external_drive
-          ${pkgs.util-linux}/bin/mount -t ntfs3 /dev/sde1 /mnt/external_drive || {
-            touch /tmp/mount-failed-docker-backup-external
-            exit 1
-          }
+        # Mount the drive
+        ${mountScript}/bin/mount-backup-drive
+
+        # Verify the repository is accessible
+        if [ ! -f "/mnt/external_drive/backups/docker/config" ]; then
+          echo "Repository config not found or not accessible"
+          touch /tmp/mount-failed-docker-backup-external
+          exit 1
         fi
-        ${pkgs.coreutils}/bin/mkdir -p /mnt/external_drive/backups/docker
+
+        # Fix permissions if needed
+        ${pkgs.coreutils}/bin/chown -R root:root /mnt/external_drive/backups/docker
+        ${pkgs.coreutils}/bin/chmod -R u+rwX,g+rX,o+rX /mnt/external_drive/backups/docker
       '';
       backupCleanupCommand = ''
         # Run the standard status command
         ${backupStatusCommand "docker-backup-external"}
 
-        # Then unmount after everything is done
+        # Then unmount the drive if it's mounted
         if ${pkgs.util-linux}/bin/mountpoint -q "/mnt/external_drive"; then
-          ${pkgs.util-linux}/bin/umount /mnt/external_drive
+          ${pkgs.util-linux}/bin/umount /mnt/external_drive || true
+          # Attempt to power down the drive
+          ${pkgs.hdparm}/bin/hdparm -y /dev/sdc || true
         fi
       '';
     };
-
-    # Remote backup configuration via SSH
-    # TODO: generate a no passphrase ssh key for this
-    #   docker-backup-remote = baseBackupConfig // {
-    #     repository = "sftp:${username}@${remoteBackupHost}:${remoteBackupPath}";
-    #     passwordFile = remotePasswordFile;
-    #     timerConfig = {
-    #       OnCalendar = "4:00";
-    #       RandomizedDelaySec = "30m";
-    #       Persistent = true;
-    #     };
-    #     extraBackupArgs = [
-    #       "--one-file-system"
-    #       "--compression max"
-    #       "--option sftp.command='ssh -i ${sshKeyPath} -F none'"
-    #     ];
-    #     backupCleanupCommand = backupStatusCommand "docker-backup-remote";
-    #   };
   };
 
-  # Prometheus exporter configuration at root level
-  services.prometheus = {
-    exporters = {
-      restic = {
-        enable = true;
-        refreshInterval = 3600; # 1 hour in seconds
-        environmentFile = "${resticEnvPath}";
-        repository = "/var/backup/docker"; # Set default repository
-        passwordFile = localPasswordFile;
-        extraFlags = [
-          # Monitor all repositories with their respective passwords
-          "--repository=/var/backup/docker#$(source ${resticEnvPath} && echo $RESTIC_LOCAL_PASSWORD)"
-          "--repository=/mnt/external_drive/backups/docker#$(source ${resticEnvPath} && echo $RESTIC_EXTERNAL_PASSWORD)"
-          # "--repository=sftp:${username}@${remoteBackupHost}:${remoteBackupPath}#$(source ${resticEnvPath} && echo $RESTIC_REMOTE_PASSWORD)"
-        ];
-      };
-    };
+  # Prometheus exporter configuration
+  #TEST: check how this work , probablby one export by type needed ?
+  services.prometheus.exporters.restic = {
+    enable = true;
+    refreshInterval = 3600; # 1 hour in seconds
+    repository = "/var/backup/docker";
+    passwordFile = "/var/lib/restic/local.txt";
+    extraFlags = [
+      "--repository=/var/backup/docker#$(cat /var/lib/restic/local.txt)"
+      "--repository=/mnt/external_drive/backups/docker#$(cat /var/lib/restic/external.txt)"
+    ];
   };
 }
