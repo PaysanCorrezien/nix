@@ -1,4 +1,9 @@
-{ inputs, config, pkgs, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   settings = {
@@ -24,9 +29,9 @@
       enableGlobal = true;
       machineType = "homeserver"; # or "homeserver" or "vps"
     };
-     disko = {
-        mainDisk = "/dev/sdc";
-        layout = "standard";
+    disko = {
+      mainDisk = "/dev/sdc";
+      layout = "standard";
     };
 
   };
@@ -34,7 +39,7 @@
   imports = [
     (./. + "/specific-confs/music-sync.nix")
     (./. + "/specific-confs/restic.nix")
-];
+  ];
   # Configure static IP dynamically
   networking = {
     defaultGateway.interface = "enp7s0";
@@ -56,27 +61,32 @@
       enp7s0 = {
         # Replace with your actual network interface
         useDHCP = false;
-        ipv4.addresses = [{
-          address = "192.168.1.165";
-          prefixLength = 24;
-        }];
+        ipv4.addresses = [
+          {
+            address = "192.168.1.165";
+            prefixLength = 24;
+          }
+        ];
       };
     };
-    nameservers = [ "192.168.1.1" "8.8.8.8" ];
+    nameservers = [
+      "192.168.1.1"
+      "8.8.8.8"
+    ];
   };
-    boot = {
+  boot = {
     supportedFilesystems = [ "acl" ];
     # Any other boot configurations you might have
-    };
+  };
 
   # Install NVIDIA drivers and configure Docker to use NVIDIA runtime
-   services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
-   hardware.graphics.enable = true;
-   hardware.graphics.enable32Bit = true;
-   hardware.nvidia-container-toolkit.enable = true;
+  hardware.graphics.enable = true;
+  hardware.graphics.enable32Bit = true;
+  hardware.nvidia-container-toolkit.enable = true;
 
-    hardware.nvidia = {
+  hardware.nvidia = {
     modesetting.enable = true;
     open = false;
     nvidiaSettings = true;
@@ -96,7 +106,7 @@
   environment.systemPackages = with pkgs; [
     davfs2 # webdav
     rclone
-    hdparm #DISK management/wake
+    hdparm # DISK management/wake
     ntfs3g
     jq
     acl
@@ -106,9 +116,9 @@
   services.davfs2 = {
     enable = true;
   };
-    users.users.${config.settings.username}.extraGroups = [ "postgres" ];
+  users.users.${config.settings.username}.extraGroups = [ "postgres" ];
 
-    systemd.tmpfiles.rules = [
+  systemd.tmpfiles.rules = [
     # NOTE: Base Docker directory
     "d /home/${config.settings.username}/docker 0755 ${config.settings.username} users -"
 
@@ -118,7 +128,6 @@
     "d /home/${config.settings.username}/docker/grafana/storage/provisioning 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/storage 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/immich/database 0750 999 postgres -"
-
 
     # NOTE: Sensitive Services (0750) - Restricted group access
     # Services with user data or configuration
@@ -134,10 +143,10 @@
     "d /home/${config.settings.username}/docker/flowise/data/logs 0750 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/uploads 0750 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/immich 0750 ${config.settings.username} users -"
-    "d /home/${config.settings.username}/docker/immich/upload 0750 ${config.settings.username} users -"  
-    "d /home/${config.settings.username}/docker/immich/redis 0750 ${config.settings.username} users -"   
-    "d /home/${config.settings.username}/docker/postgres-vikunja 0750 ${config.settings.username} users -" 
-    
+    "d /home/${config.settings.username}/docker/immich/upload 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/immich/redis 0750 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/postgres-vikunja 0750 ${config.settings.username} users -"
+
     # NOTE: Standard Services (0755) - Normal access
     # Public-facing and non-sensitive services
     "d /home/${config.settings.username}/docker/freshrss 0755 ${config.settings.username} users -"
@@ -154,10 +163,10 @@
     "d /home/${config.settings.username}/docker/navidrome/data/cache 0755 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/app 0755 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/n8n 0755 ${config.settings.username} users -"
-    "d /home/${config.settings.username}/docker/immich/cache 0755 ${config.settings.username} users -"  
-    "d /home/${config.settings.username}/docker/vikunja 0755 ${config.settings.username} users -"   
+    "d /home/${config.settings.username}/docker/immich/cache 0755 ${config.settings.username} users -"
+    "d /home/${config.settings.username}/docker/vikunja 0755 ${config.settings.username} users -"
 
-];
+  ];
   # ACL Configuration Notes:
   # setfacl parameters used below:
   # -R: recursive (apply to all existing files/dirs)
@@ -165,9 +174,9 @@
   # -m: modify the ACL
   # u:user:rwx = user gets read/write/execute
   # g:group:rx = group gets read/execute
-# NOTE: ACL Configuration
-# Sets default ACLs for inheritance and current permissions
-system.activationScripts.dockerDirPermissions = {
+  # NOTE: ACL Configuration
+  # Sets default ACLs for inheritance and current permissions
+  system.activationScripts.dockerDirPermissions = {
     text = ''
       # Set base ACLs for docker directory
       ${pkgs.acl}/bin/setfacl -Rdm u:${config.settings.username}:rwx,g:users:rx /home/${config.settings.username}/docker
@@ -181,9 +190,10 @@ system.activationScripts.dockerDirPermissions = {
       # Immich database ACLs - ensure both postgres and your user have access
       ${pkgs.acl}/bin/setfacl -Rdm u:999:rwx,u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich/database
       ${pkgs.acl}/bin/setfacl -Rm u:999:rwx,u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich/database
-      
+
       # Ensure the parent directory is accessible
       ${pkgs.acl}/bin/setfacl -m u:${config.settings.username}:rx /home/${config.settings.username}/docker/immich
     '';
-    deps = [];
-};
+    deps = [ ];
+  };
+}

@@ -17,16 +17,16 @@
     disko = {
       url = "github:nix-community/disko";
     };
-    keybswitch = {
-      # url = "git+file:///home/dylan/repo/keybswitch";
-      url = "github:paysancorrezien/keybswitch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    clovis = {
-      # url = "git+file:///home/dylan/repo/clovis";
-      url = "github:paysancorrezien/clovis";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # keybswitch = {
+    #   # url = "git+file:///home/dylan/repo/keybswitch";
+    #   url = "github:paysancorrezien/keybswitch";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    # clovis = {
+    #   # url = "git+file:///home/dylan/repo/clovis";
+    #   url = "github:paysancorrezien/clovis";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     # plasma-manager = {
     #   url = "github:nix-community/plasma-manager";
     #   inputs.nixpkgs.follows = "nixpkgs";
