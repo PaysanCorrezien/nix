@@ -208,6 +208,7 @@ in
       openfortivpn
       # teamviewer
       vscode-extensions.ms-vscode.powershell
+      vscode
 
       # Web apps
       youtubeWebApp

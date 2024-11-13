@@ -64,6 +64,7 @@ in
       enable = true;
     };
     tailscale.enable = true;
+    tailscale.tags = [ "computer" ];
     # rdpserver = {
     #   enable = true;
     # };

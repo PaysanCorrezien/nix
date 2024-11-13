@@ -127,7 +127,7 @@
     "d /home/${config.settings.username}/docker/postgresql/data 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/grafana/storage/provisioning 0700 ${config.settings.username} users -"
     "d /home/${config.settings.username}/docker/flowise/data/storage 0700 ${config.settings.username} users -"
-    "d /home/${config.settings.username}/docker/immich/database 0750 999 postgres -"
+    "d /home/${config.settings.username}/docker/immich/database 0700 999 postgres -"
 
     # NOTE: Sensitive Services (0750) - Restricted group access
     # Services with user data or configuration

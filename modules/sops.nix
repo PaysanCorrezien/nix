@@ -1,3 +1,4 @@
+#TODO: crake a mkdsopssecrets fn that handle all the boiletplate
 {
   lib,
   inputs,

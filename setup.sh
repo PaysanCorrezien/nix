@@ -99,8 +99,9 @@ if [[ $CONFIRMATION != "Yes" ]]; then
 fi
 
 echo "Setting up the disk"
-#TODO: find a way to not ever again rely again on the git master which is always broken
-sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
+#TODO: find a way to not ever again rely again on the git master which is always
+sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode disko --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
+# sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --flake "$TEMP_REPO_DIR"#$CONFIG --no-write-lock-file
 
 echo "Installing NixOS with configuration: $CONFIG"
 #TEST: capture output for debug, and --impure seems mandatory for laptop?
