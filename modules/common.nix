@@ -4,6 +4,7 @@
   config,
   pkgs,
   lib,
+  nixpkgs,
   ...
 }:
 #NOTE: home manager cant inherit config it fail with darwin error
@@ -73,7 +74,11 @@ in
     };
     sharedModules = [
       #   inputs.sops-nix.homeManagerModules.sops
-
+      {
+        nixpkgs.overlays = [
+          inputs.yazi-plugins.overlays.default
+        ];
+      }
       # inputs.plasma-manager.homeManagerModules.plasma-manager
     ];
   };

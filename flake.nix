@@ -41,12 +41,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     ags = {
-      url = "github:aylur/ags/v2";
+      url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tailscale-ssh = {
       # url = "git+file:///home/dylan/repo/tailscale-ssh.nix";
       url = "github:paysancorrezien/tailscale-ssh.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    yazi-plugins = {
+      # url = "github:lordkekz/nix-yazi-plugins?ref=main";
+      # url = "git+file:///home/dylan/repo/nix-yazi-plugins";
+      url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

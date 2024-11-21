@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  yaziPlugins,
   ...
 }:
 #FIX: make the multi file yank work , neither dragon / xckip or clipboard-jh work
@@ -44,11 +45,15 @@ lib.mkMerge [
       exiftool
       clipboard-jh # https://github.com/Slackadays/ClipBoard
       trash-cli
+      # yaziPlugins.bypass
+      # yaziPlugins.ouch
+      # yaziPlugins.copy-file-contents
     ];
 
     programs.yazi = {
       enable = true;
       enableZshIntegration = true;
+      plugins = pkgs.yaziPlugins;
 
       initLua = ''
                 function Linemode:size_and_mtime()
@@ -382,30 +387,30 @@ lib.mkMerge [
   # https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi
   {
     programs.yazi = {
-      plugins = mkYaziPlugin "max-preview" ''
-        local function entry(st)
-            if st.old then
-                Tab.layout, st.old = st.old, nil
-            else
-                st.old = Tab.layout
-                Tab.layout = function(self)
-                    self._chunks = ui.Layout()
-                        :direction(ui.Layout.HORIZONTAL)
-                        :constraints({
-                            ui.Constraint.Percentage(0),
-                            ui.Constraint.Percentage(0),
-                            ui.Constraint.Percentage(100),
-                        })
-                        :split(self._area)
-                end
-            end
-            ya.app_emit("resize", {})
-        end
-
-        local function enabled(st) return st.old ~= nil end
-
-        return { entry = entry, enabled = enabled }
-      '';
+      # plugins = mkYaziPlugin "max-preview" ''
+      #   local function entry(st)
+      #       if st.old then
+      #           Tab.layout, st.old = st.old, nil
+      #       else
+      #           st.old = Tab.layout
+      #           Tab.layout = function(self)
+      #               self._chunks = ui.Layout()
+      #                   :direction(ui.Layout.HORIZONTAL)
+      #                   :constraints({
+      #                       ui.Constraint.Percentage(0),
+      #                       ui.Constraint.Percentage(0),
+      #                       ui.Constraint.Percentage(100),
+      #                   })
+      #                   :split(self._area)
+      #           end
+      #       end
+      #       ya.app_emit("resize", {})
+      #   end
+      #
+      #   local function enabled(st) return st.old ~= nil end
+      #
+      #   return { entry = entry, enabled = enabled }
+      # '';
       keymap.manager.prepend_keymap = [
         {
           on = "T";
@@ -489,48 +494,48 @@ lib.mkMerge [
   {
     programs.yazi = {
       # https://github.com/yazi-rs/plugins/tree/main/
-      plugins = mkYaziPlugin "chmod" ''
-              local selected_or_hovered = ya.sync(function()
-        	local tab, paths = cx.active, {}
-        	for _, u in pairs(tab.selected) do
-        		paths[#paths + 1] = tostring(u)
-        	end
-        	if #paths == 0 and tab.current.hovered then
-        		paths[1] = tostring(tab.current.hovered.url)
-        	end
-        	return paths
-        end)
-
-        return {
-        	entry = function()
-        		ya.manager_emit("escape", { visual = true })
-
-        		local urls = selected_or_hovered()
-        		if #urls == 0 then
-        			return ya.notify { title = "Chmod", content = "No file selected", level = "warn", timeout = 5 }
-        		end
-
-        		local value, event = ya.input {
-        			title = "Chmod:",
-        			position = { "top-center", y = 3, w = 40 },
-        		}
-        		if event ~= 1 then
-        			return
-        		end
-
-        		local status, err = Command("chmod"):arg(value):args(urls):spawn():wait()
-        		if not status or not status.success then
-        			ya.notify {
-        				title = "Chmod",
-        				content = string.format("Chmod with selected files failed, exit code %s", status and status.code or err),
-        				level = "error",
-        				timeout = 5,
-        			}
-        		end
-        	end,
-        }
-
-      '';
+      # plugins = mkYaziPlugin "chmod" ''
+      #         local selected_or_hovered = ya.sync(function()
+      #   	local tab, paths = cx.active, {}
+      #   	for _, u in pairs(tab.selected) do
+      #   		paths[#paths + 1] = tostring(u)
+      #   	end
+      #   	if #paths == 0 and tab.current.hovered then
+      #   		paths[1] = tostring(tab.current.hovered.url)
+      #   	end
+      #   	return paths
+      #   end)
+      #
+      #   return {
+      #   	entry = function()
+      #   		ya.manager_emit("escape", { visual = true })
+      #
+      #   		local urls = selected_or_hovered()
+      #   		if #urls == 0 then
+      #   			return ya.notify { title = "Chmod", content = "No file selected", level = "warn", timeout = 5 }
+      #   		end
+      #
+      #   		local value, event = ya.input {
+      #   			title = "Chmod:",
+      #   			position = { "top-center", y = 3, w = 40 },
+      #   		}
+      #   		if event ~= 1 then
+      #   			return
+      #   		end
+      #
+      #   		local status, err = Command("chmod"):arg(value):args(urls):spawn():wait()
+      #   		if not status or not status.success then
+      #   			ya.notify {
+      #   				title = "Chmod",
+      #   				content = string.format("Chmod with selected files failed, exit code %s", status and status.code or err),
+      #   				level = "error",
+      #   				timeout = 5,
+      #   			}
+      #   		end
+      #   	end,
+      #   }
+      #
+      # '';
       keymap.manager.prepend_keymap = [
         {
           on = [
@@ -547,59 +552,59 @@ lib.mkMerge [
   {
     programs.yazi = {
       # https://github.com/yazi-rs/plugins/tree/main/full-border.yazi
-      plugins = mkYaziPlugin "full-border" ''
-            -- TODO: remove this once v0.4 is released
-        local v4 = function(typ, area, ...)
-        	if typ == "bar" then
-        		return ui.Table and ui.Bar(...):area(area) or ui.Bar(area, ...)
-        	else
-        		return ui.Table and ui.Border(...):area(area) or ui.Border(area, ...)
-        	end
-        end
-
-        local function setup(_, opts)
-        	local type = opts and opts.type or ui.Border.ROUNDED
-        	local old_build = Tab.build
-
-        	Tab.build = function(self, ...)
-        		local bar = function(c, x, y)
-        			if x <= 0 or x == self._area.w - 1 then
-        				return v4("bar", ui.Rect.default, ui.Bar.TOP)
-        			end
-
-        			return v4(
-        				"bar",
-        				ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) },
-        				ui.Bar.TOP
-        			):symbol(c)
-        		end
-
-        		local c = self._chunks
-        		self._chunks = {
-        			c[1]:padding(ui.Padding.y(1)),
-        			c[2]:padding(ui.Padding(c[1].w > 0 and 0 or 1, c[3].w > 0 and 0 or 1, 1, 1)),
-        			c[3]:padding(ui.Padding.y(1)),
-        		}
-
-        		local style = THEME.manager.border_style
-        		self._base = ya.list_merge(self._base or {}, {
-        			v4("border", self._area, ui.Border.ALL):type(type):style(style),
-        			v4("bar", self._chunks[1], ui.Bar.RIGHT):style(style),
-        			v4("bar", self._chunks[3], ui.Bar.LEFT):style(style),
-
-        			bar("┬", c[1].right - 1, c[1].y),
-        			bar("┴", c[1].right - 1, c[1].bottom - 1),
-        			bar("┬", c[2].right, c[2].y),
-        			bar("┴", c[2].right, c[2].bottom - 1),
-        		})
-
-        		old_build(self, ...)
-        	end
-        end
-
-        return { setup = setup }
-
-      '';
+      # plugins = mkYaziPlugin "full-border" ''
+      #       -- TODO: remove this once v0.4 is released
+      #   local v4 = function(typ, area, ...)
+      #   	if typ == "bar" then
+      #   		return ui.Table and ui.Bar(...):area(area) or ui.Bar(area, ...)
+      #   	else
+      #   		return ui.Table and ui.Border(...):area(area) or ui.Border(area, ...)
+      #   	end
+      #   end
+      #
+      #   local function setup(_, opts)
+      #   	local type = opts and opts.type or ui.Border.ROUNDED
+      #   	local old_build = Tab.build
+      #
+      #   	Tab.build = function(self, ...)
+      #   		local bar = function(c, x, y)
+      #   			if x <= 0 or x == self._area.w - 1 then
+      #   				return v4("bar", ui.Rect.default, ui.Bar.TOP)
+      #   			end
+      #
+      #   			return v4(
+      #   				"bar",
+      #   				ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) },
+      #   				ui.Bar.TOP
+      #   			):symbol(c)
+      #   		end
+      #
+      #   		local c = self._chunks
+      #   		self._chunks = {
+      #   			c[1]:padding(ui.Padding.y(1)),
+      #   			c[2]:padding(ui.Padding(c[1].w > 0 and 0 or 1, c[3].w > 0 and 0 or 1, 1, 1)),
+      #   			c[3]:padding(ui.Padding.y(1)),
+      #   		}
+      #
+      #   		local style = THEME.manager.border_style
+      #   		self._base = ya.list_merge(self._base or {}, {
+      #   			v4("border", self._area, ui.Border.ALL):type(type):style(style),
+      #   			v4("bar", self._chunks[1], ui.Bar.RIGHT):style(style),
+      #   			v4("bar", self._chunks[3], ui.Bar.LEFT):style(style),
+      #
+      #   			bar("┬", c[1].right - 1, c[1].y),
+      #   			bar("┴", c[1].right - 1, c[1].bottom - 1),
+      #   			bar("┬", c[2].right, c[2].y),
+      #   			bar("┴", c[2].right, c[2].bottom - 1),
+      #   		})
+      #
+      #   		old_build(self, ...)
+      #   	end
+      #   end
+      #
+      #   return { setup = setup }
+      #
+      # '';
       keymap.manager.prepend_keymap = [
         {
           on = "T";

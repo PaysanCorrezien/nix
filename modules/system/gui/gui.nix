@@ -77,13 +77,16 @@ in
         pulse.enable = true;
       };
 
-      services.printing.enable = true;
+      services.printing = {
+        enable = true;
+        drivers = [ pkgs.gutenprint ];
+      };
       services.usbmuxd.enable = true;
 
       environment.systemPackages = with pkgs; [
         # TODO: move these programs
         helix
-        zed-editor
+        # zed-editor
         # todoist-electron
         rofi
         obsidian # TODO: boostrap obsidian

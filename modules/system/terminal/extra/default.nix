@@ -40,6 +40,7 @@ in
         stylua
         gcc
         sshfs
+        nurl # fetch github sha
       ]
     );
   };
