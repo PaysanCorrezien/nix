@@ -1,7 +1,9 @@
 {
   config,
   pkgs,
+  inputs,
   lib,
+  system ? builtins.currentSystem, # Provide a default value for system
   ...
 }:
 
@@ -40,6 +42,7 @@ in
       enableZshIntegration = true;
       # package = wezterm-24-05;
       extraConfig = weztermExtraConfig;
+      package = inputs.wezterm.packages.${pkgs.system}.default; # Use pkgs.system instead
     };
   };
 }

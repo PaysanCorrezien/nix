@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -6,6 +11,7 @@
     ./ssh.nix
     ./rdp.nix
   ];
-    networking.hostName = config.settings.hostname;
+  networking.hostName = config.settings.hostname;
+  systemd.targets.network-online.wantedBy = lib.mkForce [ ];
 
 }

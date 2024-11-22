@@ -44,6 +44,11 @@
       url = "github:aylur/ags";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wezterm = {
+      url = "github:wez/wezterm/main?dir=nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     tailscale-ssh = {
       # url = "git+file:///home/dylan/repo/tailscale-ssh.nix";
       url = "github:paysancorrezien/tailscale-ssh.nix";
