@@ -56,8 +56,8 @@
     };
     yazi-plugins = {
       # url = "github:lordkekz/nix-yazi-plugins?ref=main";
-      url = "git+file:///home/dylan/repo/nix-yazi-plugins";
-      # url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
+      # url = "git+file:///home/dylan/repo/nix-yazi-plugins";
+      url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
