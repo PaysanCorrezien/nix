@@ -5,16 +5,16 @@
   yaziPlugins,
   ...
 }:
-#FIX: make the multi file yank work , neither dragon / xckip or clipboard-jh work
-#TODO: mvove all this whe na plugin management for nix is realy availabe
-#TODO: create a vrapper that :
-# take an array of plugins name and github repo, and install them if the pack dont exit, then run ya pack -u 
-# make each pack have an init.lu option and keymap option ?
-# HACK: some plugins are not installed by this like the copy one
+#NOTE: the plugins are provided via https://github.com/lordkekz/nix-yazi-plugins
 let
   mkYaziPlugin = name: text: {
     "${name}" = toString (pkgs.writeTextDir "${name}.yazi/init.lua" text) + "/${name}.yazi";
   };
+  #NOTE: make the keyjump plugin available
+  keyjumpPlugin = pkgs.runCommandLocal "keyjump.yazi" { } ''
+    mkdir -p $out
+    cp ${./keyjump.lua} $out/init.lua
+  '';
 
   # search-jump = import ./search-jump.nix { inherit lib pkgs config; };
   homeDir = config.home.homeDirectory;
@@ -38,16 +38,15 @@ lib.mkMerge [
     home.packages = with pkgs; [
       miller
       ouch
-      xdragon
       zoxide
       ueberzugpp
       unar
+      glow
       exiftool
       clipboard-jh # https://github.com/Slackadays/ClipBoard
       trash-cli
-      # yaziPlugins.bypass
-      # yaziPlugins.ouch
-      # yaziPlugins.copy-file-contents
+      exiftool
+      mediainfo
     ];
 
     programs.yazi = {
@@ -100,33 +99,31 @@ lib.mkMerge [
         		ui.Span(" "),
         	}
         end, 500, Status.RIGHT)
-                --NOTE: for the copy-file-contents plugin:
+        --NOTE: for the copy-file-contents plugin:
                 require("copy-file-contents"):setup({
         	clipboard_cmd = "default",
         	append_char = "\n",
         	notification = true,
         })
+        -- note: for the starship plugin
+        require("starship"):setup()
       '';
 
       settings = {
         manager = {
           show_hidden = true;
           sort_by = "modified";
-          sort_dir_first = true;
+          sort_dir_first = false;
           sort_reverse = true;
           linemode = "size_and_mtime";
         };
-
         preview = {
           max_width = 1920;
           max_height = 1080;
         };
-
         log = {
           enabled = true;
         };
-
-        #HACK: this plugin is not installed by nix :
         previewers = {
           prepend = [
             {
@@ -155,6 +152,38 @@ lib.mkMerge [
             }
           ];
         };
+        plugin = {
+          prepend_previewers = [
+            {
+              #NOTE: https://github.com/Reledia/glow.yazi
+              name = "*.md";
+              run = "glow";
+            }
+            {
+              #NOTE: https://github.com/Sonico98/exifaudio.yazi
+              mime = "audio/*";
+              run = "exifaudio";
+            }
+            {
+              #NOTE: https://github.com/AnirudhG07/rich-preview.yazi
+              name = "*.csv";
+              run = "rich-preview";
+            }
+            {
+              name = "*.rst";
+              run = "rich-preview";
+            }
+            {
+              name = "*.ipynb";
+              run = "rich-preview";
+            }
+            {
+              name = "*.json";
+              run = "rich-preview";
+            }
+
+          ];
+        };
       };
 
       theme = {
@@ -169,23 +198,7 @@ lib.mkMerge [
       keymap = {
         manager.prepend_keymap =
           [
-            # Open Dragon with current selection
-            {
-              on = "<C-n>";
-              run = ''shell 'dragon -x -i -T "$1"' --confirm'';
-              desc = "Open dragon with current selection";
-            }
-
-            # Yank and copy to clipboard for X11
-            {
-              on = "y";
-              run = [
-                ''shell 'URIS=""; for path in "$@"; do URIS="$URIS\nfile://$(realpath "$path")"; done; echo -e "$URIS" | xclip -i -selection clipboard -t text/uri-list' --confirm''
-                "yank"
-              ];
-              desc = "Yank and copy to clipboard (X11)";
-            }
-            #HACK: this plugin is not installed by nix : https://github.com/AnirudhG07/plugins-yazi/tree/main/copy-file-contents.yazi
+            #NOTE:  https://github.com/AnirudhG07/plugins-yazi/tree/main/copy-file-contents.yazi
             {
               on = [
                 "c"
@@ -194,7 +207,7 @@ lib.mkMerge [
               run = [ "plugin copy-file-contents" ];
               desc = "Copy contents of file";
             }
-            #HACK: this plugin is not installed by nix : https://github.com/ndtoan96/ouch.yazi
+            #NOTE:  https://github.com/ndtoan96/ouch.yazi
             # ya pack -a ndtoan96/ouch                                                                                                                                                                              
             {
               on = [
@@ -204,16 +217,6 @@ lib.mkMerge [
               run = [ "plugin ouch --args=zip" ];
               desc = "Zip the selected files";
             }
-            # Yank and copy to clipboard for Wayland
-            # NOTE: check for this
-            # {
-            #   on = "y";
-            #   run = [
-            #     ''shell 'for path in "$@"; do echo "file://$path"; done | wl-copy -t text/uri-list' --confirm''
-            #     "yank"
-            #   ];
-            #   desc = "Yank and copy to clipboard (Wayland)";
-            # }
 
             # Change directory to the root of the Git repository
             {
@@ -384,33 +387,9 @@ lib.mkMerge [
       ];
     };
   }
-  # https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi
   {
     programs.yazi = {
-      # plugins = mkYaziPlugin "max-preview" ''
-      #   local function entry(st)
-      #       if st.old then
-      #           Tab.layout, st.old = st.old, nil
-      #       else
-      #           st.old = Tab.layout
-      #           Tab.layout = function(self)
-      #               self._chunks = ui.Layout()
-      #                   :direction(ui.Layout.HORIZONTAL)
-      #                   :constraints({
-      #                       ui.Constraint.Percentage(0),
-      #                       ui.Constraint.Percentage(0),
-      #                       ui.Constraint.Percentage(100),
-      #                   })
-      #                   :split(self._area)
-      #           end
-      #       end
-      #       ya.app_emit("resize", {})
-      #   end
-      #
-      #   local function enabled(st) return st.old ~= nil end
-      #
-      #   return { entry = entry, enabled = enabled }
-      # '';
+      # https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi
       keymap.manager.prepend_keymap = [
         {
           on = "T";
@@ -424,62 +403,6 @@ lib.mkMerge [
   {
     programs.yazi = {
       # https://github.com/orhnk/system-clipboard.yazi
-      plugins = mkYaziPlugin "system-clipboard" ''
-                      -- Meant to run at async context. (yazi system-clipboard)
-
-        local selected_or_hovered = ya.sync(function()
-        	local tab, paths = cx.active, {}
-        	for _, u in pairs(tab.selected) do
-        		paths[#paths + 1] = tostring(u)
-        	end
-        	if #paths == 0 and tab.current.hovered then
-        		paths[1] = tostring(tab.current.hovered.url)
-        	end
-        	return paths
-        end)
-
-        return {
-        	entry = function()
-        		ya.manager_emit("escape", { visual = true })
-
-        		local urls = selected_or_hovered()
-
-        		if #urls == 0 then
-        			return ya.notify({ title = "System Clipboard", content = "No file selected", level = "warn", timeout = 5 })
-        		end
-
-        		-- ya.notify({ title = #urls, content = table.concat(urls, " "), level = "info", timeout = 5 })
-
-        		local status, err =
-        				Command("cb")
-        				:arg("copy")
-        				:args(urls)
-        				:spawn()
-        				:wait()
-
-        		if status or status.succes then
-        			ya.notify({
-        				title = "System Clipboard",
-        				content = "Succesfully copied the file(s) to system clipboard",
-        				level = "info",
-        				timeout = 5,
-        			})
-        		end
-
-        		if not status or not status.success then
-        			ya.notify({
-        				title = "System Clipboard",
-        				content = string.format(
-        					"Could not copy selected file(s) %s",
-        					status and status.code or err
-        				),
-        				level = "error",
-        				timeout = 5,
-        			})
-        		end
-        	end,
-        }
-      '';
       keymap.manager.prepend_keymap = [
         {
           on = "<C-y>";
@@ -494,48 +417,6 @@ lib.mkMerge [
   {
     programs.yazi = {
       # https://github.com/yazi-rs/plugins/tree/main/
-      # plugins = mkYaziPlugin "chmod" ''
-      #         local selected_or_hovered = ya.sync(function()
-      #   	local tab, paths = cx.active, {}
-      #   	for _, u in pairs(tab.selected) do
-      #   		paths[#paths + 1] = tostring(u)
-      #   	end
-      #   	if #paths == 0 and tab.current.hovered then
-      #   		paths[1] = tostring(tab.current.hovered.url)
-      #   	end
-      #   	return paths
-      #   end)
-      #
-      #   return {
-      #   	entry = function()
-      #   		ya.manager_emit("escape", { visual = true })
-      #
-      #   		local urls = selected_or_hovered()
-      #   		if #urls == 0 then
-      #   			return ya.notify { title = "Chmod", content = "No file selected", level = "warn", timeout = 5 }
-      #   		end
-      #
-      #   		local value, event = ya.input {
-      #   			title = "Chmod:",
-      #   			position = { "top-center", y = 3, w = 40 },
-      #   		}
-      #   		if event ~= 1 then
-      #   			return
-      #   		end
-      #
-      #   		local status, err = Command("chmod"):arg(value):args(urls):spawn():wait()
-      #   		if not status or not status.success then
-      #   			ya.notify {
-      #   				title = "Chmod",
-      #   				content = string.format("Chmod with selected files failed, exit code %s", status and status.code or err),
-      #   				level = "error",
-      #   				timeout = 5,
-      #   			}
-      #   		end
-      #   	end,
-      #   }
-      #
-      # '';
       keymap.manager.prepend_keymap = [
         {
           on = [
@@ -552,64 +433,30 @@ lib.mkMerge [
   {
     programs.yazi = {
       # https://github.com/yazi-rs/plugins/tree/main/full-border.yazi
-      # plugins = mkYaziPlugin "full-border" ''
-      #       -- TODO: remove this once v0.4 is released
-      #   local v4 = function(typ, area, ...)
-      #   	if typ == "bar" then
-      #   		return ui.Table and ui.Bar(...):area(area) or ui.Bar(area, ...)
-      #   	else
-      #   		return ui.Table and ui.Border(...):area(area) or ui.Border(area, ...)
-      #   	end
-      #   end
-      #
-      #   local function setup(_, opts)
-      #   	local type = opts and opts.type or ui.Border.ROUNDED
-      #   	local old_build = Tab.build
-      #
-      #   	Tab.build = function(self, ...)
-      #   		local bar = function(c, x, y)
-      #   			if x <= 0 or x == self._area.w - 1 then
-      #   				return v4("bar", ui.Rect.default, ui.Bar.TOP)
-      #   			end
-      #
-      #   			return v4(
-      #   				"bar",
-      #   				ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) },
-      #   				ui.Bar.TOP
-      #   			):symbol(c)
-      #   		end
-      #
-      #   		local c = self._chunks
-      #   		self._chunks = {
-      #   			c[1]:padding(ui.Padding.y(1)),
-      #   			c[2]:padding(ui.Padding(c[1].w > 0 and 0 or 1, c[3].w > 0 and 0 or 1, 1, 1)),
-      #   			c[3]:padding(ui.Padding.y(1)),
-      #   		}
-      #
-      #   		local style = THEME.manager.border_style
-      #   		self._base = ya.list_merge(self._base or {}, {
-      #   			v4("border", self._area, ui.Border.ALL):type(type):style(style),
-      #   			v4("bar", self._chunks[1], ui.Bar.RIGHT):style(style),
-      #   			v4("bar", self._chunks[3], ui.Bar.LEFT):style(style),
-      #
-      #   			bar("┬", c[1].right - 1, c[1].y),
-      #   			bar("┴", c[1].right - 1, c[1].bottom - 1),
-      #   			bar("┬", c[2].right, c[2].y),
-      #   			bar("┴", c[2].right, c[2].bottom - 1),
-      #   		})
-      #
-      #   		old_build(self, ...)
-      #   	end
-      #   end
-      #
-      #   return { setup = setup }
-      #
-      # '';
       keymap.manager.prepend_keymap = [
         {
           on = "T";
           run = "plugin --sync max-preview";
           desc = "Maximize or restore preview";
+        }
+      ];
+    };
+  }
+  {
+    #NOTE: https://gitee.com/DreamMaoMao/keyjump.yazi
+    # offer hop.nvim / tridactyl like nav
+    programs.yazi = {
+      plugins = {
+        # Your existing plugins...
+        keyjump = keyjumpPlugin; # Add this line
+      };
+      keymap.manager.prepend_keymap = [
+        {
+          on = [
+            "f"
+          ];
+          run = "plugin keyjump --args='global once'";
+          desc = "Keyjump (once Global mode)";
         }
       ];
     };
