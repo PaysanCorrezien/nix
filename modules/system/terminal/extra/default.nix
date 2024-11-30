@@ -13,6 +13,7 @@ in
   imports = [
     # ../home-manager/gnome/keybinds.nix
     ./dev.nix
+    # ./portals.nix
   ];
 
   options.settings.terminal.extras = {

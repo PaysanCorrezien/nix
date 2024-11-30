@@ -47,37 +47,37 @@
       '';
     };
   };
-
-  environment.gnome.excludePackages = with pkgs; [
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-gnome
-    xdg-desktop-portal
-  ];
-
-  systemd.user.services = {
-    "xdg-desktop-portal" = {
-      serviceConfig = {
-        Type = "dbus";
-        BusName = "org.freedesktop.portal.Desktop";
-        ExecStart = [
-          "" # Clear any existing ExecStart
-          "${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal"
-        ];
-        Environment = [
-          "XDG_DESKTOP_PORTAL_DIR=/etc/xdg-desktop-portal/portals"
-          "XDG_CURRENT_DESKTOP=termfilechooser"
-        ];
-      };
-      path = [ pkgs.xdg-desktop-portal-termfilechooser ];
-    };
-    "xdg-document-portal" = {
-      enable = false;
-    };
-    "xdg-desktop-portal-gtk" = {
-      enable = false;
-    };
-    "xdg-desktop-portal-gnome" = {
-      enable = false;
-    };
-  };
+  #
+  # environment.gnome.excludePackages = with pkgs; [
+  #   xdg-desktop-portal-gtk
+  #   xdg-desktop-portal-gnome
+  #   xdg-desktop-portal
+  # ];
+  #
+  # systemd.user.services = {
+  #   "xdg-desktop-portal" = {
+  #     serviceConfig = {
+  #       Type = "dbus";
+  #       BusName = "org.freedesktop.portal.Desktop";
+  #       ExecStart = [
+  #         "" # Clear any existing ExecStart
+  #         "${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal"
+  #       ];
+  #       Environment = [
+  #         "XDG_DESKTOP_PORTAL_DIR=/etc/xdg-desktop-portal/portals"
+  #         "XDG_CURRENT_DESKTOP=termfilechooser"
+  #       ];
+  #     };
+  #     path = [ pkgs.xdg-desktop-portal-termfilechooser ];
+  #   };
+  #   "xdg-document-portal" = {
+  #     enable = false;
+  #   };
+  #   "xdg-desktop-portal-gtk" = {
+  #     enable = false;
+  #   };
+  #   "xdg-desktop-portal-gnome" = {
+  #     enable = false;
+  #   };
+  # };
 }

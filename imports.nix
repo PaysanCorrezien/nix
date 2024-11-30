@@ -29,5 +29,11 @@
 
   nixpkgs.overlays = [
     inputs.yazi-plugins.overlays.default
+    #NOTE: build xdf-portal-termfilechooser
+    (final: prev: {
+      xdg-desktop-portal-termfilechooser =
+        final.callPackage ./modules/home-manager/terminals/core/yazi/xdg-desktop-portal-termfilechooser.nix
+          { };
+    })
   ];
 }
