@@ -14,10 +14,10 @@ in
       aider-chat
     ];
 
+    # ZSH Configuration
     programs.zsh = {
       shellAliases.ai = "aichat";
-      # NOTE: this make ctrl / to trigger aichat to correct current prompt
-      # https://github.com/sigoden/aichat/blob/main/scripts/shell-integration/integration.zsh
+      # Ctrl+/ trigger for aichat prompt correction
       initExtra = ''
         aichat_zsh() {
           if [[ -n "$BUFFER" ]]; then
@@ -33,6 +33,35 @@ in
       '';
     };
 
+    # Nushell Configuration
+    programs.nushell = {
+      enable = true;
+      extraConfig = ''
+        def "_aichat_nushell" [] {
+          let _prev = (commandline)
+          if ($_prev != "") {
+            print '⌛'
+            commandline edit -r (aichat -e $_prev)
+          }
+        }
+
+        # Add keybinding for Alt+E
+        $env.config.keybindings = ($env.config.keybindings | append {
+          name: aichat_integration
+          modifier: control
+          keycode: char_u002F  # Unicode for '/' without shift
+          mode: [emacs, vi_insert]
+          event: [
+            {
+              send: executehostcommand
+              cmd: "_aichat_nushell"
+            }
+          ]
+        })
+      '';
+    };
+
+    # AI Chat Configuration
     xdg.configFile = {
       "aichat/config.yaml".text = ''
         ---

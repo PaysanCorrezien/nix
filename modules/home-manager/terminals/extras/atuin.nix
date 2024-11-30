@@ -1,10 +1,15 @@
-{ pkgs, lib, settings, ... }:
-let 
+{
+  pkgs,
+  lib,
+  settings,
+  ...
+}:
+let
   cfg = settings.terminal.extras;
-  readSecretFile = file:
-    lib.optionalString (builtins.pathExists file) (builtins.readFile file);
+  readSecretFile = file: lib.optionalString (builtins.pathExists file) (builtins.readFile file);
   secrets = readSecretFile "/run/secrets/atuin_sync_address";
-in {
+in
+{
   config = lib.mkIf cfg.enable {
     programs.atuin = {
       enable = true;
