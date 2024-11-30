@@ -4,9 +4,43 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.settings.isServer;
+
+  # Define the VJA package
+  vja = pkgs.python3Packages.buildPythonPackage {
+    pname = "vja";
+    version = "0.1.0"; # Adjust version as needed
+
+    src = pkgs.fetchFromGitLab {
+      owner = "ce72";
+      repo = "vja";
+      rev = "d4cd8f4729f36b671b9945a53178fce2a962d2c8";
+      hash = "sha256-KwvPcRWwVdPld0zHmm8UE8hicwF8qLlvHJikb4EJO4Y=";
+    };
+
+    # Add any build dependencies the package needs
+    buildInputs = with pkgs.python3Packages; [
+      # Add build dependencies here if needed
+    ];
+
+    # Runtime dependencies from setup.py
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      click
+      click-aliases
+      requests
+      parsedatetime
+      python-dateutil
+    ];
+
+    # If the package has a setup.py or pyproject.toml, this should work as is
+    # If not, you might need to override the build system
+    format = "setuptools";
+
+    # Disable tests if they're not working or if there aren't any
+    doCheck = false;
+  };
+
   myPython = pkgs.python3.withPackages (
     ps: with ps; [
       pillow
@@ -28,6 +62,7 @@ let
       google-api-python-client
       flake8
       ollama
+      vja # Add the custom package here
     ]
   );
 
@@ -39,20 +74,16 @@ let
       in
       pkgs.writeShellScriptBin "webscrape" ''
         #!/usr/bin/env bash
-
         # Try to get git root from current directory
         GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-
         # Build the command with appropriate output directory
         if [ -n "$GIT_ROOT" ]; then
             OUTPUT_ARG="--output $GIT_ROOT/.aider_docs"
         else
             OUTPUT_ARG="--output /tmp/webscraper_output"
         fi
-
         # Change to the script directory before running
         cd ${scriptDir}
-
         # Run the script with all arguments plus the output directory
         nix-shell ${scriptDir}/shell.nix --run "python3 ${scraperPath} $@ $OUTPUT_ARG"
       ''
@@ -104,7 +135,6 @@ in
           harfbuzz
         ];
     };
-    # Add this section to create an alias for your script
     environment.shellAliases = {
       "console" = "python3 ~/repo/pythonautomation/console.py";
       "excel-tool" = "python3 ~/repo/pythonautomation/excel_viewer.py";
