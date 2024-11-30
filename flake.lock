@@ -757,15 +757,16 @@
       "locked": {
         "lastModified": 1732353266,
         "narHash": "sha256-h5n93Vorh9Rzv2HVuwVwH7NcighDIsVDErZWYvKDs1U=",
-        "ref": "refs/heads/main",
+        "owner": "paysancorrezien",
+        "repo": "nix-yazi-plugins",
         "rev": "2ffd14df3bb639604a8a270f0e809beae8bdbc7e",
-        "revCount": 28,
-        "type": "git",
-        "url": "file:///home/dylan/repo/nix-yazi-plugins"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/dylan/repo/nix-yazi-plugins"
+        "owner": "paysancorrezien",
+        "ref": "main",
+        "repo": "nix-yazi-plugins",
+        "type": "github"
       }
     },
     "zlib": {

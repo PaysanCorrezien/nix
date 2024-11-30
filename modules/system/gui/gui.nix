@@ -88,7 +88,9 @@ in
         helix
         # zed-editor
         # todoist-electron
-        rofi
+        # rofi
+        wofi
+        pnpm # TODO: create a web.nix
         obsidian # TODO: boostrap obsidian
         libnotify
         gimp-with-plugins
