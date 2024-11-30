@@ -7,6 +7,9 @@
 }:
 #NOTE: the plugins are provided via https://github.com/lordkekz/nix-yazi-plugins
 let
+
+  # NOTE: ship the ttermfilechooser backend for xdg-desktop-portal
+
   mkYaziPlugin = name: text: {
     "${name}" = toString (pkgs.writeTextDir "${name}.yazi/init.lua" text) + "/${name}.yazi";
   };
@@ -37,6 +40,7 @@ lib.mkMerge [
   {
     home.packages = with pkgs; [
       miller
+      zenity
       ouch
       zoxide
       ueberzugpp
@@ -461,4 +465,121 @@ lib.mkMerge [
       ];
     };
   }
+
+  {
+    # xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
+    #   [filechooser]
+    #   cmd=${pkgs.yazi}/bin/yazi
+    #   default_dir=$HOME
+    # '';
+
+    xdg.dataFile."applications/yazi.desktop".text = ''
+      [Desktop Entry]
+      Name=Yazi
+      Icon=yazi
+      Comment=Blazing fast terminal file manager written in Rust, based on async I/O
+      Terminal=true
+      TryExec=yazi
+      Exec=yazi %U
+      Type=Application
+      MimeType=inode/directory
+      Categories=Utility;Core;System;FileTools;FileManager;ConsoleOnly
+      Keywords=File;Manager;Explorer;Browser;Launcher
+    '';
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "inode/directory" = "yazi.desktop";
+        "x-directory/normal" = "yazi.desktop";
+        "x-directory/gnome-default-handler" = "yazi.desktop";
+        "x-scheme-handler/file" = "yazi.desktop";
+        "application/x-directory" = "yazi.desktop";
+        "application/x-gnome-saved-search" = "yazi.desktop";
+      };
+    };
+  }
+
+  #NOTE: configure xdg-desktop-portal-termfilechooser for yazi
+  # {
+  #   xdg.configFile."xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" = {
+  #     text = ''
+  #       #!/usr/bin/env bash
+  #       CWD="''${1:-$HOME}"
+  #       CHOICES_FILE="''${2}"
+  #
+  #       TERM_CMD=''${TERMCMD:-"${pkgs.wezterm}/bin/wezterm"}
+  #
+  #       if [ -n "$TERM_CMD" ]; then
+  #         $TERM_CMD -- ${pkgs.yazi}/bin/yazi --chooser-file "$CHOICES_FILE" "$CWD"
+  #       else
+  #         ${pkgs.yazi}/bin/yazi --chooser-file "$CHOICES_FILE" "$CWD"
+  #       fi
+  #     '';
+  #     executable = true;
+  #   };
+  #
+  #   # Explicitly disable FileChooser in other portals
+  #
+  #   xdg.configFile."xdg-desktop-portal/portals/gtk.portal".text = ''
+  #     [portal]
+  #     DBusName=org.freedesktop.impl.portal.desktop.gtk
+  #     Interfaces=org.freedesktop.impl.portal.Settings;org.freedesktop.impl.portal.Screenshot
+  #     UseIn=gtk
+  #   '';
+  #
+  #   systemd.user.services.xdg-desktop-portal-termfilechooser = {
+  #     Unit = {
+  #       Description = "Terminal file chooser portal";
+  #       PartOf = [ "graphical-session.target" ];
+  #       After = [ "graphical-session.target" ];
+  #     };
+  #     Service = {
+  #       Type = "dbus";
+  #       BusName = "org.freedesktop.impl.portal.desktop.termfilechooser";
+  #       ExecStart = "${pkgs.xdg-desktop-portal-termfilechooser}/libexec/xdg-desktop-portal-termfilechooser -l DEBUG";
+  #       Environment = [
+  #         "GTK_USE_PORTAL=1"
+  #         "XDG_CURRENT_DESKTOP=termfilechooser:GNOME" # Add our desktop first
+  #         "TERMFILECHOOSER_PRIORITY=999"
+  #       ];
+  #       Restart = "on-failure";
+  #     };
+  #     Install = {
+  #       WantedBy = [ "graphical-session.target" ];
+  #     };
+  #   };
+  #
+  #   # Add to your session variables
+  #   home.sessionVariables = {
+  #     GTK_USE_PORTAL = "1";
+  #     GDK_DEBUG = "portals";
+  #     XDG_CURRENT_DESKTOP = "termfilechooser:GNOME"; # Add our desktop first
+  #   };
+  #
+  #   # Update portal config
+  #   xdg.configFile."xdg-desktop-portal/portals/termfilechooser.portal".text = ''
+  #     [portal]
+  #     DBusName=org.freedesktop.impl.portal.desktop.termfilechooser
+  #     Interfaces=org.freedesktop.impl.portal.FileChooser
+  #     UseIn=gnome;gtk;*
+  #     Priority=999
+  #   '';
+  #
+  #   # This is the key: we'll modify the gnome portal configuration
+  #   xdg.configFile."xdg-desktop-portal/portals/gnome.portal".text = ''
+  #     [portal]
+  #     DBusName=org.freedesktop.impl.portal.desktop.gnome
+  #     Interfaces=org.freedesktop.impl.portal.Account;org.freedesktop.impl.portal.Screenshot;org.freedesktop.impl.portal.ScreenCast;org.freedesktop.impl.portal.RemoteDesktop;org.freedesktop.impl.portal.Inhibit;org.freedesktop.impl.portal.Notification;org.freedesktop.impl.portal.Background;org.freedesktop.impl.portal.Settings;org.freedesktop.impl.portal.GameMode;org.freedesktop.impl.portal.AppChooser;org.freedesktop.impl.portal.Print;org.freedesktop.impl.portal.Lockdown;org.freedesktop.impl.portal.Wallpaper;org.freedesktop.impl.portal.InputCapture
+  #     UseIn=gnome;*
+  #   '';
+  #
+  #   xdg.configFile."xdg-desktop-portal/portals.conf".text = ''
+  #     [preferred]
+  #     default=termfilechooser
+  #     org.freedesktop.impl.portal.FileChooser=termfilechooser
+  #
+  #     [various]
+  #     termfilechooser=999
+  #   '';
+  # }
 ]
