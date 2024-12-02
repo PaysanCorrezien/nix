@@ -3,6 +3,7 @@
   plasma-manager,
   config,
   pkgs,
+  system,
   lib,
   nixpkgs,
   ...
@@ -38,14 +39,17 @@ in
 
   # Configure console keymap
   nixpkgs.config.allowUnfree = true;
+  hardware.firmware = [
+    pkgs.firmwareLinuxNonfree
+  ];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
-  # NOTE: attempt to make computer wifi card work 
+  # NOTE: attempt to make computer wifi card work
   # move this to specific host conf if work
   hardware.enableAllFirmware = true;
-  hardware.firmware = [ pkgs.firmwareLinuxNonfree ];
   users.users.dylan = {
     isNormalUser = true;
     description = "dylan";
@@ -65,7 +69,7 @@ in
   boot.kernelModules = [ "i2c-dev" ];
   home-manager = {
     extraSpecialArgs = {
-      inherit inputs settings;
+      inherit inputs settings system;
       hostName = config.networking.hostName;
     };
     backupFileExtension = "HomeManagerBAK"; # https://discourse.nixos.org/t/way-to-automatically-override-home-manager-collisions/33038/3
@@ -76,6 +80,59 @@ in
       #   inputs.sops-nix.homeManagerModules.sops
       {
         nixpkgs.overlays = [
+          # inputs.hyprpanel.overlay
+          (
+            final: prev:
+            let
+              baseHyprpanel =
+                (prev.callPackage "${inputs.hyprpanel}/nix" {
+                  inputs = inputs // {
+                    ags = {
+                      packages.${prev.system}.default = {
+                        override = _: prev.ags;
+                      };
+                    };
+                  };
+                }).desktop.script;
+            in
+            {
+              hyprpanel = prev.symlinkJoin {
+                name = "hyprpanel";
+                paths = [ baseHyprpanel ];
+                buildInputs = [ prev.makeWrapper ];
+                postBuild = ''
+                  wrapProgram $out/bin/hyprpanel \
+                    --prefix GI_TYPELIB_PATH : "${
+                      prev.lib.makeSearchPathOutput "lib" "lib/girepository-1.0" [
+                        prev.libdbusmenu-gtk3
+                        prev.gvfs
+                        prev.glib
+                        prev.gio-sharp
+                        prev.gtk3
+                      ]
+                    }" \
+                    --prefix XDG_DATA_DIRS : "${prev.gvfs}/share:${prev.gtk3}/share" \
+                    --prefix GIO_EXTRA_MODULES : "${prev.gvfs}/lib/gio/modules" \
+                    --prefix LD_LIBRARY_PATH : "${
+                      prev.lib.makeLibraryPath [
+                        prev.gvfs
+                        prev.glib
+                        prev.gtk3
+                      ]
+                    }" \
+                    --prefix PATH : "${
+                      prev.lib.makeBinPath [
+                        prev.gvfs
+                        prev.glib
+                        prev.shared-mime-info
+                        prev.dbus # Add dbus tools
+                        prev.socat # For socket connections
+                      ]
+                    }"
+                '';
+              };
+            }
+          )
           inputs.yazi-plugins.overlays.default
           (final: prev: {
             xdg-desktop-portal-termfilechooser =

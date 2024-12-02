@@ -33,10 +33,11 @@ in
 
     ./hyprland/settings.nix
     ./hyprland/waybar.nix
-    # ./hyprland/wlogout.nix
+    ./hyprland/wlogout.nix
 
     ./stylix/default.nix
     ./programs/astal.nix
+    ./programs/rofi.nix
   ];
 
   home = {
@@ -66,6 +67,7 @@ in
     minimalNvim = settings.isServer;
     stylix.enable = settings.gui.enable;
     astal.enable = settings.gui.enable;
+    rofi.enable = settings.gui.enable;
   };
 
   # Window manager specific settings

@@ -19,7 +19,7 @@ in
     ./extra/work.nix
     ./extra/audio.nix
     ./extra/social.nix
-    ./extra/virtualisation.nix
+    # ./extra/virtualisation.nix
     ./extra/glance.nix
     ./extra/gnome.nix
     ./extra/hyprland.nix
@@ -109,11 +109,9 @@ in
         xdg-desktop-portal
       ];
 
-      # NOTE: TODOIST 
-      nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
       services.udev.extraRules = ''
-        ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="removable", ATTR{power/wakeup}="enabled"
-        ACTION=="add", SUBSYSTEM=="usb", ATTRS{removable}=="fixed", ATTR{power/wakeup}="enabled"
+        # Only enable wakeup for devices that support it
+        ACTION=="add", SUBSYSTEM=="usb", TEST=="power/wakeup", ATTR{power/wakeup}="enabled"
       '';
       boot.kernelParams = [ "usbcore.autosuspend=-1" ];
       powerManagement.enable = true;

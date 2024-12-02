@@ -11,6 +11,13 @@
   };
 
   config = lib.mkIf config.settings.hyprland.extra.enable {
+    home.packages = with pkgs; [
+      hyprpanel
+      udiskie
+      # pywal
+    ];
+    fonts.fontconfig.enable = true;
+
     wayland.windowManager.hyprland = {
       enable = true;
       extraConfig = ''
@@ -19,64 +26,45 @@
 
         # Set default applications
         $terminal = ${pkgs.wezterm}/bin/wezterm
-        $menu = ${pkgs.wofi}/bin/wofi --show drun
+        $menu = ${pkgs.rofi}/bin/rofi -show drun
 
         # Default environment variables
-        # env = XCURSOR_SIZE,24
         env = QT_QPA_PLATFORM,wayland
         env = SDL_VIDEODRIVER,wayland
         env = GDK_BACKEND,wayland
 
+        general {
+            border_size = 2       
+            gaps_in = 3            
+        }
+
+        env = XCURSOR_SIZE,24               # Set cursor size
+        env = XCURSOR_THEME,BreezeX-RosePine-Linux  # Make sure Hyprland knows your cursor theme
+        exec-once = hyprctl setcursor BreezeX-RosePine-Linux 24
+
         # Input configuration
         input {
-            kb_layout = us
-            follow_mouse = 1
-            touchpad {
-                natural_scroll = true
-                tap-to-click = true
-            }
-            sensitivity = 0
+            kb_layout = us,fr
+            kb_variant = altgr-intl,
+            kb_options = grp:win_space_toggle
         }
 
-        # General configuration
-        general {
-            gaps_in = 5
-            gaps_out = 10
-            border_size = 2
-            col.active_border = rgba(33ccffee)
-            col.inactive_border = rgba(595959aa)
-            layout = dwindle
-        }
-
-        # Window decorations
-        decoration {
-            rounding = 10
-            blur {
-                enabled = true
-                size = 3
-                passes = 1
-                new_optimizations = true
-            }
-            drop_shadow = true
-            shadow_range = 4
-            shadow_render_power = 3
-        }
-
-        # Animations
         animations {
             enabled = true
+            
             bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-            animation = windows, 1, 7, myBezier
-            animation = windowsOut, 1, 7, default, popin 80%
-            animation = border, 1, 10, default
-            animation = fade, 1, 7, default
-            animation = workspaces, 1, 6, default
+            
+            animation = windows, 1, 3, myBezier
+            animation = windowsOut, 1, 3, default, popin 80%
+            animation = border, 1, 5, default
+            animation = borderangle, 1, 4, default
+            animation = fade, 1, 4, default
+            animation = workspaces, 1, 3, default
         }
-
-        # Layout configuration
-        dwindle {
-            pseudotile = true
-            preserve_split = true
+        decoration {
+        rounding = 10                # Rounded corners for all windows
+        active_opacity = 1.0         # Active window is completely opaque
+        inactive_opacity = 0.90      # Inactive windows are slightly transparent (90% opacity)
         }
 
         # Key bindings (translated from GNOME)
@@ -85,6 +73,7 @@
         # Basic window operations
         bind = $mainMod SHIFT, Q, killactive  # Close window
         bind = $mainMod, Return, exec, $terminal  # Launch terminal
+        bind = $mainMod, O, exec, $terminal
         bind = $mainMod, F, exec, $menu  # Launch wofi
         bind = SUPER, F, togglefloating  # Toggle floating
         bind = SUPER SHIFT, F, pin  # Toggle always on top
@@ -125,17 +114,6 @@
         bind = $mainMod SHIFT, k, movewindow, u
         bind = $mainMod SHIFT, j, movewindow, d
 
-        # Quick settings and notifications
-        bind = $mainMod, X, exec, pkill wofi || wofi --show drun  # App launcher (similar to quick settings)
-        bind = $mainMod, M, exec, swaync-client -t  # Toggle notification center
-
-        # System controls
-        bind = SUPER, L, exec, systemctl suspend  # Suspend system
-        bind = $mainMod, A, exec, pavucontrol  # Audio settings
-        bind = $mainMod, W, exec, nm-connection-editor  # Network settings
-        bind = $mainMod, B, exec, blueman-manager  # Bluetooth settings
-        bind = $mainMod, S, exec, hyprctl dispatch fullscreen 1  # Toggle fullscreen
-
         # Screenshots (using grim + slurp instead of flameshot)
         bind = $mainMod, C, exec, grim -g "$(slurp)" - | wl-copy  # Screenshot to clipboard
 
@@ -154,7 +132,16 @@
         bindm = $mainMod, mouse:272, movewindow
         bindm = $mainMod, mouse:273, resizewindow
 
-
+        # bind = ALT, E, exec, hyprpanel -t energymenu
+        # alt shit w windows script
+        bind = $mainMod, A, exec, hyprpanel -t audiomenu        
+        bind = $mainMod, W, exec, hyprpanel -t networkmenu        
+        bind = $mainMod, B, exec, hyprpanel -t bluetoothmenu     
+        bind = $mainMod, M, exec, hyprpanel -t notificationsmenu
+        bind = $mainMod SHIFT, M, exec, hyprpanel -t mediamenu
+        bind = SUPER, L, exec, hyprpanel -t powerdropdownmenu 
+        bind = $mainMod , X, exec, hyprpanel -t dashboardmenu
+        bind = $mainMod SHIFT, C,exec, hyprpanel -t calendarmenu
 
         # Media and Function Keys
         bind = ,XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
@@ -172,13 +159,13 @@
         bind = ALT, Tab, bringactivetotop
 
         # Window Rules
-        windowrule = noborder, ^(wofi)$
-        windowrule = center, ^(wofi)$
-        windowrule = center, ^(steam)$
-        windowrule = float, nm-connection-editor|blueman-manager
-        windowrule = float, swayimg|vlc|Viewnior|pavucontrol
-        windowrule = float, nwg-look|qt5ct|mpv
-        windowrule = float, zoom
+        # windowrule = noborder, ^(wofi)$
+        # windowrule = center, ^(wofi)$
+        # windowrule = center, ^(steam)$
+        # windowrule = float, nm-connection-editor|blueman-manager
+        # windowrule = float, swayimg|vlc|Viewnior|pavucontrol
+        # windowrule = float, nwg-look|qt5ct|mpv
+        # windowrule = float, zoom
 
         # Advanced window rules
         windowrulev2 = stayfocused, title:^()$,class:^(steam)$
@@ -218,32 +205,30 @@
         workspace=11,name:note
         workspace=12,name:extra
 
-        # Gestures
-        gestures {
-            workspace_swipe = true
-            workspace_swipe_fingers = 3
-        }
-
-        # General behavior settings
-        misc {
-            disable_autoreload = true
-            disable_hyprland_logo = true
-            always_follow_on_dnd = true
-            layers_hog_keyboard_focus = false
-            animate_manual_resizes = true
-            enable_swallow = true
-            swallow_regex = ^(wezterm)$
-        }
-
-        # Previous animations, decorations, etc. configs remain the same...
-
         # Startup applications
-        exec-once = waybar
+        # exec-once = waybar
+        exec-once = hyprpanel
         exec-once = wl-paste --type text --watch cliphist store
         exec-once = wl-paste --type image --watch cliphist store
-        exec-once = swaync
+        # exec-once = swaync
         exec-once = hyprpaper
+        exec-once = blueman-applet &
+        exec-once = udiskie -at
+
       '';
+    };
+    dconf.settings = {
+      "org.gnome.desktop.sound" = {
+        event-sounds = false;
+      };
+      "org/gnome/desktop/applications/browser" = {
+        exec = "firefox";
+      };
+      "org/gnome/desktop/interface" = {
+        #BUG: stylix ccursor-theme dont set it properly??
+        cursor-theme = lib.mkForce "BreezeX-RosePine-Linux";
+      };
+
     };
   };
 

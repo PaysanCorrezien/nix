@@ -3,10 +3,10 @@
 let
   # Check if stylix is enabled, if not provide fallback colors
   colors =
-    if config.stylix.base16Scheme or null != null then
+    if (config.stylix.base16.colors or null) != null then
       {
-        base05 = config.stylix.base16Scheme.base05;
-        base0B = config.stylix.base16Scheme.base0B;
+        base05 = config.stylix.base16.colors.base05;
+        base0B = config.stylix.base16.colors.base0B;
       }
     else
       {

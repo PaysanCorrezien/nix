@@ -27,11 +27,6 @@
     #   url = "github:paysancorrezien/clovis";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    # plasma-manager = {
-    #   url = "github:nix-community/plasma-manager";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    #   inputs.home-manager.follows = "home-manager";
-    # };
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,15 +35,14 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ags = {
-      url = "github:aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # ags = {
+    #   url = "github:aylur/ags";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     wezterm = {
       url = "github:wez/wezterm/main?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     tailscale-ssh = {
       # url = "git+file:///home/dylan/repo/tailscale-ssh.nix";
       url = "github:paysancorrezien/tailscale-ssh.nix";
@@ -58,6 +52,11 @@
       # url = "github:lordkekz/nix-yazi-plugins?ref=main";
       # url = "git+file:///home/dylan/repo/nix-yazi-plugins";
       url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprpanel = {
+      url = "github:Jas-SinghFSU/HyprPanel";
+      # url = "git+file:///home/dylan/repo/HyprPanel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -83,6 +82,7 @@
           };
           modules = [
             ./imports.nix
+
             (./hosts + "/${hostname}.nix")
             (
               { config, ... }:

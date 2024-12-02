@@ -28,7 +28,10 @@
     ++ lib.optional (builtins.pathExists /etc/nixos/hardware-configuration.nix) /etc/nixos/hardware-configuration.nix;
 
   nixpkgs.overlays = [
+    # inputs.hyprpanel.overlay
+
     inputs.yazi-plugins.overlays.default
+
     #NOTE: build xdf-portal-termfilechooser
     (final: prev: {
       xdg-desktop-portal-termfilechooser =

@@ -6,7 +6,7 @@
 }:
 let
   # NOTE:
-  # this allow change this config on the fly : 
+  # this allow change this config on the fly :
   # sudo USE_DHCP=1 nixos-rebuild switch --flake "/home/dylan/.config/nix#lenovo" --impure --show-trace
   # i want this to be able if needed to enable networkmanager quickly
   # and i cant get wifi no work with fix ip on networkmanage + networkmanager cant coexixst with a static ip defined 'outside'.... 💀
@@ -70,51 +70,44 @@ in
     # };
   };
 
-  config.networking = {
-    hostName = config.settings.hostname;
-
-    # Wireless configuration (only used when not using NetworkManager)
-    wireless = lib.mkIf (!useDhcp) {
-      enable = true;
-      networks = {
-        "Dylan-Box" = {
-          psk = wifiKey;
+  config = {
+    networking = {
+      hostName = config.settings.hostname;
+      wireless = lib.mkIf (!useDhcp) {
+        enable = true;
+        networks = {
+          "Dylan-Box" = {
+            psk = wifiKey;
+          };
         };
+        userControlled.enable = true;
       };
-      userControlled.enable = true;
-    };
+      networkmanager = {
+        enable = useDhcp;
+        wifi.powersave = false;
+      };
+      useDHCP = useDhcp;
 
-    # NetworkManager configuration (only used when useDhcp is true)
-    networkmanager = {
-      enable = useDhcp;
-      wifi.powersave = false;
-    };
-
-    # Static IP configuration (used when useDhcp is false)
-    interfaces.wlp4s0 = lib.mkIf (!useDhcp) {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          address = "192.168.1.110";
-          prefixLength = 24;
-        }
+      interfaces.wlp4s0 = lib.mkIf (!useDhcp) {
+        ipv4.addresses = [
+          {
+            address = "192.168.1.110";
+            prefixLength = 24;
+          }
+        ];
+      };
+      defaultGateway = lib.mkIf (!useDhcp) {
+        address = "192.168.1.1";
+        interface = "wlp4s0";
+      };
+      nameservers = lib.mkIf (!useDhcp) [
+        "1.1.1.1"
+        "8.8.8.8"
       ];
     };
 
-    defaultGateway = lib.mkIf (!useDhcp) {
-      address = "192.168.1.1";
-      interface = "wlp4s0";
-    };
+    users.groups.plugdev = { }; # Create the plugdev group
 
-    nameservers = lib.mkIf (!useDhcp) [
-      "1.1.1.1"
-      "8.8.8.8"
-    ];
   };
-  config.environment.systemPackages = with pkgs; [
-    # Add your own packages here
-    # bambu-studio
-    sqlc
-  ];
 
 }
