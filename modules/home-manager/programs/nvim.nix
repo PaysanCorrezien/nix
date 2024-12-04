@@ -20,6 +20,8 @@ let
   fullPackages = with pkgs; [
     bash-language-server
     black
+    ruff-lsp
+    ruff
     cmake-language-server
     clang-tools
     vscode-extensions.vadimcn.vscode-lldb

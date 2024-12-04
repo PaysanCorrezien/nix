@@ -1,5 +1,10 @@
 # system-virtualization.nix
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.settings.virtualisation.enable;
   vmName = "windows-11";
@@ -98,8 +103,8 @@ let
       fi
     fi
   '';
-  # TODO: make it so it genrates the config file for the VMs
 in
+# TODO: make it so it genrates the config file for the VMs
 {
   config = lib.mkIf cfg {
     # Enable QEMU/KVM virtualization
@@ -116,7 +121,10 @@ in
 
     virtualisation.spiceUSBRedirection.enable = true;
 
-    users.users.dylan.extraGroups = [ "libvirtd" "kvm" ];
+    users.users.dylan.extraGroups = [
+      "libvirtd"
+      "kvm"
+    ];
 
     security.polkit.enable = true;
 
@@ -137,32 +145,36 @@ in
     ];
 
     # Generate .desktop file for the VM
-    home-manager.users.dylan = { pkgs, ... }: {
-      home.packages = [ pkgs.qemu ];
+    home-manager.users.dylan =
+      { pkgs, ... }:
+      {
+        home.packages = [ pkgs.qemu ];
 
-      xdg.desktopEntries.${vmName} = {
-        name = vmName;
-        exec = "${launchScript}/bin/launch-windows-vm";
-        icon = "qemu";
-        type = "Application";
-        terminal = false;
+        xdg.desktopEntries.${vmName} = {
+          name = vmName;
+          exec = "${launchScript}/bin/launch-windows-vm";
+          icon = "qemu";
+          type = "Application";
+          terminal = false;
+        };
       };
-    };
     # Enable CPU virtualization extensions (AMD-specific)
     boot.kernelModules = [ "kvm-amd" ];
-    boot.extraModprobeConfig =
-      "options kvm_amd nested=1"; # Enable nested virtualization for AMD
+    boot.extraModprobeConfig = "options kvm_amd nested=1"; # Enable nested virtualization for AMD
 
     # Enable IOMMU for potential GPU passthrough
-    boot.kernelParams = [ "amd_iommu=on" "iommu=pt" ];
+    boot.kernelParams = [
+      "amd_iommu=on"
+      "iommu=pt"
+    ];
 
     # Set up libvirt storage pool using extraConfig
-    virtualisation.libvirtd.extraConfig = ''
-      unix_sock_group = "libvirtd"
-      unix_sock_rw_perms = "0770"
-      log_filters="3:qemu 3:libvirt 3:conf 3:security 3:event 3:file 3:object 1:*"
-      log_outputs="3:syslog:virtlogd"
-    '';
+    # virtualisation.libvirtd.extraConfig = ''
+    #   unix_sock_group = "libvirtd"
+    #   unix_sock_rw_perms = "0770"
+    #   log_filters="3:qemu 3:libvirt 3:conf 3:security 3:event 3:file 3:object 1:*"
+    #   log_outputs="3:syslog:virtlogd"
+    # '';
 
     # Ensure libvirt storage pool is set up
     # systemd.services.libvirt-storage-setup = {

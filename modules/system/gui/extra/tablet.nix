@@ -1,11 +1,16 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-let cfg = config.settings.isServer;
-in {
+let
+  cfg = config.settings.isServer;
+in
+{
   config = lib.mkIf (!cfg) {
 
-  hardware.opentabletdriver.enable = true;
-};
+    # hardware.opentabletdriver.enable = true;
+  };
 }
-
-

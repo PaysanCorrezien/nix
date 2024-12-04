@@ -207,7 +207,7 @@ in
       linphone
       openfortivpn
       # teamviewer
-      vscode-extensions.ms-vscode.powershell
+      # vscode-extensions.ms-vscode.powershell
       vscode
 
       # Web apps
