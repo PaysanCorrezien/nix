@@ -68,6 +68,9 @@ in
     # rdpserver = {
     #   enable = true;
     # };
+    yubikey = {
+      enable = true;
+    };
   };
 
   config = {
