@@ -1,4 +1,7 @@
 # disko-config.nix
+# TODO: check luks x yubikey drive
+# TODO: make back the default detection script, and provide options to use differents layouts preset ( cloud vps / nvme computer)
+#
 { config, lib, ... }:
 let
   cfg = config.settings.disko;

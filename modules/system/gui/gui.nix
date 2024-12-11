@@ -28,6 +28,7 @@ in
     ./extra/clovis.nix
     ./extra/keybswitch.nix
     ./extra/tablet.nix
+    ./extra/yubikey.nix
   ];
 
   options.settings.gui = {
@@ -96,6 +97,8 @@ in
         todoist
         flameshot
         libimobiledevice
+        mullvad
+        activitywatch
         ifuse
         (pkgs.catppuccin-sddm.override {
           flavor = "mocha";
@@ -107,6 +110,8 @@ in
         xdg-desktop-portal-gnome
         xdg-desktop-portal
       ];
+      services.mullvad-vpn.package = pkgs.mullvad-vpn;
+      services.mullvad-vpn.enable = true;
 
       services.udev.extraRules = ''
         # Only enable wakeup for devices that support it

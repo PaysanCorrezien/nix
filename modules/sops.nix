@@ -1,4 +1,5 @@
 #TODO: crake a mkdsopssecrets fn that handle all the boiletplate
+#make a better repartion of key by type of host , maybe with a wrapper or some sort of abstraction
 {
   lib,
   inputs,
@@ -95,6 +96,14 @@ in
             owner = "dylan";
           };
           "thunderbird/account2/email" = {
+            sopsFile = ./sops/pasokon.yaml;
+            owner = "dylan";
+          };
+          "yubikey/primary" = {
+            sopsFile = ./sops/pasokon.yaml;
+            owner = "dylan";
+          };
+          "yubikey/backup" = {
             sopsFile = ./sops/pasokon.yaml;
             owner = "dylan";
           };
