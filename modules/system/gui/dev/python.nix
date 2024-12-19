@@ -72,6 +72,7 @@ let
       let
         scriptDir = builtins.dirOf scraperPath;
       in
+      #TODO: use an environment variable for the output directory
       pkgs.writeShellScriptBin "webscrape" ''
         #!/usr/bin/env bash
         # Try to get git root from current directory
@@ -80,7 +81,7 @@ let
         if [ -n "$GIT_ROOT" ]; then
             OUTPUT_ARG="--output $GIT_ROOT/.aider_docs"
         else
-            OUTPUT_ARG="--output /tmp/webscraper_output"
+            OUTPUT_ARG="--output /home/dylan/Documents/Notes/3-Ressources/Docs/"
         fi
         # Change to the script directory before running
         cd ${scriptDir}
