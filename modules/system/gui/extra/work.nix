@@ -1,4 +1,4 @@
-# TODO: prepare an automount script for drive 
+# TODO: prepare an automount script for drive
 # configure powershell modules ?
 # TODO: nix doest provite any settings for it . and i have psfzf as mandatory dep
 # Helper function to create web app desktop entries
@@ -209,6 +209,7 @@ in
       # teamviewer
       # vscode-extensions.ms-vscode.powershell
       vscode
+      code-cursor
 
       # Web apps
       youtubeWebApp

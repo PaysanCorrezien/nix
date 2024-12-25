@@ -16,6 +16,7 @@ in
     starship
     tldr
     xclip
+    openssl
     git
     fzf
     zoxide

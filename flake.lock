@@ -758,17 +758,17 @@
       },
       "locked": {
         "dir": "nix",
-        "lastModified": 1732918908,
-        "narHash": "sha256-k43oaC+35/LGqJ+3MjIhn4Ko+ap3wTvHCJ4sj9W/o+k=",
-        "owner": "wez",
+        "lastModified": 1735098763,
+        "narHash": "sha256-3Hh8Rs3TCDAWjVZoS6M5DkfTs+uoMPpi3+8+g+EtnYA=",
+        "owner": "e82eric",
         "repo": "wezterm",
-        "rev": "4906789a6d61da58f73b95f89b59c41af60e0f3b",
+        "rev": "fba767c88147927809ffd91e551f2d1d0dfebf51",
         "type": "github"
       },
       "original": {
         "dir": "nix",
-        "owner": "wez",
-        "ref": "main",
+        "owner": "e82eric",
+        "ref": "float-pane",
         "repo": "wezterm",
         "type": "github"
       }
