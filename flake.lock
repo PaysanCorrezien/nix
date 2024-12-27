@@ -497,11 +497,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1732837521,
-        "narHash": "sha256-jNRNr49UiuIwaarqijgdTR2qLPifxsVhlJrKzQ8XUIE=",
+        "lastModified": 1734649271,
+        "narHash": "sha256-4EVBRhOjMDuGtMaofAIqzJbg4Ql7Ai0PSeuVZTHjyKQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "970e93b9f82e2a0f3675757eb0bfc73297cc6370",
+        "rev": "d70bd19e0a38ad4790d3913bf08fcbfc9eeca507",
         "type": "github"
       },
       "original": {
@@ -784,11 +784,11 @@
         "systems": "systems_5"
       },
       "locked": {
-        "lastModified": 1732353266,
-        "narHash": "sha256-h5n93Vorh9Rzv2HVuwVwH7NcighDIsVDErZWYvKDs1U=",
+        "lastModified": 1735307768,
+        "narHash": "sha256-oAKXOOOp+9lWlwJEB7DX3bAZMQVniDYYuTgN1z5ms0w=",
         "owner": "paysancorrezien",
         "repo": "nix-yazi-plugins",
-        "rev": "2ffd14df3bb639604a8a270f0e809beae8bdbc7e",
+        "rev": "a347b31cc1fe18375b3adcf0f373686660746466",
         "type": "github"
       },
       "original": {

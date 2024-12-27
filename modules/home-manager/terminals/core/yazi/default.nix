@@ -59,38 +59,38 @@ lib.mkMerge [
       plugins = pkgs.yaziPlugins;
 
       initLua = ''
-                function Linemode:size_and_mtime()
-                  local time = (self._file.cha and self._file.cha.modified or 0) // 1
-                  local timestr
-                  if time > 0 then
-                    timestr = os.date("%d/%m/%y %H:%M", time)
-                  else
-                    timestr = ""
-                  end
+            function Linemode:size_and_mtime()
+            local time = (self._file.cha and self._file.cha.mtime or 0) // 1  -- Changed from modified to mtime
+            local timestr
+            if time > 0 then
+              timestr = os.date("%d/%m/%y %H:%M", time)
+            else
+              timestr = ""
+            end
+          
+            local size = self._file:size()
+            local sizestr
+            if not size or size == 0 then
+              sizestr = "0 B"
+            elseif size < 1024 then
+              sizestr = string.format("%d B", size)
+            elseif size < 1024 * 1024 then
+              sizestr = string.format("%.2f KB", size / 1024)
+            else
+              sizestr = string.format("%.2f MB", size / (1024 * 1024))
+            end
+          
+            return ui.Line(string.format(" %s | %s ", sizestr, timestr))
+          end
 
-                  local size = self._file:size()
-                  local sizestr
-                  if not size or size == 0 then
-                    sizestr = "0 B"
-                  elseif size < 1024 then
-                    sizestr = string.format("%d B", size)
-                  elseif size < 1024 * 1024 then
-                    sizestr = string.format("%.2f KB", size / 1024)
-                  else
-                    sizestr = string.format("%.2f MB", size / (1024 * 1024))
-                  end
+            --NOTE: for the fullborder plugin:
+            require("full-border"):setup {
+            	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
+            	type = ui.Border.ROUNDED,
+            }
 
-                  return ui.Line(string.format(" %s | %s ", sizestr, timestr))
-                end
-
-                --NOTE: for the fullborder plugin:
-                require("full-border"):setup {
-                	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
-                	type = ui.Border.ROUNDED,
-                }
-
-                --NOTE: https://yazi-rs.github.io/docs/tips/#user-group-in-status
-                Status:children_add(function()
+            --NOTE: https://yazi-rs.github.io/docs/tips/#user-group-in-status
+            Status:children_add(function()
         	local h = cx.active.current.hovered
         	if h == nil or ya.target_family() ~= "unix" then
         		return ui.Line {}
@@ -116,7 +116,7 @@ lib.mkMerge [
       settings = {
         manager = {
           show_hidden = true;
-          sort_by = "modified";
+          sort_by = "mtime";
           sort_dir_first = false;
           sort_reverse = true;
           linemode = "size_and_mtime";
@@ -131,27 +131,27 @@ lib.mkMerge [
         previewers = {
           prepend = [
             {
-              mime = "application/*zip";
+              mime = "application/zip"; # Removed x- prefix
               run = "ouch";
             }
             {
-              mime = "application/x-tar";
+              mime = "application/tar"; # Removed x- prefix
               run = "ouch";
             }
             {
-              mime = "application/x-bzip2";
+              mime = "application/bzip2"; # Removed x- prefix
               run = "ouch";
             }
             {
-              mime = "application/x-7z-compressed";
+              mime = "application/7z-compressed"; # Removed x- prefix
               run = "ouch";
             }
             {
-              mime = "application/x-rar";
+              mime = "application/rar"; # Removed x- prefix
               run = "ouch";
             }
             {
-              mime = "application/x-xz";
+              mime = "application/xz"; # Removed x- prefix
               run = "ouch";
             }
           ];
@@ -212,7 +212,7 @@ lib.mkMerge [
               desc = "Copy contents of file";
             }
             #NOTE:  https://github.com/ndtoan96/ouch.yazi
-            # ya pack -a ndtoan96/ouch                                                                                                                                                                              
+            # ya pack -a ndtoan96/ouch
             {
               on = [
                 "c"
@@ -322,18 +322,18 @@ lib.mkMerge [
   # smart-enter: enter for directory, open for file
   {
     programs.yazi = {
-      plugins = mkYaziPlugin "smart-enter" ''
-        return {
-          entry = function()
-            local h = cx.active.current.hovered
-            ya.manager_emit(h and h.cha.is_dir and "enter" or "open", { hovered = true })
-          end,
-        }
-      '';
+      # plugins = mkYaziPlugin "smart-enter" ''
+      #   return {
+      #     entry = function()
+      #       local h = cx.active.current.hovered
+      #       ya.manager_emit(h and h.cha.is_dir and "enter" or "open", { hovered = true })
+      #     end,
+      #   }
+      # '';
       keymap.manager.prepend_keymap = [
         {
           on = "l";
-          run = "plugin --sync smart-enter";
+          run = "plugin smart-enter";
           desc = "Enter the child directory, or open the file";
         }
       ];
@@ -360,7 +360,7 @@ lib.mkMerge [
       keymap.manager.prepend_keymap = [
         {
           on = "p";
-          run = "plugin --sync smart-paste";
+          run = "plugin smart-paste"; # Removed --sync
           desc = "Paste into the hovered directory or CWD";
         }
       ];
@@ -368,13 +368,15 @@ lib.mkMerge [
   }
 
   # arrow: file navigation wraparound
+
   {
     programs.yazi = {
       plugins = mkYaziPlugin "arrow" ''
+        --- @sync entry
         return {
-          entry = function(_, args)
+          entry = function(_, job)
             local current = cx.active.current
-            local new = (current.cursor + args[1]) % #current.files
+            local new = (current.cursor + job.args[1]) % #current.files
             ya.manager_emit("arrow", { new - current.cursor })
           end,
         }
@@ -382,22 +384,21 @@ lib.mkMerge [
       keymap.manager.prepend_keymap = [
         {
           on = "k";
-          run = "plugin --sync arrow --args=-1";
+          run = "plugin arrow --args=-1";
         }
         {
           on = "j";
-          run = "plugin --sync arrow --args=1";
+          run = "plugin arrow --args=1";
         }
       ];
     };
   }
   {
     programs.yazi = {
-      # https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi
       keymap.manager.prepend_keymap = [
         {
           on = "T";
-          run = "plugin --sync max-preview";
+          run = "plugin max-preview"; # Removed --sync
           desc = "Maximize or restore preview";
         }
       ];
@@ -420,7 +421,6 @@ lib.mkMerge [
 
   {
     programs.yazi = {
-      # https://github.com/yazi-rs/plugins/tree/main/
       keymap.manager.prepend_keymap = [
         {
           on = [
@@ -446,19 +446,15 @@ lib.mkMerge [
       ];
     };
   }
+
   {
-    #NOTE: https://gitee.com/DreamMaoMao/keyjump.yazi
-    # offer hop.nvim / tridactyl like nav
     programs.yazi = {
       plugins = {
-        # Your existing plugins...
-        keyjump = keyjumpPlugin; # Add this line
+        keyjump = keyjumpPlugin;
       };
       keymap.manager.prepend_keymap = [
         {
-          on = [
-            "f"
-          ];
+          on = [ "f" ];
           run = "plugin keyjump --args='global once'";
           desc = "Keyjump (once Global mode)";
         }
@@ -467,11 +463,6 @@ lib.mkMerge [
   }
 
   {
-    # xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
-    #   [filechooser]
-    #   cmd=${pkgs.yazi}/bin/yazi
-    #   default_dir=$HOME
-    # '';
 
     xdg.dataFile."applications/yazi.desktop".text = ''
       [Desktop Entry]
