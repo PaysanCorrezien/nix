@@ -31,6 +31,7 @@
     # inputs.hyprpanel.overlay
 
     inputs.yazi-plugins.overlays.default
+    inputs.busygit.overlays.default
 
     #NOTE: build xdf-portal-termfilechooser
     (final: prev: {

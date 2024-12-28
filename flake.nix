@@ -57,6 +57,10 @@
       url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    busygit = {
+      url = "github:paysancorrezien/busygit";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     hyprpanel = {
       url = "github:Jas-SinghFSU/HyprPanel";
       # url = "git+file:///home/dylan/repo/HyprPanel";

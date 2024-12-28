@@ -29,6 +29,7 @@ in
     zip
     ripgrep
     wget
+    busygit
     #NOTE: this makes wezterm my default env for running commands
     # use a trick by symlinking wezterm to xdg-terminal-exec
     (pkgs.symlinkJoin {
