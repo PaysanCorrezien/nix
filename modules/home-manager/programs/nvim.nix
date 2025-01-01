@@ -57,6 +57,8 @@ let
     poppler_utils
     harper
     gnumake # for avante build
+    svelte-language-server
+    vtsls
   ];
 
   minimalPackages = with pkgs; [
