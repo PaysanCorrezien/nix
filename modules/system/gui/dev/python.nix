@@ -61,6 +61,8 @@ let
       pyqt5
       google-api-python-client
       flake8
+      gitpython
+      prompt_toolkit
       ollama
       flake8 # for aider
       vja # Add the custom package here
