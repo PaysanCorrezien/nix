@@ -62,6 +62,7 @@ let
       google-api-python-client
       flake8
       ollama
+      flake8 # for aider
       vja # Add the custom package here
     ]
   );

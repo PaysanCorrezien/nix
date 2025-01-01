@@ -98,6 +98,7 @@ in
         flameshot
         libimobiledevice
         mullvad
+        localsend
         activitywatch
         ifuse
         (pkgs.catppuccin-sddm.override {
