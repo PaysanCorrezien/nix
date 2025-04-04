@@ -134,6 +134,7 @@ in
         ll = "ls -l";
         update = "sudo nixos-rebuild switch";
         sw = "~/.config/nix/scripts/rebuild.sh";
+        compose-manager = "~/.config/nix/scripts/compose-manager.sh";
         switchkb = "switch-keyboard-layout";
         np = ''
           function _findpkg() { 
