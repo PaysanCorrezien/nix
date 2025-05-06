@@ -42,6 +42,10 @@ in {
     social.enable = true;
     locale        = "fr_FR.UTF-8";
     autoSudo      = true;
+
+    yubikey = {
+      enable = false;
+    };
   };
 
   ## ─────── Networking (DHCP vs static) ────────────────────────────────────────
