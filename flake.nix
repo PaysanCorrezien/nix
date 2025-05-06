@@ -108,6 +108,7 @@
         homeserv = mkSystem "homeserv";
         ionos = mkSystem "ionos";
         wsl = mkSystem "wsl";
+        wmware = mkSystem "vmware";
       };
     };
 }
