@@ -40,9 +40,9 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     wezterm = {
-      # url = "github:wez/wezterm/main?dir=nix";
+      url = "github:wez/wezterm/main?dir=nix";
       #NOTE: https://github.com/wez/wezterm/pull/5576
-      url = "github:e82eric/wezterm/float-pane?dir=nix";
+      # url = "github:e82eric/wezterm/float-pane?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tailscale-ssh = {
