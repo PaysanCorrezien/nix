@@ -31,7 +31,8 @@
 
     # Desktop
     windowManager = "gnome";
-    displayServer = "xorg";
+    displayServer = "wayland";
+    ssh.enable = false;
 
     # Misc flags
     useDhcp      = true;
