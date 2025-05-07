@@ -30,7 +30,7 @@ in
       enableBashIntegration = true;
       enableZshIntegration = true;
       extraConfig = weztermExtraConfig;
-      package = inputs.wezterm.packages.${pkgs.system}.default;
+      # package = inputs.wezterm.packages.${pkgs.system}.default;
     };
   };
 }
