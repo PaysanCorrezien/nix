@@ -13,7 +13,7 @@ in
     programs.nushell = {
       package = pkgs.nushell.override {
         withDefaultFeatures = true;
-        additionalFeatures = oldFeatures: oldFeatures ++ [ "system-clipboard" ];
+        #additionalFeatures = oldFeatures: oldFeatures ++ [ "system-clipboard" ];
       };
       enable = true;
 
