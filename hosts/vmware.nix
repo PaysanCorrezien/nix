@@ -49,7 +49,7 @@
     # Disable YubiKey logic on this VM
     yubikey.enable = false;
   };
-   virtualisation.vmware.guest.enable = true;  # pulls in the open-vm-tools set,
+  config.virtualisation.vmware.guest.enable = true;  # pulls in the open-vm-tools set,
 
   ##############################################################################
   # Networking — DHCP only                                                    #
