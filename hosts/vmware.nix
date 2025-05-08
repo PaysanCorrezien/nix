@@ -28,6 +28,8 @@
 
     # Disk layout (shared logic lives in modules/options/disko.nix)
     disko.mainDisk = "/dev/sda";
+    disko.layout = "standard"; # Standard layout with ESP
+
 
     # Desktop
     windowManager = "gnome";
@@ -47,6 +49,7 @@
     # Disable YubiKey logic on this VM
     yubikey.enable = false;
   };
+   virtualisation.vmware.guest.enable = true;  # pulls in the open-vm-tools set,
 
   ##############################################################################
   # Networking — DHCP only                                                    #

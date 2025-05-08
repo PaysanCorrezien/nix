@@ -28,7 +28,8 @@ in
         };
         efi.efiSysMountPoint = efiMountPoint;
       };
-      boot.kernelParams = [ "root=/dev/disk/by-partlabel/disk-main-root" ];
+      boot.kernelParams = [ "boot.shell_on_fail" "boot.trace" "root=/dev/disk/by-partlabel/disk-main-root" ];
+
     })
     (lib.mkIf isWSL {
       boot.loader.grub.enable = lib.mkForce false;
