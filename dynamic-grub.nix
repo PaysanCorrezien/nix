@@ -18,11 +18,21 @@ in
           efiInstallAsRemovable = true;
           useOSProber = false;
           extraEntries = ''
-            menuentry "Reboot" {
-              reboot
+            ## ── Power controls ───────────────────────────────────────────────
+            menuentry "Reboot"   { reboot }
+            menuentry "Power-off" { halt }
+
+            ## ── Maintenance / debugging ─────────────────────────────────────
+            # press ‘c’ from the GRUB menu for a shell,
+            #  press ‘e’ on any entry to edit its kernel command line.
+
+            menuentry "Enter firmware setup (UEFI / BIOS)" {
+              fwsetup
             }
-            menuentry "Poweroff" {
-              halt
+
+            menuentry "Boot first USB device" {
+              set root=(hd1)
+              chainloader +1
             }
           '';
         };

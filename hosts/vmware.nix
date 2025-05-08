@@ -32,7 +32,8 @@
 
 
     # Desktop
-    windowManager = "gnome";
+    windowManager = "hyprland";
+    # windowManager = "gnome";
     displayServer = "wayland";
     ssh.enable = false;
 
