@@ -1,97 +1,150 @@
 #!/usr/bin/env bash
-set -e
-set -x
+set -euo pipefail
+# set -x   # Uncomment for verbose tracing
 
 ################################################################################
 # NixOS unattended installer
-# - Selects a host flake from a Git repo
-# - Runs disko + nixos-install
-# - Pre‑installs an Age/SOPS key so secrets can be decrypted during the build
+#
+# • Pick host with fzf
+# • Optionally mount an external block‑device, select one of many Age/SOPS keys
+# • Run disko, nixos-install
+# • Copy flake into /home/<user>/.config/nix
 ################################################################################
 
-# Hard‑coded username for the first boot (override in your flake if needed)
-USER_NAME="dylan"
+# ---------------------------------------------------------------------------- #
+# Settings (override with env vars)                                            #
+# ---------------------------------------------------------------------------- #
+USER_NAME=${USER_NAME:-"dylan"}
+REPO_URL=${REPO_URL:-"https://github.com/paysancorrezien/nix.git"}
+TEMP_REPO_DIR="/tmp/nixos-config"
+MOUNT_TMP="/mnt/agekey"
 
 # ---------------------------------------------------------------------------- #
-# Workspace
+# Helpers                                                                      #
 # ---------------------------------------------------------------------------- #
-TEMP_REPO_DIR="/tmp/nixos-config"
+require_cmd() { command -v "$1" &>/dev/null || {
+	echo "Missing $1"
+	exit 1
+}; }
+
+# Select a block‑device partition ( /dev/sdXN, /dev/nvme0n1pX … )
+choose_partition() {
+	mapfile -t PARTS < <(
+		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
+	)
+	((${#PARTS[@]})) || return 1
+	printf '%s\n' "${PARTS[@]}" | fzf --height 15 --layout=reverse --prompt="Select partition > " | awk '{print $1}'
+}
+
+# Pick one key file among many ( *.age / *.txt )
+choose_age_key() {
+	local dir="$1"
+	mapfile -t KEYS < <(find "$dir" -maxdepth 2 -type f \( -name '*.age' -o -name '*.txt' \))
+	((${#KEYS[@]})) || return 1
+	[[ ${#KEYS[@]} -eq 1 ]] && {
+		printf '%s' "${KEYS[0]}"
+		return 0
+	}
+	printf '%s\n' "${KEYS[@]}" | fzf --height 10 --layout=reverse --prompt="Select Age key > "
+}
+
+# ---------------------------------------------------------------------------- #
+# Ensure dependencies                                                          #
+# ---------------------------------------------------------------------------- #
+for bin in git fzf lsblk sudo; do require_cmd "$bin"; done
+nix-env -q git &>/dev/null || nix-env -iA nixos.git -q >/dev/null
+nix-env -q fzf &>/dev/null || nix-env -iA nixos.fzf -q >/dev/null
+
+# ---------------------------------------------------------------------------- #
+# Prepare workspace                                                            #
+# ---------------------------------------------------------------------------- #
 [ -d "$TEMP_REPO_DIR" ] && {
-	echo "Removing existing $TEMP_REPO_DIR"
+	echo "Removing $TEMP_REPO_DIR"
 	rm -rf "$TEMP_REPO_DIR"
 }
 
-# ---------------------------------------------------------------------------- #
-# Dependencies
-# ---------------------------------------------------------------------------- #
-echo "Installing git and fzf …"
-nix-env -iA nixos.git nixos.fzf -q >/dev/null
+git clone --depth 1 "$REPO_URL" "$TEMP_REPO_DIR"
 
 # ---------------------------------------------------------------------------- #
-# Clone flake
-# ---------------------------------------------------------------------------- #
-REPO_URL="https://github.com/paysancorrezien/nix.git"
-echo "Cloning configuration repository …"
-git clone "$REPO_URL" "$TEMP_REPO_DIR"
-
-# ---------------------------------------------------------------------------- #
-# Pick a host
+# Pick host                                                                    #
 # ---------------------------------------------------------------------------- #
 mapfile -t CONFIGS < <(ls "$TEMP_REPO_DIR"/hosts/*.nix | xargs -n1 basename | sed 's/\.nix$//')
-((${#CONFIGS[@]} == 0)) && {
-	echo "No host files found under hosts/*.nix"
+((${#CONFIGS[@]})) || {
+	echo "No host files"
 	exit 1
 }
-
-CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height=10 --layout=reverse --prompt="Select host > ")
+CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height 10 --layout=reverse --prompt="Select host > ")
 [ -z "$CONFIG" ] && {
-	echo "Nothing selected; aborting."
+	echo "Cancelled"
 	exit 1
 }
 
-echo "Host selected: $CONFIG"
+echo "Host → $CONFIG"
 
 # ---------------------------------------------------------------------------- #
-# Install Age/SOPS key BEFORE nixos-install so evaluation can decrypt secrets
+# Optional Age key import                                                      #
 # ---------------------------------------------------------------------------- #
-AGE_KEY_TEMP=$(find /tmp -maxdepth 1 -name "*.age" -o -name "*.txt" | head -n1)
-if [[ -n "$AGE_KEY_TEMP" ]]; then
-	AGE_KEY_DEST="/mnt/var/lib/secrets/${CONFIG}.txt"
-	echo "Copying Age key → $AGE_KEY_DEST"
-	sudo mkdir -p "$(dirname "$AGE_KEY_DEST")"
-	sudo install -m 600 "$AGE_KEY_TEMP" "$AGE_KEY_DEST"
-else
-	echo "! No Age key found in /tmp. The build may fail if it needs to decrypt secrets or fallback to default values."
-fi
+KEY_SOURCE=""
+case $(printf 'Skip\nImport from external drive\n' | fzf --height 4 --prompt="Import Age key? > ") in
+"Import from external drive")
+	PART=$(choose_partition) || { echo "No partition chosen → skipping key import"; }
+	if [[ -n "$PART" ]]; then
+		echo "Mounting $PART on $MOUNT_TMP …"
+		sudo mkdir -p "$MOUNT_TMP"
+		sudo mount "$PART" "$MOUNT_TMP"
+		trap 'sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true' EXIT
+		KEY_SOURCE=$(choose_age_key "$MOUNT_TMP" || true)
+		if [[ -z "$KEY_SOURCE" ]]; then
+			echo "⚠️  No key picked → continuing without Age key"
+		else
+			echo "Key selected: $KEY_SOURCE"
+		fi
+	fi
+	;;
+*) echo "Skipping Age key import" ;;
+esac
 
 # ---------------------------------------------------------------------------- #
-# Partition / format / mount via disko
+# Run disko                                                                    #
 # ---------------------------------------------------------------------------- #
-echo "Running disko for $CONFIG …"
 sudo nix --experimental-features "nix-command flakes" run \
 	github:nix-community/disko/latest -- \
 	--mode disko --flake "$TEMP_REPO_DIR#$CONFIG" --no-write-lock-file
 
 # ---------------------------------------------------------------------------- #
-# nixos-install (env var exposes key to the build)
+# Copy key into target root                                                    #
 # ---------------------------------------------------------------------------- #
-echo "Starting nixos-install …"
-sudo SOPS_AGE_KEY_FILE="/var/lib/secrets/${CONFIG}.txt" \
-	nixos-install --flake "$TEMP_REPO_DIR#$CONFIG" --show-trace --impure
+if [[ -n "$KEY_SOURCE" ]]; then
+	DEST_KEY="/mnt/var/lib/secrets/${CONFIG}.txt"
+	echo "Copying → $DEST_KEY"
+	sudo mkdir -p "$(dirname "$DEST_KEY")"
+	sudo install -m 600 "$KEY_SOURCE" "$DEST_KEY"
+fi
 
 # ---------------------------------------------------------------------------- #
-# Move flake into the target system for convenience
+# nixos-install                                                                #
+# ---------------------------------------------------------------------------- #
+ENV_ARGS=()
+[[ -n "$KEY_SOURCE" ]] && ENV_ARGS+=("SOPS_AGE_KEY_FILE=/var/lib/secrets/${CONFIG}.txt")
+
+echo "Running nixos-install …"
+# shellcheck disable=SC2048,SC2068
+sudo ${ENV_ARGS[*]} nixos-install --flake "$TEMP_REPO_DIR#$CONFIG" --show-trace --impure
+
+# ---------------------------------------------------------------------------- #
+# Copy flake into installed system                                             #
 # ---------------------------------------------------------------------------- #
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
-echo "Moving flake into $FINAL_REPO_DIR …"
 sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
 sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
 
 # ---------------------------------------------------------------------------- #
-# Cleanup
+# Cleanup                                                                      #
 # ---------------------------------------------------------------------------- #
 [ -d "$TEMP_REPO_DIR" ] && rm -rf "$TEMP_REPO_DIR"
+trap - EXIT
+[[ -n "${PART:-}" ]] && sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true
 
-printf '\nInstallation finished. Reboot into your new system.\n'
-printf '• Age key copied to /var/lib/secrets/%s.txt\n' "$CONFIG"
+echo -e "\n✅ Installation complete. Reboot now."
+[[ -n "$KEY_SOURCE" ]] && printf '• Age key copied to /var/lib/secrets/%s.txt\n' "$CONFIG"
 printf '• Flake cloned to /home/%s/.config/nix\n' "$USER_NAME"
