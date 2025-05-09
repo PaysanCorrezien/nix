@@ -43,7 +43,7 @@
     useDhcp      = true;
     environment  = "home";
     gaming       = false;
-    social.enable = fals;
+    social.enable = false;
     locale       = "fr_FR.UTF-8";
     autoSudo     = true;
     tailscale.enable = false; # Disable Tailscale on this VM , require secret key

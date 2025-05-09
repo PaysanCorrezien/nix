@@ -6,29 +6,31 @@ set -euo pipefail
 # NixOS unattended installer
 #
 # • Pick host with fzf
-# • Optionally mount an external block‑device, select one of many Age/SOPS keys
+# • Optionally mount an external block‑device, select an Age/SOPS key
 # • Run disko, nixos-install
 # • Copy flake into /home/<user>/.config/nix
 ################################################################################
 
 # ---------------------------------------------------------------------------- #
-# Settings (override with env vars)                                            #
+# Settings                                                                     #
 # ---------------------------------------------------------------------------- #
 USER_NAME=${USER_NAME:-"dylan"}
 REPO_URL=${REPO_URL:-"https://github.com/paysancorrezien/nix.git"}
 TEMP_REPO_DIR="/tmp/nixos-config"
 MOUNT_TMP="/mnt/agekey"
 
-# Select a block‑device partition ( /dev/sdXN, /dev/nvme0n1pX … )
+# ---------------------------------------------------------------------------- #
+# Helpers                                                                      #
+# ---------------------------------------------------------------------------- #
+
 choose_partition() {
-	lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	mapfile -t PARTS < <(
+		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	)
 	((${#PARTS[@]})) || return 1
 	printf '%s\n' "${PARTS[@]}" | fzf --height 15 --layout=reverse --prompt="Select partition > " | awk '{print $1}'
 }
 
-# Pick one key file among many ( *.age / *.txt )
 choose_age_key() {
 	local dir="$1"
 	mapfile -t KEYS < <(find "$dir" -maxdepth 2 -type f \( -name '*.age' -o -name '*.txt' \))
@@ -43,9 +45,10 @@ choose_age_key() {
 # ---------------------------------------------------------------------------- #
 # Ensure dependencies                                                          #
 # ---------------------------------------------------------------------------- #
-# Always try to install git & fzf first; then verify everything is present.
 echo "Installing git and fzf …"
-nix-env -iA nixos.git nixos.fzf -q >/dev/null
+# Use separate nix‑env calls without -q; some installer shells reject combined flags.
+nix-env -iA nixos.git
+nix-env -iA nixos.fzf
 
 # ---------------------------------------------------------------------------- #
 # Prepare workspace                                                            #
