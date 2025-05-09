@@ -18,6 +18,8 @@
   # Main host configuration                                                   #
   ##############################################################################
   config.settings = {
+    # TYPE
+    isServer = true;
     # Identity
     hostname    = "vmware";
     username    = "dylan";
@@ -32,17 +34,16 @@
 
 
     # Desktop
-    windowManager = "hyprland";
+    #windowManager = "hyprland";
     # windowManager = "gnome";
-    displayServer = "wayland";
+    #displayServer = "wayland";
     ssh.enable = false;
 
     # Misc flags
     useDhcp      = true;
-    isServer     = false;
     environment  = "home";
-    gaming       = true;
-    social.enable = true;
+    gaming       = false;
+    social.enable = fals;
     locale       = "fr_FR.UTF-8";
     autoSudo     = true;
     tailscale.enable = false; # Disable Tailscale on this VM , require secret key
@@ -50,6 +51,15 @@
     # Disable YubiKey logic on this VM
     yubikey.enable = false;
   };
+  users.users.${config.settings.username} = {
+    # initialPassword = "dylan"; #TODO: put pass in sops as users.users.your-user.initialHashedPassword 
+    initialHashedPassword = "$6$.NL5Jii4wwztUzFC$pOiZJ3I2810HLcCZc0CYR5YGEHS6JWibJ75mbx4TWcm0gsxuEAsSK4rsDxu1Ny7o67..V4hdX3mwJQ4enHCJ6."; # dylan for test
+
+    group = "dylan";
+    home = "/home/${config.settings.username}";
+  };
+
+
   config.virtualisation.vmware.guest.enable = true;  # pulls in the open-vm-tools set,
 
   ##############################################################################
@@ -67,8 +77,5 @@
   ##############################################################################
   # Packages                                                                  #
   ##############################################################################
-  config.environment.systemPackages = with pkgs; [
-    beets
-  ];
 }
 
