@@ -19,18 +19,10 @@ REPO_URL=${REPO_URL:-"https://github.com/paysancorrezien/nix.git"}
 TEMP_REPO_DIR="/tmp/nixos-config"
 MOUNT_TMP="/mnt/agekey"
 
-# ---------------------------------------------------------------------------- #
-# Helpers                                                                      #
-# ---------------------------------------------------------------------------- #
-require_cmd() { command -v "$1" &>/dev/null || {
-	echo "Missing $1"
-	exit 1
-}; }
-
 # Select a block‑device partition ( /dev/sdXN, /dev/nvme0n1pX … )
 choose_partition() {
+	lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	mapfile -t PARTS < <(
-		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	)
 	((${#PARTS[@]})) || return 1
 	printf '%s\n' "${PARTS[@]}" | fzf --height 15 --layout=reverse --prompt="Select partition > " | awk '{print $1}'
@@ -51,9 +43,9 @@ choose_age_key() {
 # ---------------------------------------------------------------------------- #
 # Ensure dependencies                                                          #
 # ---------------------------------------------------------------------------- #
-for bin in git fzf lsblk sudo; do require_cmd "$bin"; done
-nix-env -q git &>/dev/null || nix-env -iA nixos.git -q >/dev/null
-nix-env -q fzf &>/dev/null || nix-env -iA nixos.fzf -q >/dev/null
+# Always try to install git & fzf first; then verify everything is present.
+echo "Installing git and fzf …"
+nix-env -iA nixos.git nixos.fzf -q >/dev/null
 
 # ---------------------------------------------------------------------------- #
 # Prepare workspace                                                            #
