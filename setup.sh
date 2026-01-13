@@ -68,6 +68,32 @@ nix-env -iA nixos.git
 nix-env -iA nixos.fzf
 
 # ---------------------------------------------------------------------------- #
+# Preflight: ensure /nix/store has enough space (live ISO is tmpfs)             #
+# ---------------------------------------------------------------------------- #
+min_free_mb=2048
+free_kb=$(df -Pk /nix/store | awk 'NR==2 {print $4}')
+free_mb=$((free_kb / 1024))
+if ((free_mb < min_free_mb)); then
+	echo ""
+	echo "⚠️  Low free space in /nix/store (${free_mb}MB)."
+	echo "The live ISO stores /nix in RAM; flake evals may fail."
+	if command -v fallocate >/dev/null 2>&1; then
+		read -r -p "Create 8G swapfile at /tmp/swapfile to continue? [y/N] " answer
+		if [[ "${answer:-}" =~ ^[Yy]$ ]]; then
+			run_sudo fallocate -l 8G /tmp/swapfile
+			run_sudo chmod 600 /tmp/swapfile
+			run_sudo mkswap /tmp/swapfile
+			run_sudo swapon /tmp/swapfile
+			echo "Swap enabled."
+		else
+			echo "Continuing without swap."
+		fi
+	else
+		echo "fallocate not available; consider increasing VM RAM or adding swap."
+	fi
+fi
+
+# ---------------------------------------------------------------------------- #
 # Prepare workspace                                                            #
 # ---------------------------------------------------------------------------- #
 [ -d "$TEMP_REPO_DIR" ] && {
