@@ -60,30 +60,20 @@ run_sudo() {
 }
 
 # ---------------------------------------------------------------------------- #
-# Preflight: ensure /nix/store has enough space (live ISO is small)             #
-# Must run BEFORE installing dependencies to avoid filling the store            #
+# Preflight: add zram swap to increase effective memory for nix builds          #
+# This helps when the live ISO's /nix/store (tmpfs) runs low on space           #
 # ---------------------------------------------------------------------------- #
-min_free_mb=2048
-free_kb=$(df -Pk /nix/store | awk 'NR==2 {print $4}')
-free_mb=$((free_kb / 1024))
-if ((free_mb < min_free_mb)); then
+echo "Setting up zram swap for additional memory..."
+if run_sudo modprobe zram 2>/dev/null; then
+	# Use 50% of RAM as compressed swap (effectively ~2x that due to compression)
 	mem_kb=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
-	target_kb=$((mem_kb * 70 / 100))
-	target_mb=$((target_kb / 1024))
-	echo ""
-	echo "⚠️  Low free space in /nix/store (${free_mb}MB)."
-	echo "Expanding /nix/store using overlay (${target_mb}M backing from RAM)."
-
-	# Create tmpfs-backed directories for overlay
-	run_sudo mkdir -p /tmp/nix-overlay-upper /tmp/nix-overlay-work
-	run_sudo mount -t tmpfs -o "size=${target_mb}M" tmpfs /tmp/nix-overlay-upper
-
-	# Mount overlay: reads from original store, writes go to tmpfs
-	run_sudo mount -t overlay overlay \
-		-o "lowerdir=/nix/store,upperdir=/tmp/nix-overlay-upper,workdir=/tmp/nix-overlay-work" \
-		/nix/store
-
-	echo "✓ /nix/store expanded via overlay (existing content preserved)."
+	zram_size_kb=$((mem_kb / 2))
+	echo "${zram_size_kb}K" | run_sudo tee /sys/block/zram0/disksize >/dev/null 2>&1 || true
+	run_sudo mkswap /dev/zram0 >/dev/null 2>&1 || true
+	run_sudo swapon -p 100 /dev/zram0 2>/dev/null || true
+	echo "✓ zram swap enabled ($(( zram_size_kb / 1024 ))MB compressed)"
+else
+	echo "⚠️  zram not available, continuing without extra swap"
 fi
 
 # ---------------------------------------------------------------------------- #
