@@ -42,6 +42,19 @@ choose_age_key() {
 	printf '%s\n' "${KEYS[@]}" | fzf --height 10 --layout=reverse --prompt="Select Age key > "
 }
 
+run_sudo() {
+	if [[ "$(id -u)" -eq 0 ]]; then
+		"$@"
+		return
+	fi
+	if command -v sudo >/dev/null 2>&1; then
+		sudo "$@"
+		return
+	fi
+	echo "Error: sudo not available and not running as root."
+	exit 1
+}
+
 # ---------------------------------------------------------------------------- #
 # Ensure dependencies                                                          #
 # ---------------------------------------------------------------------------- #
@@ -63,12 +76,15 @@ git clone --depth 1 "$REPO_URL" "$TEMP_REPO_DIR"
 # ---------------------------------------------------------------------------- #
 # Pick host                                                                    #
 # ---------------------------------------------------------------------------- #
-mapfile -t CONFIGS < <(ls "$TEMP_REPO_DIR"/hosts/*.nix | xargs -n1 basename | sed 's/\.nix$//')
-((${#CONFIGS[@]})) || {
+shopt -s nullglob
+HOST_FILES=("$TEMP_REPO_DIR"/hosts/*.nix)
+shopt -u nullglob
+((${#HOST_FILES[@]})) || {
 	echo "No host files"
 	exit 1
 }
-CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height 10 --layout=reverse --prompt="Select host > ")
+mapfile -t CONFIGS < <(printf '%s\n' "${HOST_FILES[@]}" | xargs -n1 basename | sed 's/\.nix$//')
+CONFIG=$(printf '%s\n' "${CONFIGS[@]}" | fzf --height 10 --layout=reverse --prompt="Select host > " || true)
 [ -z "$CONFIG" ] && {
 	echo "Cancelled"
 	exit 1
@@ -80,14 +96,15 @@ echo "Host → $CONFIG"
 # Optional Age key import                                                      #
 # ---------------------------------------------------------------------------- #
 KEY_SOURCE=""
-case $(printf 'Skip\nImport from external drive\n' | fzf --height 4 --prompt="Import Age key? > ") in
+KEY_CHOICE=$(printf 'Skip\nImport from external drive\n' | fzf --height 4 --prompt="Import Age key? > " || true)
+case "$KEY_CHOICE" in
 "Import from external drive")
 	PART=$(choose_partition) || { echo "No partition chosen → skipping key import"; }
 	if [[ -n "$PART" ]]; then
 		echo "Mounting $PART on $MOUNT_TMP …"
-		sudo mkdir -p "$MOUNT_TMP"
-		sudo mount "$PART" "$MOUNT_TMP"
-		trap 'sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true' EXIT
+		run_sudo mkdir -p "$MOUNT_TMP"
+		run_sudo mount "$PART" "$MOUNT_TMP"
+		trap 'run_sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true' EXIT
 		KEY_SOURCE=$(choose_age_key "$MOUNT_TMP" || true)
 		if [[ -z "$KEY_SOURCE" ]]; then
 			echo "⚠️  No key picked → continuing without Age key"
@@ -102,7 +119,7 @@ esac
 # ---------------------------------------------------------------------------- #
 # Run disko                                                                    #
 # ---------------------------------------------------------------------------- #
-sudo nix --experimental-features "nix-command flakes" run \
+run_sudo nix --experimental-features "nix-command flakes" run \
 	github:nix-community/disko/latest -- \
 	--mode disko --flake "$TEMP_REPO_DIR#$CONFIG" --no-write-lock-file
 
@@ -112,8 +129,8 @@ sudo nix --experimental-features "nix-command flakes" run \
 if [[ -n "$KEY_SOURCE" ]]; then
 	DEST_KEY="/mnt/var/lib/secrets/${CONFIG}.txt"
 	echo "Copying → $DEST_KEY"
-	sudo mkdir -p "$(dirname "$DEST_KEY")"
-	sudo install -m 600 "$KEY_SOURCE" "$DEST_KEY"
+	run_sudo mkdir -p "$(dirname "$DEST_KEY")"
+	run_sudo install -m 600 "$KEY_SOURCE" "$DEST_KEY"
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -124,21 +141,22 @@ ENV_ARGS=()
 
 echo "Running nixos-install …"
 # shellcheck disable=SC2048,SC2068
-sudo ${ENV_ARGS[*]} nixos-install --flake "$TEMP_REPO_DIR#$CONFIG" --show-trace --impure
+run_sudo ${ENV_ARGS[*]} nixos-install --flake "$TEMP_REPO_DIR#$CONFIG" --show-trace --impure
 
 # ---------------------------------------------------------------------------- #
 # Copy flake into installed system                                             #
 # ---------------------------------------------------------------------------- #
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
-sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
-sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
+run_sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
+run_sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
+run_sudo chown -R "$USER_NAME:$USER_NAME" "$FINAL_REPO_DIR"
 
 # ---------------------------------------------------------------------------- #
 # Cleanup                                                                      #
 # ---------------------------------------------------------------------------- #
 [ -d "$TEMP_REPO_DIR" ] && rm -rf "$TEMP_REPO_DIR"
 trap - EXIT
-[[ -n "${PART:-}" ]] && sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true
+[[ -n "${PART:-}" ]] && run_sudo umount "$MOUNT_TMP" >/dev/null 2>&1 || true
 
 echo -e "\n✅ Installation complete. Reboot now."
 [[ -n "$KEY_SOURCE" ]] && printf '• Age key copied to /var/lib/secrets/%s.txt\n' "$CONFIG"

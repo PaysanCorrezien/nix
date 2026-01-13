@@ -18,7 +18,7 @@ in
     programs.zsh = {
       shellAliases.ai = "aichat";
       # Ctrl+/ trigger for aichat prompt correction
-      initExtra = ''
+      initContent = ''
         aichat_zsh() {
           if [[ -n "$BUFFER" ]]; then
             local _old=$BUFFER

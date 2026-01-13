@@ -73,19 +73,6 @@ let
 
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.nextcloudcli = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable =
-              lib.mkEnableOption "Enable custom Nextcloud configuration";
-          };
-        };
-      };
-    };
-  };
-
   config = lib.mkIf config.settings.nextcloudcli.enable {
     home.packages = with pkgs; [ nextcloud-client ];
 

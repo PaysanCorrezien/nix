@@ -58,19 +58,6 @@ let
 
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.keepassxc = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable =
-              lib.mkEnableOption "Enable custom KeePass configuration";
-          };
-        };
-      };
-    };
-  };
-
   config = lib.mkIf config.settings.keepassxc.enable {
     home.packages = with pkgs; [ keepassxc keepmenu pinentry-gtk2 bitwarden-cli bitwarden-desktop];
 

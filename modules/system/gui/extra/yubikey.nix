@@ -13,24 +13,14 @@ let
   hasYubiKeys = builtins.pathExists yubiKeyPrimary && builtins.pathExists yubiKeyBackup;
 in
 {
-  options.settings.yubikey = lib.mkOption {
-    type = lib.types.submodule {
-      options.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-      };
-    };
-  };
-
   config = lib.mkIf cfg.enable {
     # Basic YubiKey packages
     environment.systemPackages = with pkgs; [
       yubikey-manager
-      yubikey-manager-qt
       yubikey-personalization
       yubioath-flutter
       pam_u2f
-      pinentry
+      pinentry-gnome3
     ];
 
     # Enable smart card support

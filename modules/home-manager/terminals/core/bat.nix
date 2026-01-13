@@ -18,7 +18,7 @@
     watch = "${config.home.profileDirectory}/bin/batwatch";
   };
 
-  programs.zsh.initExtra = ''
+  programs.zsh.initContent = ''
     export LESSOPEN="|${config.home.profileDirectory}/bin/batpipe %s"
     export LESS="$LESS -R"
     export BATPIPE="color"

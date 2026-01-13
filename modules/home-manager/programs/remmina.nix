@@ -114,18 +114,6 @@ let
 
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.remmina = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable = lib.mkEnableOption "Enable custom Remmina configuration";
-          };
-        };
-      };
-    };
-  };
-
   config = lib.mkIf config.settings.remmina.enable {
     home.packages = [ pkgs.remmina ];
 

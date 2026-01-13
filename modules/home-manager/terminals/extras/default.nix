@@ -51,7 +51,7 @@ in
       gping # Ping, but with a graph
       systemctl-tui # systemctl manager tui
       hyperfine # benchmarking cmd
-      du-dust # directory infos
+      dust # directory infos (formerly du-dust)
       duf # File system infos
       dnsx # DNS client
       hexyl

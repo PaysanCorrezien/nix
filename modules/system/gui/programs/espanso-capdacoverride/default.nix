@@ -51,7 +51,7 @@ with lib;
       ];
 
       security.wrappers."${pkgs.espanso-wayland.meta.mainProgram}" = {
-        source = "${getExe pkgs.espanso-wayland}";
+        source = lib.mkForce "${getExe pkgs.espanso-wayland}";
         capabilities = "cap_dac_override+p";
         owner = "root";
         group = "root";

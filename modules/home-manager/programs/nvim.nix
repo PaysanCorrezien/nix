@@ -1,12 +1,14 @@
+# Unified Neovim configuration (works for desktop, server, and WSL)
 {
   config,
   pkgs,
   lib,
+  settings,
   ...
 }:
 
 let
-  cfg = config.settings;
+  isMinimal = settings.minimalNvim or settings.isServer or false;
 
   nvim-spell-fr-utf8-dictionary = builtins.fetchurl {
     url = "https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl";
@@ -20,16 +22,12 @@ let
   fullPackages = with pkgs; [
     bash-language-server
     black
-    ruff-lsp
     ruff
     cmake-language-server
     clang-tools
     vscode-extensions.vadimcn.vscode-lldb
     docker-compose-language-service
-    dockerfile-language-server-nodejs
-    vscode-extensions.dbaeumer.vscode-eslint
-    # vscode-extensions.ms-vscode.powershell
-    hadolint
+    dockerfile-language-server
     vscode-langservers-extracted
     lua-language-server
     vscode-extensions.davidanson.vscode-markdownlint
@@ -38,11 +36,10 @@ let
     neocmakelsp
     nil
     nixpkgs-fmt
-    nixfmt-rfc-style # new formated , the osed used by lazyvim
+    nixfmt
     nodePackages.prettier
     nodePackages.typescript-language-server
     pyright
-    ruff-lsp
     shellcheck
     shfmt
     sqlfluff
@@ -54,9 +51,9 @@ let
     nodejs
     nodenv
     jdk21
-    poppler_utils
+    poppler-utils
     harper
-    gnumake # for avante build
+    gnumake
     svelte-language-server
     vtsls
   ];
@@ -69,38 +66,23 @@ let
 
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.minimalNvim = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Whether to use a minimal Neovim setup";
-        };
-      };
-    };
+  programs.neovim = {
+    enable = true;
+    plugins = with pkgs.vimPlugins; [
+      nvim-treesitter
+      vim-markdown-toc
+      nvim-lspconfig
+      sqlite-lua
+    ];
   };
 
-  config = {
-    programs.neovim = {
-      enable = true;
-      plugins = with pkgs.vimPlugins; [
-        nvim-treesitter
-        vim-markdown-toc
-        nvim-lspconfig
-        sqlite-lua
-      ];
-    };
+  programs.zsh.initContent = ''
+    export SQL_CLIB_PATH="${pkgs.sqlite.out}/lib/libsqlite3.so"
+  '';
 
-    programs.zsh.initExtra = ''
-      export SQL_CLIB_PATH="${pkgs.sqlite.out}/lib/libsqlite3.so"
-    '';
+  home.packages = if isMinimal then minimalPackages else fullPackages;
 
-    home.packages = if cfg.minimalNvim then minimalPackages else fullPackages;
-
-    home.file."${config.home.homeDirectory}/.config/nvim/spell/fr.utf-8.spl".source =
-      nvim-spell-fr-utf8-dictionary;
-    home.file."${config.home.homeDirectory}/.config/nvim/spell/fr.utf-8.sug".source =
-      nvim-spell-fr-utf8-suggestions;
-  };
+  # Spell files
+  xdg.configFile."nvim/spell/fr.utf-8.spl".source = nvim-spell-fr-utf8-dictionary;
+  xdg.configFile."nvim/spell/fr.utf-8.sug".source = nvim-spell-fr-utf8-suggestions;
 }

@@ -5,17 +5,6 @@
   ...
 }:
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.rofi = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable = lib.mkEnableOption "Enable custom Rofi configuration";
-          };
-        };
-      };
-    };
-  };
   config = lib.mkIf config.settings.rofi.enable {
     home.packages = with pkgs; [
       xdotool

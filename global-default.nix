@@ -1,130 +1,128 @@
 { config, lib, pkgs, ... }:
 
-#TODO:: move all this out of here , and inside their related file
-# find a way to genreate the doc for the options
-let
-  globalDefaults = {
-    username = lib.mkDefault "dylan";
-    hostname = lib.mkDefault "nixos";
-    isServer = lib.mkDefault false;
-    locale = lib.mkDefault "fr_FR.UTF-8";
-    virtualisation.enable = lib.mkDefault false;
-    environment = lib.mkDefault "home";
-    isExperimental = lib.mkDefault false;
-    work = lib.mkDefault true;
-    gaming = lib.mkDefault true;
-    windowManager = lib.mkDefault "gnome";
-    displayServer = lib.mkDefault "xorg";
-    docker.enable = lib.mkDefault false;
-    social.enable = lib.mkDefault true;
-    architecture = lib.mkDefault "x86_64";
-    autoSudo = lib.mkDefault false;
-  };
-in
 {
-  options = {
-    settings = {
-      username = lib.mkOption {
+  options.settings = {
+    # Core identification
+    username = lib.mkOption {
+      type = lib.types.str;
+      default = "dylan";
+      description = "Primary username for the system";
+    };
+
+    hostname = lib.mkOption {
+      type = lib.types.str;
+      default = "nixos";
+      description = "System hostname";
+    };
+
+    locale = lib.mkOption {
+      type = lib.types.str;
+      default = "fr_FR.UTF-8";
+      description = "System locale and language settings";
+    };
+
+    architecture = lib.mkOption {
+      type = lib.types.enum [ "x86_64" "aarch64" "riscv64" ];
+      default = "x86_64";
+      description = "System CPU architecture";
+    };
+
+    environment = lib.mkOption {
+      type = lib.types.enum [ "home" "work" ];
+      default = "home";
+      description = "Environment context affecting default application selection";
+    };
+
+    # Machine type flags
+    isServer = lib.mkEnableOption "headless server mode (disables GUI, reduces packages)";
+
+    isWSL = lib.mkEnableOption "Windows Subsystem for Linux mode";
+
+    isExperimental = lib.mkEnableOption "experimental/unstable features";
+
+    # Feature toggles
+    work = lib.mkEnableOption "work-related applications" // { default = true; };
+
+    gaming = lib.mkEnableOption "gaming-related applications" // { default = true; };
+
+    autoSudo = lib.mkEnableOption "passwordless sudo for wheel group";
+
+    # Display configuration
+    windowManager = lib.mkOption {
+      type = lib.types.nullOr (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
+      default = "gnome";
+      description = "Window manager selection (null for terminal-only)";
+    };
+
+    displayServer = lib.mkOption {
+      type = lib.types.nullOr (lib.types.enum [ "xorg" "wayland" ]);
+      default = "xorg";
+      description = "Display server selection (null for terminal-only)";
+    };
+
+    # Submodules with enable flags
+    virtualisation = {
+      enable = lib.mkEnableOption "KVM/QEMU virtualisation support";
+    };
+
+    docker = {
+      enable = lib.mkEnableOption "Docker container runtime";
+    };
+
+    social = {
+      enable = lib.mkEnableOption "social applications (Discord, etc.)" // { default = true; };
+    };
+
+    yubikey = {
+      enable = lib.mkEnableOption "YubiKey support for login and PAM";
+    };
+
+    # Paths configuration
+    paths = {
+      ageKeyFile = lib.mkOption {
         type = lib.types.str;
-        default = globalDefaults.username;
-        description = "Username for the system.";
+        default = "/var/lib/secrets/${config.settings.hostname}.txt";
+        description = "Path to the Age key file for SOPS decryption";
       };
-      hostname = lib.mkOption {
+
+      homeDirectory = lib.mkOption {
         type = lib.types.str;
-        default = globalDefaults.hostname;
-        description = "Hostname for the system.";
+        default = "/home/${config.settings.username}";
+        description = "Home directory path for the primary user";
       };
-      isServer = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.isServer;
-        description = "Is it a server?";
-      };
-      locale = lib.mkOption {
+
+      flakeDirectory = lib.mkOption {
         type = lib.types.str;
-        default = globalDefaults.locale;
-        description = "Locale lang settings for the system.";
+        default = "${config.settings.paths.homeDirectory}/.config/nix";
+        description = "Path to the NixOS flake configuration directory";
       };
-      virtualisation.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.virtualisation.enable;
-        description = "Do I run VM on this host?";
-      };
-      environment = lib.mkOption {
-        type = lib.types.enum [ "home" "work" ];
-        default = globalDefaults.environment;
-        description = "The environment setting (home or work).";
-      };
-      isExperimental = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.isExperimental;
-        description = "Is this an experimental machine?";
-      };
-      social.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.social.enable;
-        description = "Install social apps like Discord.";
-      };
-      work = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.work;
-        description = "Install work-related applications.";
-      };
-      gaming = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.gaming;
-        description = "Install gaming-related applications.";
-      };
-      windowManager = lib.mkOption {
-        type = lib.types.nullOr
-          (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
-        default = globalDefaults.windowManager;
-        description =
-          "Choose window manager (gnome, plasma, xfce, hyprland) or null for terminal-only.";
-      };
-      displayServer = lib.mkOption {
-        type = lib.types.nullOr (lib.types.enum [ "xorg" "wayland" ]);
-        default = globalDefaults.displayServer;
-        description =
-          "Choose display server (wayland, xorg) or null for terminal-only.";
-      };
-        docker = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = globalDefaults.docker.enable;
-            description = "Enable docker and its settings on host.";
-          };
-      };
-      architecture = lib.mkOption {
-        type = lib.types.enum [ "x86_64" "aarch64" "riscv64" ];
-        default = globalDefaults.architecture;
-        description = "Choose system architecture (x86_64, aarch64, riscv64).";
-      };
-      autoSudo = lib.mkOption {
-        type = lib.types.bool;
-        default = globalDefaults.autoSudo;
-        description =
-          "Add users to sudoers with no password and allow access to home manager service for user.";
+
+      dotfilesUrl = lib.mkOption {
+        type = lib.types.str;
+        default = "https://github.com/PaysanCorrezien/dotfiles";
+        description = "URL to the chezmoi dotfiles repository";
       };
     };
   };
 
-  config = {
-    settings = {
-      username = globalDefaults.username;
-      isServer = globalDefaults.isServer;
-      hostname = globalDefaults.hostname;
-      locale = globalDefaults.locale;
-      virtualisation.enable = globalDefaults.virtualisation.enable;
-      environment = globalDefaults.environment;
-      isExperimental = globalDefaults.isExperimental;
-      social.enable = globalDefaults.social.enable;
-      work = globalDefaults.work;
-      gaming = globalDefaults.gaming;
-      windowManager = globalDefaults.windowManager;
-      displayServer = globalDefaults.displayServer;
-      docker.enable = globalDefaults.docker.enable;
-      architecture = globalDefaults.architecture;
-      autoSudo = globalDefaults.autoSudo;
-    };
+  # Default configuration values
+  config.settings = {
+    username = lib.mkDefault "dylan";
+    hostname = lib.mkDefault "nixos";
+    locale = lib.mkDefault "fr_FR.UTF-8";
+    architecture = lib.mkDefault "x86_64";
+    environment = lib.mkDefault "home";
+    isServer = lib.mkDefault false;
+    isWSL = lib.mkDefault false;
+    isExperimental = lib.mkDefault false;
+    work = lib.mkDefault true;
+    gaming = lib.mkDefault true;
+    autoSudo = lib.mkDefault false;
+    windowManager = lib.mkDefault "gnome";
+    displayServer = lib.mkDefault "xorg";
+    virtualisation.enable = lib.mkDefault false;
+    docker.enable = lib.mkDefault false;
+    social.enable = lib.mkDefault true;
+    yubikey.enable = lib.mkDefault false;
   };
 }

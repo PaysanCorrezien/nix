@@ -21,7 +21,7 @@ in
       };
     };
     programs.zsh = {
-      initExtra = ''
+      initContent = ''
         eval "$(atuin init zsh)"
       '';
       shellAliases = {

@@ -16,9 +16,11 @@ in {
     home.sessionVariables = {
       CARGO_HOME = "$HOME/.cargo";
       RUSTUP_HOME = "$HOME/.rustup";
-      PATH = "$CARGO_HOME/bin:$PATH";
       PKG_CONFIG_PATH = "${pkgs.systemd.dev}/lib/pkgconfig:$PKG_CONFIG_PATH";
     };
+
+    # Add cargo bin to PATH
+    home.sessionPath = [ "$HOME/.cargo/bin" ];
 
     home.activation.initRustup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       export CARGO_HOME="$HOME/.cargo"

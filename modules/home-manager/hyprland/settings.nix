@@ -6,10 +6,6 @@
 }:
 
 {
-  options.settings.hyprland.extra = {
-    enable = lib.mkEnableOption "Enable extra hyprland settings";
-  };
-
   config = lib.mkIf config.settings.hyprland.extra.enable {
     home.packages = with pkgs; [
       hyprpanel

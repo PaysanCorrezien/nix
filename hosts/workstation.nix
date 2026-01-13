@@ -19,9 +19,11 @@ let
     else
       false;
 
-  wifiKey = lib.optionalString (builtins.pathExists "/run/secrets/wifi_homekey") (
-    builtins.readFile "/run/secrets/wifi_homekey"
-  );
+  wifiKey =
+    if builtins.pathExists "/run/secrets/wifi_homekey" then
+      lib.strings.removeSuffix "\n" (builtins.readFile "/run/secrets/wifi_homekey")
+    else
+      null;
 in
 {
   options.settings.useDhcp = lib.mkOption {

@@ -28,22 +28,6 @@ let
   };
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.gnome = lib.mkOption {
-          type = lib.types.submodule {
-            options.extra = lib.mkOption {
-              type = lib.types.submodule {
-                options.enable = lib.mkEnableOption "Enable extra GNOME configuration";
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-
   config = lib.mkIf config.settings.gnome.extra.enable {
 
     # Setup the GTK theme

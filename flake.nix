@@ -2,6 +2,7 @@
   description = "NixOS configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,10 +58,10 @@
       url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    busygit = {
-      url = "github:paysancorrezien/busygit";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # busygit = {
+    #   url = "github:paysancorrezien/busygit";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     hyprpanel = {
       url = "github:Jas-SinghFSU/HyprPanel";
       # url = "git+file:///home/dylan/repo/HyprPanel";
@@ -81,34 +82,33 @@
       ...
     }@inputs:
     let
-      mkSystem =
-        hostname:
+      # mkSystem takes hostname and import type (desktop, server, wsl)
+      mkSystem = hostname: importType:
         nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs nixpkgs;
           };
           modules = [
-            ./imports.nix
-
+            (./modules/imports + "/${importType}.nix")
             (./hosts + "/${hostname}.nix")
-            (
-              { config, ... }:
-              {
-                nixpkgs.hostPlatform = "${config.settings.architecture}-linux";
-              }
-            )
+            ({ config, ... }: {
+              nixpkgs.hostPlatform = "${config.settings.architecture}-linux";
+            })
           ];
         };
     in
     {
       nixosConfigurations = {
-        lenovo = mkSystem "lenovo";
-        workstation = mkSystem "workstation";
-        chi = mkSystem "chi";
-        homeserv = mkSystem "homeserv";
-        ionos = mkSystem "ionos";
-        wsl = mkSystem "wsl";
-        vmware = mkSystem "vmware";
+        # Desktops/laptops
+        lenovo = mkSystem "lenovo" "desktop";
+        workstation = mkSystem "workstation" "desktop";
+        # Servers
+        chi = mkSystem "chi" "server";
+        homeserv = mkSystem "homeserv" "server";
+        ionos = mkSystem "ionos" "server";
+        vmware = mkSystem "vmware" "server";
+        # WSL
+        wsl = mkSystem "wsl" "wsl";
       };
     };
 }

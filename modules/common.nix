@@ -40,7 +40,7 @@ in
   # Configure console keymap
   nixpkgs.config.allowUnfree = true;
   hardware.firmware = [
-    pkgs.firmwareLinuxNonfree
+    pkgs.linux-firmware
   ];
 
   nix.settings.experimental-features = [
@@ -79,6 +79,10 @@ in
     sharedModules = [
       #   inputs.sops-nix.homeManagerModules.sops
       {
+        # Ensure home-manager also allows unfree/broken packages
+        nixpkgs.config.allowUnfree = true;
+        nixpkgs.config.allowBroken = true;
+
         nixpkgs.overlays = [
           # inputs.hyprpanel.overlay
           (
@@ -139,6 +143,23 @@ in
               final.callPackage ../modules/home-manager/terminals/core/yazi/xdg-desktop-portal-termfilechooser.nix
                 { };
           })
+          # Overlay for development tools from unstable with allowBroken
+          (final: prev:
+            let
+              unstablePkgs = import inputs.nixpkgs {
+                system = prev.system;
+                config = {
+                  allowUnfree = true;
+                  allowBroken = true;
+                };
+              };
+            in
+            {
+              codex = unstablePkgs.codex;
+              cursor-cli = unstablePkgs.cursor-cli;
+              supabase-cli = unstablePkgs.supabase-cli;
+            }
+          )
         ];
       }
       # inputs.plasma-manager.homeManagerModules.plasma-manager

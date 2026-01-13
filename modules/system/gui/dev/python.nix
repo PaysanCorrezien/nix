@@ -62,7 +62,7 @@ let
       google-api-python-client
       flake8
       gitpython
-      prompt_toolkit
+      prompt-toolkit
       ollama
       flake8 # for aider
       vja # Add the custom package here
@@ -107,7 +107,7 @@ in
         atk
         pango
         harfbuzz
-        ruff-lsp
+        ruff
         devenv
         uv
       ]

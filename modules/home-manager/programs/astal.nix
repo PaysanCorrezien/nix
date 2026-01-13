@@ -8,17 +8,6 @@
 {
   # Import the AGS home-manager module
   # imports = [ inputs.ags.homeManagerModules.default ];
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.astal = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable = lib.mkEnableOption "Enable custom Astal configuration";
-          };
-        };
-      };
-    };
-  };
   #
   # config = lib.mkIf config.settings.astal.enable {
   #

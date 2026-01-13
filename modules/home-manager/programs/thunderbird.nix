@@ -75,18 +75,6 @@ let
 
 in
 {
-  options = {
-    settings = lib.mkOption {
-      type = lib.types.submodule {
-        options.thunderbird = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable = lib.mkEnableOption "Enable custom Thunderbird configuration";
-          };
-        };
-      };
-    };
-  };
-
   config = lib.mkIf config.settings.thunderbird.enable {
 
     home.file.".thunderbird/default/extension-settings.json".text = builtins.toJSON mergedSettings;

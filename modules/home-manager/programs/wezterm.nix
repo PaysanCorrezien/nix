@@ -15,15 +15,6 @@ let
   '';
 in
 {
-  options.settings = lib.mkOption {
-    type = lib.types.submodule {
-      options.wezterm = lib.mkOption {
-        type = lib.types.submodule {
-          options.enable = lib.mkEnableOption "Enable custom Wezterm configuration";
-        };
-      };
-    };
-  };
   config = lib.mkIf config.settings.wezterm.enable {
     programs.wezterm = {
       enable = true;
