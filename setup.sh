@@ -70,8 +70,18 @@ nix-env -iA nixos.fzf
 # ---------------------------------------------------------------------------- #
 # Preflight: ensure /nix/store has enough space (live ISO is tmpfs)             #
 # ---------------------------------------------------------------------------- #
-if [[ "$(findmnt -n -o FSTYPE /nix 2>/dev/null)" == "tmpfs" ]]; then
-	used_pct=$(df -Pk /nix/store | awk 'NR==2 {gsub(/%/, "", $5); print $5}')
+nix_fstype=""
+if command -v findmnt >/dev/null 2>&1; then
+	nix_fstype=$(findmnt -n -o FSTYPE /nix 2>/dev/null || true)
+elif command -v stat >/dev/null 2>&1; then
+	# Fallback when findmnt is missing or returns empty
+	nix_fstype=$(stat -f -c %T /nix 2>/dev/null || true)
+fi
+
+used_pct=$(df -Pk /nix/store | awk 'NR==2 {gsub(/%/, "", $5); print $5}')
+echo "[preflight] /nix fstype=${nix_fstype:-unknown} used=${used_pct:-?}%"
+
+if [[ "$nix_fstype" == "tmpfs" || "$nix_fstype" == "tmpfsfs" ]]; then
 	if [[ -n "$used_pct" ]] && ((used_pct >= 85)); then
 		mem_kb=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
 		target_kb=$((mem_kb * 70 / 100))
@@ -81,6 +91,8 @@ if [[ "$(findmnt -n -o FSTYPE /nix 2>/dev/null)" == "tmpfs" ]]; then
 		echo "Remounting /nix with size=${target_mb}M (70% of system RAM)."
 		run_sudo mount -o "remount,size=${target_mb}M" /nix
 	fi
+else
+	echo "[preflight] /nix is not tmpfs; skipping remount."
 fi
 
 # ---------------------------------------------------------------------------- #
