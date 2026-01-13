@@ -62,10 +62,12 @@ run_sudo() {
 # ---------------------------------------------------------------------------- #
 # Ensure dependencies                                                          #
 # ---------------------------------------------------------------------------- #
-echo "Installing git and fzf …"
+echo "Installing git, fzf, and coreutils …"
 # Use separate nix‑env calls without -q; some installer shells reject combined flags.
 nix-env -iA nixos.git
 nix-env -iA nixos.fzf
+nix-env -iA nixos.coreutils
+export PATH="/run/current-system/sw/bin:$PATH"
 
 # ---------------------------------------------------------------------------- #
 # Preflight: ensure /nix/store has enough space (live ISO is small)             #
@@ -88,7 +90,7 @@ fi
 # ---------------------------------------------------------------------------- #
 [ -d "$TEMP_REPO_DIR" ] && {
 	echo "Removing $TEMP_REPO_DIR"
-	rm -rf "$TEMP_REPO_DIR"
+	run_sudo /run/current-system/sw/bin/rm -rf "$TEMP_REPO_DIR"
 }
 
 git clone --depth 1 "$REPO_URL" "$TEMP_REPO_DIR"
