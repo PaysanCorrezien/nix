@@ -58,8 +58,21 @@ wsl --import NixOS $dest "$dest\nixos-wsl.tar.gz" --version 2;
 wsl -d NixOS
 ```
 
+## Load keyboard
+
+After iso loading on blank system , run this to get french keyboard
+
+```
+sudo loadkeys fr
+```
+
+## Run the install
+
+```
+curl -fsSL http://setup.domain.com | sh
+```
+
 ## Usefull ressources
 
 [home manager option](https://nix-community.github.io/home-manager/options.xhtml)
 [home manager programs](https://mynixos.com/home-manager/options/programs)
-

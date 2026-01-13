@@ -24,6 +24,10 @@ MOUNT_TMP="/mnt/agekey"
 # ---------------------------------------------------------------------------- #
 
 choose_partition() {
+	echo ""
+	echo "Available partitions (size, label, type, mount):"
+	lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "  %s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
+	echo ""
 	mapfile -t PARTS < <(
 		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	)
@@ -96,6 +100,12 @@ echo "Host → $CONFIG"
 # Optional Age key import                                                      #
 # ---------------------------------------------------------------------------- #
 KEY_SOURCE=""
+echo ""
+echo "SOPS/Age key import:"
+echo "- If you have an existing Age key on a USB drive, you can import it now."
+echo "- This lets the installer decrypt secrets during install."
+echo "- You can also skip and add the key later."
+echo ""
 KEY_CHOICE=$(printf 'Skip\nImport from external drive\n' | fzf --height 4 --prompt="Import Age key? > " || true)
 case "$KEY_CHOICE" in
 "Import from external drive")
