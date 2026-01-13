@@ -92,7 +92,34 @@ if [[ "$nix_fstype" == "tmpfs" || "$nix_fstype" == "tmpfsfs" ]]; then
 		run_sudo mount -o "remount,size=${target_mb}M" /nix
 	fi
 else
-	echo "[preflight] /nix is not tmpfs; skipping remount."
+	echo "[preflight] /nix is not tmpfs; checking overlay upperdir."
+	upperdir=""
+	if command -v findmnt >/dev/null 2>&1; then
+		upperdir=$(findmnt -n -o OPTIONS /nix 2>/dev/null | sed -n 's/.*upperdir=\([^,]*\).*/\1/p' || true)
+	fi
+	if [[ -z "$upperdir" ]] && command -v mount >/dev/null 2>&1; then
+		upperdir=$(mount | awk '$3=="/nix" {print $6}' | sed -n 's/.*upperdir=\([^,]*\).*/\1/p' | head -n1)
+	fi
+	if [[ -n "$upperdir" ]]; then
+		upper_target=""
+		upper_fstype=""
+		if command -v findmnt >/dev/null 2>&1; then
+			upper_target=$(findmnt -n -o TARGET -T "$upperdir" 2>/dev/null || true)
+			upper_fstype=$(findmnt -n -o FSTYPE -T "$upperdir" 2>/dev/null || true)
+		fi
+		echo "[preflight] /nix upperdir=${upperdir} mount=${upper_target:-unknown} fstype=${upper_fstype:-unknown}"
+		if [[ "$upper_fstype" == "tmpfs" && -n "$upper_target" && -n "$used_pct" && $used_pct -ge 85 ]]; then
+			mem_kb=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
+			target_kb=$((mem_kb * 70 / 100))
+			target_mb=$((target_kb / 1024))
+			echo ""
+			echo "⚠️  /nix overlay upperdir is tmpfs and ${used_pct}% full."
+			echo "Remounting ${upper_target} with size=${target_mb}M (70% of system RAM)."
+			run_sudo mount -o "remount,size=${target_mb}M" "$upper_target"
+		fi
+	else
+		echo "[preflight] No overlay upperdir detected."
+	fi
 fi
 
 # ---------------------------------------------------------------------------- #
