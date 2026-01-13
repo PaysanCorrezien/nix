@@ -60,17 +60,8 @@ run_sudo() {
 }
 
 # ---------------------------------------------------------------------------- #
-# Ensure dependencies                                                          #
-# ---------------------------------------------------------------------------- #
-echo "Installing git, fzf, and coreutils …"
-# Use separate nix‑env calls without -q; some installer shells reject combined flags.
-nix-env -iA nixos.git
-nix-env -iA nixos.fzf
-nix-env -iA nixos.coreutils
-export PATH="/run/current-system/sw/bin:$PATH"
-
-# ---------------------------------------------------------------------------- #
 # Preflight: ensure /nix/store has enough space (live ISO is small)             #
+# Must run BEFORE installing dependencies to avoid filling the store            #
 # ---------------------------------------------------------------------------- #
 min_free_mb=2048
 free_kb=$(df -Pk /nix/store | awk 'NR==2 {print $4}')
@@ -81,9 +72,29 @@ if ((free_mb < min_free_mb)); then
 	target_mb=$((target_kb / 1024))
 	echo ""
 	echo "⚠️  Low free space in /nix/store (${free_mb}MB)."
-	echo "Mounting a larger tmpfs on /nix/store (${target_mb}M, 70% of RAM)."
-	run_sudo mount -t tmpfs -o "size=${target_mb}M" tmpfs /nix/store
+	echo "Expanding /nix/store using overlay (${target_mb}M backing from RAM)."
+
+	# Create tmpfs-backed directories for overlay
+	run_sudo mkdir -p /tmp/nix-overlay-upper /tmp/nix-overlay-work
+	run_sudo mount -t tmpfs -o "size=${target_mb}M" tmpfs /tmp/nix-overlay-upper
+
+	# Mount overlay: reads from original store, writes go to tmpfs
+	run_sudo mount -t overlay overlay \
+		-o "lowerdir=/nix/store,upperdir=/tmp/nix-overlay-upper,workdir=/tmp/nix-overlay-work" \
+		/nix/store
+
+	echo "✓ /nix/store expanded via overlay (existing content preserved)."
 fi
+
+# ---------------------------------------------------------------------------- #
+# Ensure dependencies                                                          #
+# ---------------------------------------------------------------------------- #
+echo "Installing git, fzf, and coreutils …"
+# Use separate nix‑env calls without -q; some installer shells reject combined flags.
+nix-env -iA nixos.git
+nix-env -iA nixos.fzf
+nix-env -iA nixos.coreutils
+export PATH="/run/current-system/sw/bin:$PATH"
 
 # ---------------------------------------------------------------------------- #
 # Prepare workspace                                                            #

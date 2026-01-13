@@ -107,6 +107,7 @@
         homeserv = mkSystem "homeserv" "server";
         ionos = mkSystem "ionos" "server";
         vmware = mkSystem "vmware" "server";
+        vmware-minimal = mkSystem "vmware-minimal" "server"; # Bootstrap config for low-memory installs
         # WSL
         wsl = mkSystem "wsl" "wsl";
       };
