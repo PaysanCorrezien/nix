@@ -6,28 +6,25 @@
 }:
 
 # Ultra-minimal VMware host for bootstrap install
-# Use this if vmware.nix fails due to space constraints
-# After install, switch to vmware.nix with: nixos-rebuild switch --flake .#vmware
+# After install, switch to vmware: nixos-rebuild switch --flake .#vmware
 
 {
   config.settings = {
     isServer = true;
-    hostname = "vmware";
+    hostname = "vmware-minimal";
     username = "dylan";
     architecture = "x86_64";
     virtualisation.enable = true;
     disko.mainDisk = "/dev/sda";
     disko.layout = "standard";
-    useDhcp = true;
     environment = "home";
     gaming = false;
     social.enable = false;
     locale = "fr_FR.UTF-8";
     autoSudo = true;
-    tailscale.enable = false;
     yubikey.enable = false;
     ssh.enable = false;
-    # No window manager - pure CLI server
+    tailscale.enable = false;
     windowManager = null;
     displayServer = null;
   };
@@ -45,10 +42,4 @@
     hostName = config.settings.hostname;
     networkmanager.enable = true;
   };
-
-  # Minimal packages - just enough to bootstrap
-  config.environment.systemPackages = with pkgs; [
-    git
-    vim
-  ];
 }
