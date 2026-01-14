@@ -24,7 +24,7 @@
   ##############################################################################
   config.settings = {
     # TYPE
-    isServer = true;
+    isServer = false;
     # Identity
     hostname = "vmware";
     username = "dylan";
@@ -38,8 +38,7 @@
     disko.layout = "standard"; # Standard layout with ESP
 
     # Desktop
-    windowManager = "hyprland";
-    # windowManager = "gnome";
+    windowManager = "niri";
     displayServer = "wayland";
     ssh.enable = false;
 

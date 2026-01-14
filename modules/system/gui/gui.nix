@@ -22,6 +22,8 @@ in
     ./extra/glance.nix
     ./extra/gnome.nix
     ./extra/hyprland.nix
+    ./extra/niri.nix
+    ./extra/noctalia.nix
     ./extra/stylix.nix
     ./extra/docker.nix
     ./extra/screensaver.nix

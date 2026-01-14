@@ -180,6 +180,7 @@ run_sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
 run_sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
 # Use UID 1000 since the user doesn't exist on live ISO, only in installed system
 run_sudo chown -R 1000:1000 "$FINAL_REPO_DIR"
+run_sudo chown -R 1000:1000 "/mnt/home/$USER_NAME/.config"
 
 # ---------------------------------------------------------------------------- #
 # Cleanup                                                                      #

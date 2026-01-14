@@ -44,6 +44,7 @@ in
     ./hyprland/settings.nix
     ./hyprland/waybar.nix
     ./hyprland/wlogout.nix
+    ./niri/settings.nix
     ./stylix/default.nix
     ./programs/astal.nix
     ./programs/rofi.nix

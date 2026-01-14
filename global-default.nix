@@ -49,7 +49,7 @@
 
     # Display configuration
     windowManager = lib.mkOption {
-      type = lib.types.nullOr (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" ]);
+      type = lib.types.nullOr (lib.types.enum [ "gnome" "plasma" "xfce" "hyprland" "niri" ]);
       default = "gnome";
       description = "Window manager selection (null for terminal-only)";
     };
