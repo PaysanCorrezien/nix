@@ -78,7 +78,6 @@ in
     };
     sharedModules = [
       #   inputs.sops-nix.homeManagerModules.sops
-      inputs.stylix.homeModules.stylix
       {
         # Ensure home-manager also allows unfree/broken packages
         nixpkgs.config.allowUnfree = true;
