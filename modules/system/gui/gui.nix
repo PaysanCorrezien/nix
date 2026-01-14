@@ -14,7 +14,7 @@ in
 {
   imports = [
     ./dev/python.nix
-    ./programs/espanso.nix
+    # ./programs/espanso.nix
     ./extra/work.nix
     ./extra/audio.nix
     ./extra/social.nix
@@ -51,6 +51,15 @@ in
           theme = "catppuccin-mocha";
           package = lib.mkForce pkgs.kdePackages.sddm;
           autoNumlock = true;
+          themePackages = [
+            (pkgs.catppuccin-sddm.override {
+              flavor = "mocha";
+              font = "Noto Sans";
+              fontSize = "9";
+              background = "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
+              loginBackground = true;
+            })
+          ];
           settings = {
             General = {
               DisplayServer = if config.settings.displayServer == "wayland" then "wayland" else "x11";
@@ -103,13 +112,6 @@ in
         localsend
         activitywatch
         ifuse
-        (pkgs.catppuccin-sddm.override {
-          flavor = "mocha";
-          font = "Noto Sans";
-          fontSize = "9";
-          background = "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
-          loginBackground = true;
-        })
         xdg-desktop-portal-gnome
         xdg-desktop-portal
       ];

@@ -16,7 +16,7 @@ in
           device = "nodev";
           forceInstall = true;
           efiInstallAsRemovable = true;
-          useOSProber = false;
+          useOSProber = true;
           extraEntries = ''
             ## ── Power controls ───────────────────────────────────────────────
             menuentry "Reboot"   { reboot }

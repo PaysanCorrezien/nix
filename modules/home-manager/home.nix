@@ -39,7 +39,8 @@ in
     ./programs/remmina.nix
     ./programs/keepassxc.nix
     ./programs/thunderbird.nix
-    ./programs/wezterm.nix
+    # ./programs/wezterm.nix
+    ./programs/ghostty.nix
     ./programs/virtualisation.nix
     ./hyprland/settings.nix
     ./hyprland/waybar.nix
