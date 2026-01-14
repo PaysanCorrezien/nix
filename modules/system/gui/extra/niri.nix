@@ -18,6 +18,7 @@ in
 {
   config = lib.mkIf (cfg.windowManager == "niri") {
     settings.displayServer = lib.mkDefault "wayland";
+    settings.stylix.enable = lib.mkForce false;
     programs.niri.enable = true;
 
     environment.sessionVariables = {
