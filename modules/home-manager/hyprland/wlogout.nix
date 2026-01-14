@@ -1,12 +1,13 @@
-{ lib, config, ... }:
+{ lib, config, settings, ... }:
 
 let
-  # Check if stylix is enabled, if not provide fallback colors
+  # Check if stylix is enabled via settings flag, if not provide fallback colors
+  stylixEnabled = settings.stylix.enable or false;
   colors =
-    if (config.stylix.base16.colors or null) != null then
+    if stylixEnabled then
       {
-        base05 = config.stylix.base16.colors.base05;
-        base0B = config.stylix.base16.colors.base0B;
+        base05 = config.lib.stylix.colors.base05;
+        base0B = config.lib.stylix.colors.base0B;
       }
     else
       {

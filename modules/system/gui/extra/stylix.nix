@@ -16,7 +16,7 @@
 
   config = lib.mkMerge [
     {
-      settings.stylix.enable = config.settings.gui.enable;
+      settings.stylix.enable = lib.mkDefault config.settings.gui.enable;
     }
     (lib.mkIf config.settings.stylix.enable {
       stylix = {
