@@ -5,6 +5,7 @@
   ...
 }:
 let
+  cfg = config.settings;
   niriPortalsConf = ''
     [preferred]
     default=gnome;gtk;
@@ -15,9 +16,9 @@ let
   '';
 in
 {
-  config = lib.mkIf (config.settings.windowManager == "niri") {
-    settings.displayServer = lib.mkDefault "wayland";
-    settings.stylix.enable = lib.mkForce false;
+  config = lib.mkIf (cfg.windowManager == "niri") {
+    # NOTE: Host file must set settings.displayServer = "wayland" when using niri
+    # Setting it here causes infinite recursion with the mkIf condition
     programs.niri.enable = true;
 
     environment.sessionVariables = {
