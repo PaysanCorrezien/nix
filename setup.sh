@@ -178,7 +178,8 @@ run_sudo ${ENV_ARGS[*]} nixos-install --flake "$TEMP_REPO_DIR#$CONFIG" --show-tr
 FINAL_REPO_DIR="/mnt/home/$USER_NAME/.config/nix"
 run_sudo mkdir -p "$(dirname "$FINAL_REPO_DIR")"
 run_sudo mv "$TEMP_REPO_DIR" "$FINAL_REPO_DIR"
-run_sudo chown -R "$USER_NAME:$USER_NAME" "$FINAL_REPO_DIR"
+# Use UID 1000 since the user doesn't exist on live ISO, only in installed system
+run_sudo chown -R 1000:1000 "$FINAL_REPO_DIR"
 
 # ---------------------------------------------------------------------------- #
 # Cleanup                                                                      #
