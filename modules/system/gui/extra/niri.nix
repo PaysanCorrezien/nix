@@ -36,6 +36,7 @@ in
 
     environment.etc."xdg-desktop-portal/niri-portals.conf".text = niriPortalsConf;
 
+    programs.dconf.enable = true;
     services.gnome.gnome-keyring.enable = true;
     security.polkit.enable = true;
 
