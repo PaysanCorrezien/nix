@@ -5,7 +5,6 @@
   ...
 }:
 let
-  cfg = config.settings;
   niriPortalsConf = ''
     [preferred]
     default=gnome;gtk;
@@ -16,7 +15,7 @@ let
   '';
 in
 {
-  config = lib.mkIf (cfg.windowManager == "niri") {
+  config = lib.mkIf (config.settings.windowManager == "niri") {
     settings.displayServer = lib.mkDefault "wayland";
     settings.stylix.enable = lib.mkForce false;
     programs.niri.enable = true;
