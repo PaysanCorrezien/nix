@@ -10,6 +10,13 @@ let
   isServer = config.settings.isServer;
   isWSL = config.wsl.enable or false;
   defaultGuiEnable = !(isServer || isWSL); # Default to false if server or WSL
+  sddmTheme = pkgs.catppuccin-sddm.override {
+    flavor = "mocha";
+    font = "Noto Sans";
+    fontSize = "9";
+    background = "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
+    loginBackground = true;
+  };
 in
 {
   imports = [
@@ -51,18 +58,12 @@ in
           theme = "catppuccin-mocha";
           package = lib.mkForce pkgs.kdePackages.sddm;
           autoNumlock = true;
-          themePackages = [
-            (pkgs.catppuccin-sddm.override {
-              flavor = "mocha";
-              font = "Noto Sans";
-              fontSize = "9";
-              background = "${../../home-manager/gnome/backgrounds/wallpaper_leaves.png}";
-              loginBackground = true;
-            })
-          ];
           settings = {
             General = {
               DisplayServer = if config.settings.displayServer == "wayland" then "wayland" else "x11";
+            };
+            Theme = {
+              ThemeDir = "${sddmTheme}/share/sddm/themes";
             };
           };
         };
