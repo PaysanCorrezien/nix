@@ -51,13 +51,6 @@
       url = "github:paysancorrezien/tailscale-ssh.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    yazi-plugins = {
-      # url = "github:lordkekz/nix-yazi-plugins?ref=main";
-      # url = "git+file:///home/dylan/repo/nix-yazi-plugins?ref=0.4";
-      # url = "github:paysancorrezien/nix-yazi-plugins";
-      url = "github:paysancorrezien/nix-yazi-plugins?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # busygit = {
     #   url = "github:paysancorrezien/busygit";
     #   inputs.nixpkgs.follows = "nixpkgs";

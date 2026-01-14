@@ -22,7 +22,6 @@
 
   # Overlays available to all hosts
   nixpkgs.overlays = [
-    inputs.yazi-plugins.overlays.default
     # inputs.busygit.overlays.default
     (final: prev: {
       xdg-desktop-portal-termfilechooser =
