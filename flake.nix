@@ -106,11 +106,11 @@
         # Desktops/laptops
         lenovo = mkSystem "lenovo" "desktop";
         workstation = mkSystem "workstation" "desktop";
+        vmware = mkSystem "vmware" "desktop";
         # Servers
         chi = mkSystem "chi" "server";
         homeserv = mkSystem "homeserv" "server";
         ionos = mkSystem "ionos" "server";
-        vmware = mkSystem "vmware" "server";
         vmware-minimal = mkSystem "vmware-minimal" "server"; # Bootstrap config for low-memory installs
         # WSL
         wsl = mkSystem "wsl" "wsl";
