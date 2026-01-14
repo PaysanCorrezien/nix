@@ -43,12 +43,6 @@
           };
           default = { };
         };
-        stylix = lib.mkOption {
-          type = lib.types.submodule {
-            options.enable = lib.mkEnableOption "custom stylix configuration";
-          };
-          default = { };
-        };
         wezterm = lib.mkOption {
           type = lib.types.submodule {
             options.enable = lib.mkEnableOption "custom Wezterm configuration";

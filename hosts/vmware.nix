@@ -40,7 +40,6 @@
     # Desktop
     windowManager = "niri";
     displayServer = "wayland";
-    stylix.enable = false; # Noctalia handles theming for niri
     ssh.enable = false;
 
     # Misc flags

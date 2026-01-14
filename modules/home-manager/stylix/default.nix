@@ -1,20 +1,21 @@
 {
   lib,
   config,
-  pkgs,
+  settings,
   ...
 }:
+let
+  # Check if stylix is enabled by checking if the window manager is not niri
+  # This mirrors the NixOS-level logic
+  stylixEnabled = (settings.windowManager or null) != "niri" && (settings.windowManager or null) != null && !(settings.isServer or false);
+in
 {
-  config = lib.mkIf config.settings.stylix.enable {
-    # stylix.enable = true;
-    # stylix.image = pkgs.lib.mkDefault "${config.home.homeDirectory}/.wallpaper.png";
-    # stylix.image = "/home/dylan/.wallpaper.png";
+  config = lib.mkIf stylixEnabled {
     stylix = {
       targets = {
         neovim.enable = false;
         rofi.enable = false;
       };
     };
-
   };
 }

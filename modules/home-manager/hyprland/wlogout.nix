@@ -1,8 +1,8 @@
 { lib, config, settings, ... }:
 
 let
-  # Check if stylix is enabled via settings flag, if not provide fallback colors
-  stylixEnabled = settings.stylix.enable or false;
+  # Check if stylix is enabled (not niri, not server, has window manager)
+  stylixEnabled = (settings.windowManager or null) != "niri" && (settings.windowManager or null) != null && !(settings.isServer or false);
   colors =
     if stylixEnabled then
       {
