@@ -81,8 +81,18 @@ in
           device = cfg.mainDisk;
           content = {
             type = "gpt";
+            preCreateHook = ''
+              # Thoroughly wipe disk metadata before partitioning
+              sgdisk --zap-all ${cfg.mainDisk} || true
+              wipefs --all --force ${cfg.mainDisk} || true
+              # Zero first and last 10MB to clear any remaining metadata
+              dd if=/dev/zero of=${cfg.mainDisk} bs=1M count=10 conv=fsync 2>/dev/null || true
+              partprobe ${cfg.mainDisk} || true
+              sleep 1
+            '';
             partitions = {
               ESP = {
+                priority = 1;
                 name = "ESP";
                 size = efiSize;
                 type = "EF00";
@@ -90,10 +100,12 @@ in
                   type = "filesystem";
                   format = "vfat";
                   mountpoint = efiMountPoint;
+                  mountOptions = [ "umask=0077" ];
                 };
               };
             } // lib.optionalAttrs cfg.swap.enable {
               swap = {
+                priority = 2;
                 name = "swap";
                 size = cfg.swap.size;
                 content = {
@@ -102,12 +114,14 @@ in
               };
             } // {
               root = {
+                priority = 100;
                 name = "root";
                 size = "100%";
                 content = {
                   type = "filesystem";
                   format = "ext4";
                   mountpoint = "/";
+                  mountOptions = [ "defaults" ];
                 };
               };
             };

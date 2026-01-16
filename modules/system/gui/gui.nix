@@ -49,6 +49,7 @@ in
     (lib.mkIf config.settings.gui.enable {
       # Enable X server only if display server is not null
       services.xserver.enable = config.settings.displayServer != null;
+      services.dbus.enable = true;
 
       # Configure display manager based on settings
       services.displayManager = lib.mkIf (config.settings.windowManager != null) {
@@ -127,6 +128,9 @@ in
       powerManagement.enable = true;
       powerManagement.powertop.enable = true;
 
+    })
+    (lib.mkIf (config.settings.gui.enable && config.settings.windowManager == "niri") {
+      services.displayManager.defaultSession = "niri";
     })
   ];
 }

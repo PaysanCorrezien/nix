@@ -26,10 +26,10 @@ MOUNT_TMP="/mnt/agekey"
 choose_partition() {
 	echo ""
 	echo "Available partitions (size, label, type, mount):"
-	lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "  %s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
+	lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT --output-separator $'\t' | awk -F '\t' '$4=="part" {printf "  %s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	echo ""
 	mapfile -t PARTS < <(
-		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT | awk '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
+		lsblk -rpno NAME,SIZE,LABEL,TYPE,MOUNTPOINT --output-separator $'\t' | awk -F '\t' '$4=="part" {printf "%s (%s) %s %s\n", $1, $2, ($3==""?"-":$3), ($5==""?"":$5)}'
 	)
 	((${#PARTS[@]})) || return 1
 	printf '%s\n' "${PARTS[@]}" | fzf --height 15 --layout=reverse --prompt="Select partition > " | awk '{print $1}'
